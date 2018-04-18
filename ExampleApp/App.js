@@ -38,7 +38,7 @@ export default class App extends Component<Props> {
 
   callLoging() {
         console.log("Login Called");
-        webengage.user.login("user-react-test2");
+        webengage.user.login("user-react-test3");
     }
 }
 

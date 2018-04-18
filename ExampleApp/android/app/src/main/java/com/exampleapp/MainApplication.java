@@ -55,9 +55,9 @@ public class MainApplication extends Application implements ReactApplication,Lif
     SoLoader.init(this, /* native exopackage */ false);
     Log.d("WebEngage-React","Application on onCreate");
     WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-              .setWebEngageKey("~134105268")
+              .setWebEngageKey(YOUR_LICENSE_CODE)
               .setAutoGCMRegistrationFlag(true)
-              .setGCMProjectNumber("299770535209")
+              .setGCMProjectNumber(YOUR_PUSH_PROJECT_NUMBER)
               .setDebugMode(true) // only in development mode
               .build();
   registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));

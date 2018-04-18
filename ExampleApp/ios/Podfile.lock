@@ -1,0 +1,18 @@
+PODS:
+  - WebEngage (4.0.11):
+    - WebEngage/Xcode9 (= 4.0.11)
+  - WebEngage/Xcode9 (4.0.11)
+
+DEPENDENCIES:
+  - WebEngage
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - WebEngage
+
+SPEC CHECKSUMS:
+  WebEngage: 131f531b3391678e4c7538093c40b0937280a14d
+
+PODFILE CHECKSUM: 4ef0e1b553ef9d25f5856f175b4396157a790b88
+
+COCOAPODS: 1.5.0

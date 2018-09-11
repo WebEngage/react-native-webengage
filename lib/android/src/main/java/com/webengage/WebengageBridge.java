@@ -4,10 +4,12 @@ package com.webengage;
  * Created by uzma on 10/25/17.
  */
 
+import android.net.Uri;
 import android.content.Context;
 import android.os.Bundle;
 import android.renderscript.Sampler;
 import android.util.Log;
+import com.webengage.sdk.android.Logger;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -47,22 +49,25 @@ import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
-
-
-public class WebengageBridge extends ReactContextBaseJavaModule implements PushNotificationCallbacks, InAppNotificationCallbacks{
+public class WebengageBridge extends ReactContextBaseJavaModule implements PushNotificationCallbacks, InAppNotificationCallbacks {
+    private static final String TAG = "webengageBridge";
 
     public WebengageBridge(ReactApplicationContext reactContext) {
         super(reactContext);
+        Log.d(TAG, "Constructor called");
+        WebEngage.registerPushNotificationCallback(this);
+        WebEngage.registerInAppNotificationCallback(this);
     }
 
     @Override
     public String getName() {
-        return "webengageBridge";
+        return TAG;
     }
 
     @ReactMethod
     public void init(boolean autoRegister) {
         WebEngage.registerPushNotificationCallback(this);
+        WebEngage.registerInAppNotificationCallback(this);
     }
 
     @ReactMethod
@@ -96,7 +101,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     public void setAttribute(ReadableMap readableMap) throws JSONException {
         JSONObject jsonObject = new JSONObject();
 
-
         ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
 
         while (iterator.hasNextKey()) {
@@ -124,7 +128,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
                     WebEngage.get().user().setAttribute(key,attributeValue);
                     break;
             }
-
         }
     }
 
@@ -215,9 +218,8 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
                     deconstructedMap.put(key, readableMap.getArray(key));
                     break;
                 default:
-                    throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
+                    Logger.e(TAG, "Could not convert object with key: " + key);
             }
-
         }
         return deconstructedMap;
     }
@@ -246,21 +248,18 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
                     deconstructedList.add(i, recursivelyDeconstructReadableArray(readableArray.getArray(i)));
                     break;
                 default:
-                    throw new IllegalArgumentException("Could not convert object at index " + i + ".");
+                    Logger.e(TAG, "Could not convert object at index " + i);
             }
         }
         return deconstructedList;
     }
 
-    private void sendEvent(ReactContext reactContext,
-                           String eventName,
-                           @Nullable WritableMap params) {
+    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
     }
 
-    public static WritableMap convertJsonObjectToWriteable(
-            JSONObject jsonObj) {
+    public static WritableMap convertJsonObjectToWriteable(JSONObject jsonObj) {
         WritableMap map = Arguments.createMap();
         Iterator<String> it = jsonObj.keys();
         while (it.hasNext()) {
@@ -269,18 +268,15 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
             try {
                 obj = jsonObj.get(key);
             } catch (JSONException jsonException) {
-                // Should not happen.
-                throw new RuntimeException("Key " + key
-                        + " should exist in " + jsonObj.toString() + ".",
-                        jsonException);
+                Logger.e(TAG, "Key " + key + " should exist in " + String.valueOf(jsonObj), jsonException);
+            } catch (Exception e) {
+                Logger.e(TAG, "Exception while getting value for " + key, e);
             }
-
+            
             if (obj instanceof JSONObject)
-                map.putMap(key,
-                        convertJsonObjectToWriteable((JSONObject) obj));
+                map.putMap(key, convertJsonObjectToWriteable((JSONObject) obj));
             else if (obj instanceof JSONArray)
-                map.putArray(key,
-                        convertJsonArrayToWriteable((JSONArray) obj));
+                map.putArray(key, convertJsonArrayToWriteable((JSONArray) obj));
             else if (obj instanceof String)
                 map.putString(key, (String) obj);
             else if (obj instanceof Double)
@@ -289,12 +285,11 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
                 map.putInt(key, (Integer) obj);
             else if (obj instanceof Boolean)
                 map.putBoolean(key, (Boolean) obj);
-            else if (obj == null)
+            else if (obj == null || (obj == JSONObject.NULL)) 
                 map.putNull(key);
             else
-                throw new RuntimeException("Unrecognized object: " + obj);
+                Logger.e(TAG, "Unrecognized value for " + key + ": " + String.valueOf(obj));
         }
-
         return map;
     }
 
@@ -305,8 +300,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
             try {
                 obj = jsonArr.get(i);
             } catch (JSONException jsonException) {
-                // Should not happen.
-                throw new RuntimeException(i + " should be within bounds of array " + jsonArr.toString(), jsonException);
+                Logger.e(TAG, i + " should be within bounds of array " + String.valueOf(jsonArr), jsonException);
             }
 
             if (obj instanceof JSONObject)
@@ -324,7 +318,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
             else if (obj == null)
                 arr.pushNull();
             else
-                throw new RuntimeException("Unrecognized object: " + obj);
+                Logger.e(TAG, "Unrecognized object: " + String.valueOf(obj));
         }
 
         return arr;
@@ -332,7 +326,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
 
     @Override
     public PushNotificationData onPushNotificationReceived(Context context, PushNotificationData pushNotificationData) {
-
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
         sendEvent(getReactApplicationContext(), "pushNotificationReceived", map);
         return pushNotificationData;
@@ -348,7 +341,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     public boolean onPushNotificationClicked(Context context, PushNotificationData pushNotificationData) {
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
         sendEvent(getReactApplicationContext(), "pushNotificationClicked", map);
-        return true;
+        return false;
     }
 
     @Override
@@ -358,28 +351,64 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @Override
-    public boolean onPushNotificationActionClicked(Context context, PushNotificationData pushNotificationData, String s) {
+    public boolean onPushNotificationActionClicked(Context context, PushNotificationData pushNotificationData, String buttonId) {
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
         sendEvent(getReactApplicationContext(), "pushNotificationClicked", map);
-        return true;
+        return false;
     }
 
     @Override
     public InAppNotificationData onInAppNotificationPrepared(Context context, InAppNotificationData inAppNotificationData) {
-
         sendEvent(getReactApplicationContext(), "notificationPrepared", convertJsonObjectToWriteable(inAppNotificationData.getData()));
-        return null;
+        return inAppNotificationData;
     }
 
     @Override
     public void onInAppNotificationShown(Context context, InAppNotificationData inAppNotificationData) {
-        sendEvent(getReactApplicationContext(), "notificationShown", convertJsonObjectToWriteable(inAppNotificationData.getData()));
+        WritableMap map = convertJsonObjectToWriteable(inAppNotificationData.getData());
+        Logger.d(TAG, "in-app notification data: " + map);
+        sendEvent(getReactApplicationContext(), "notificationShown", map);
     }
 
     @Override
-    public boolean onInAppNotificationClicked(Context context, InAppNotificationData inAppNotificationData, String s) {
-        sendEvent(getReactApplicationContext(), "notificationClicked", convertJsonObjectToWriteable(inAppNotificationData.getData()));
-        return true;
+    public boolean onInAppNotificationClicked(Context context, InAppNotificationData inAppNotificationData, String actionId) {
+        Logger.d(TAG, "action id: " + actionId);
+        JSONObject jsonObject = inAppNotificationData.getData();
+        String actionLink = null;
+        try {
+            JSONArray actions = jsonObject.isNull("actions") ? null : jsonObject.getJSONArray("actions");
+            if (actions != null) {
+                for (int i = 0; i < actions.length(); i++) {
+                    JSONObject action = actions.getJSONObject(i);
+                    String actionEId = action.isNull("actionEId") ? null : action.optString("actionEId");
+                    if (actionEId != null && actionEId.equals(actionId)) {
+                        actionLink = action.isNull("actionLink") ? null : action.getString("actionLink");
+                        break;
+                    }
+                }
+
+                List<String> params = null;
+                try {
+                    params = Uri.parse(actionLink).getPathSegments();
+                } catch (Exception e) {
+
+                }
+
+                if (params != null && params.size() > 1) {
+                    actionLink = params.get(1);
+                }
+
+                Logger.d(TAG, "action link: " + actionLink);
+            }
+        } catch (JSONException e) {
+            Logger.e(TAG, "JSONException while getting action link from in-app notification data", e);
+        }
+
+        WritableMap map = convertJsonObjectToWriteable(jsonObject);
+        map.putString("deepLink", actionLink);
+        map.putString("clickId", actionId);
+        sendEvent(getReactApplicationContext(), "notificationClicked", map);
+        return false;
     }
 
     @Override
@@ -387,4 +416,3 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         sendEvent(getReactApplicationContext(), "notificationDismissed", convertJsonObjectToWriteable(inAppNotificationData.getData()));
     }
 }
-

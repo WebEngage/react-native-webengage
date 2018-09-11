@@ -15,23 +15,33 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  NSURL *jsCodeLocation;
-
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                      moduleName:@"ExampleApp"
-                                               initialProperties:nil
-                                                   launchOptions:launchOptions];
+//  NSURL *jsCodeLocation;
+//
+//  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  
+//  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
+//                                                      moduleName:@"ExampleApp"
+//                                               initialProperties:nil
+//                                                   launchOptions:launchOptions];
+  
+  // TODO: Need to improve the SDK this so that clients don't have to make these changes as done in Android
+  self.bridge = [WEGWebEngageBridge new];
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.bridge launchOptions:launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"ExampleApp" initialProperties:nil];
+  
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-
+  
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  [[WebEngage sharedInstance] application:application 
-                                didFinishLaunchingWithOptions:launchOptions];
+  
+//  WEGWebEngageBridge* webEngageBridge = [WEGWebEngageBridge allocWithZone: nil];
+  
+  [[WebEngage sharedInstance] application:application
+            didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.bridge.wegBridge];
+
   return YES;
 }
 

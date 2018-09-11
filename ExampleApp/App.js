@@ -10,36 +10,173 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableHighlight
+  TextInput,
+  TouchableHighlight,
+  Linking
 } from 'react-native';
+import { AsyncStorage } from "react-native";
 import WebEngage from 'react-native-webengage';
-var webengage = new WebEngage();
-console.log("WebEngage-React:App js called");
+
 const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
+  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
+  android: 'Double tap R on your keyboard to reload,\n' + 'Shake or press menu button for dev menu'
 });
+
+var webengage = new WebEngage();
 
 type Props = {};
 export default class App extends Component<Props> {
-  render() {
-    console.log("WebEngage-React:Render called");
-    return (
-          <View style={styles.container}>
-            <TouchableHighlight style={styles.button}
-              onPress={this.callLoging}>
-              <Text>Login</Text>
-            </TouchableHighlight>
-          </View>
-      );
+  constructor() {
+    super();
+    this.state = {
+      userId: null,
+      userIdInput: null,
+      loginButtonText: 'LOGIN',
+      event: ''
+    }
+    this.login = this.login.bind(this);
+    this.track = this.track.bind(this);
+    this.buy = this.buy.bind(this);
   }
 
-  callLoging() {
-        console.log("Login Called");
-        webengage.user.login("user-react-test3");
+  componentDidMount() {
+    Linking.addEventListener('url', this.handleOpenURL);
+
+    try {
+      AsyncStorage.getItem('userid')
+        .then((user_id) => {
+          console.log("user id: " + user_id);
+          if (user_id && user_id !== null && user_id !== '') {
+            console.log("logged in user id: " + user_id);
+            this.setState({
+              userId: user_id,
+              userIdInput: user_id,
+              loginButtonText: "LOGOUT"
+            })
+          } else {
+            this.setState({
+              loginButtonText: "LOGIN"
+            })
+          }
+        });
+    } catch (error) {
+        console.log(error);
     }
+
+    // In-app notification callbacks
+    webengage.notification.onPrepare(function(notificationData) {
+      console.log("App: in-app notification prepared");
+    });
+
+    webengage.notification.onShown(function(notificationData) {
+      var message;
+      if (notificationData["title"] && notificationData["title"] !== null) {
+        message = "title: " + notificationData["title"];
+      } else if (notificationData["description"] && notificationData["description"] !== null) {
+        message = "description: " + notificationData["description"];
+      }
+      console.log("App: in-app notification shown with " + message);
+    });
+
+    webengage.notification.onClick(function(notificationData, clickId) {
+      console.log("App: in-app notification clicked: click-id: " + clickId + ", deep-link: " + notificationData["deepLink"]);
+    });
+
+    webengage.notification.onDismiss(function(notificationData) {
+      console.log("App: in-app notification dismissed");
+    });
+  }
+
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this.handleOpenURL);
+  }
+
+  handleOpenURL(event) {
+    console.log("App: launch URL: " + event.url);
+  }
+
+  render() {
+    console.log("App: Render called");
+    return (
+        <View style={styles.container}>
+          <TextInput
+            style={{width: 250,height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10}}
+            onChangeText={(text) => this.setState({userIdInput: text})}
+            value={this.state.userIdInput}
+          />
+
+          <TouchableHighlight style={styles.button}
+            onPress={this.login}>
+            <Text>{this.state.loginButtonText}</Text>
+          </TouchableHighlight>
+
+          <TextInput
+            style={{width: 250,height: 40, borderColor: 'gray', borderWidth: 1, marginTop: 50, marginBottom: 10}}
+            onChangeText={(text) => this.setState({event: text})}
+            value={this.state.event}
+          />
+
+          <TouchableHighlight style={styles.button}
+            onPress={this.track}>
+            <Text>TRACK</Text>
+          </TouchableHighlight>
+
+          <TouchableHighlight style={styles.button}
+            onPress={this.buy}>
+            <Text>BUY NOW</Text>
+          </TouchableHighlight>
+        </View>
+    );
+  }
+
+  login() {
+    if (this.state.userId === undefined || this.state.userId === null) {
+      // Login
+      var newUserId = this.state.userIdInput;
+      if (newUserId && newUserId !== null && newUserId !== '') {
+        webengage.user.login(newUserId);
+
+        AsyncStorage.setItem('userid', newUserId);
+
+        this.setState({
+          userId: newUserId,
+          loginButtonText: "LOGOUT"
+        })
+
+        console.log("App: Login called");
+      } else {
+        console.log("App: Invalid user id");
+      }
+    } else {
+      // Logout
+      webengage.user.logout();
+
+      AsyncStorage.setItem('userid', '');
+
+      this.setState({
+        userId: null,
+        userIdInput: '',
+        loginButtonText: "LOGIN"
+      })
+
+      console.log("App: Logout called");
+    }
+  }
+
+  track() {
+    if (this.state.event && this.state.event !== null && this.state.event != '') {
+      webengage.track(this.state.event);
+    }
+  }
+
+  buy() {
+    var event = "Product Purchased";
+    var attributes = {
+      "product-price": 25.50,
+      "product-name": "wrist watch"
+    };
+    webengage.track(event, attributes);
+  }
 }
 
 const styles = StyleSheet.create({
@@ -59,4 +196,11 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  button: {
+    width: 150,
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10,
+    marginBottom: 25
+  }
 });

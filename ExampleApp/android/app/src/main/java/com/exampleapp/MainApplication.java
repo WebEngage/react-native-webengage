@@ -22,7 +22,7 @@ import com.webengage.sdk.android.WebEngageConfig;
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
 import com.webengage.sdk.android.WebEngage;
 
-public class MainApplication extends Application implements ReactApplication,LifeCycleCallbacks {
+public class MainApplication extends Application implements ReactApplication, LifeCycleCallbacks {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -53,38 +53,34 @@ public class MainApplication extends Application implements ReactApplication,Lif
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    Log.d("WebEngage-React","Application on onCreate");
     WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-              .setWebEngageKey(YOUR_LICENSE_CODE)
+              .setWebEngageKey(YOUR-LICENSE-CODE)
               .setAutoGCMRegistrationFlag(true)
-              .setGCMProjectNumber(YOUR_PUSH_PROJECT_NUMBER)
+              .setGCMProjectNumber(YOUR-FCM-SENDER-ID)
               .setDebugMode(true) // only in development mode
               .build();
-  registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
-  WebEngage.registerLifeCycleCallback(this);
-
+    registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
+    WebEngage.registerLifeCycleCallback(this);
   }
 
   @Override
-    public void onGCMRegistered(Context context, String regID) {
-        Log.d("WebEngage-React", "GCM reg id: " + regID);
-
-//        Utils.track("onGCMRegistered_Callback", regID);
-    }
+  public void onGCMRegistered(Context context, String regID) {
+    Log.d("WebEngage-React", "GCM reg id: " + regID);
+  }
 
 
-    @Override
-    public void onGCMMessageReceived(Context context, Intent intent) {
-        Log.d("WebEngage-React", intent.getExtras().toString());
-    }
+  @Override
+  public void onGCMMessageReceived(Context context, Intent intent) {
+    Log.d("WebEngage-React", intent.getExtras().toString());
+  }
 
-    @Override
-    public void onAppInstalled(Context context, Intent intent) {
-        Log.d("WebEngage-React" + "Install Referrer", intent.getExtras().getString("referrer"));
-    }
+  @Override
+  public void onAppInstalled(Context context, Intent intent) {
+    Log.d("WebEngage-React" + "Install Referrer", intent.getExtras().getString("referrer"));
+  }
 
-    @Override
-    public void onAppUpgraded(Context context, int oldVersion, int newVersion) {
+  @Override
+  public void onAppUpgraded(Context context, int oldVersion, int newVersion) {
         
-    }
+  }
 }

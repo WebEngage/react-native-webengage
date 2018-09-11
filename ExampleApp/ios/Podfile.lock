@@ -7,7 +7,7 @@ DEPENDENCIES:
   - WebEngage
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - WebEngage
 
 SPEC CHECKSUMS:
@@ -15,4 +15,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4ef0e1b553ef9d25f5856f175b4396157a790b88
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3

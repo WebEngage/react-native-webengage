@@ -6,9 +6,11 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <WEGWebEngageBridge.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) WEGWebEngageBridge *bridge;
 
 @end

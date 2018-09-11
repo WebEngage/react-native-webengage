@@ -17,6 +17,5 @@ public class MainActivity extends ReactActivity {
      @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("WebEngage-React","Activity On Create");
     }
 }

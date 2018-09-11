@@ -10,13 +10,33 @@
 #import <React/RCTLog.h>
 #import <WebEngage/WebEngage.h>
 #import <WebEngage/WEGAnalytics.h>
+#import <React/RCTBundleURLProvider.h>
 @import UserNotifications;
 
 @implementation WEGWebEngageBridge
 RCT_EXPORT_MODULE(webengageBridge);
 
+// + (id)allocWithZone:(NSZone *)zone {
+//     static WEGWebEngageBridge *sharedInstance = nil;
+//     static dispatch_once_t onceToken;
+//     dispatch_once(&onceToken, ^{
+//         sharedInstance = [super allocWithZone:zone];
+//     });
+//     return sharedInstance;
+// }
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge{
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
+    WEGWebEngageBridge* b = [WEGWebEngageBridge new];
+    self.wegBridge = b;
+    b.bridge = bridge;
+    return @[b];
+}
+
 RCT_EXPORT_METHOD(init:(BOOL)autoRegister) {
-    
     UNUserNotificationCenter* center = [UNUserNotificationCenter  currentNotificationCenter];
     center.delegate = self;
     [[WebEngage sharedInstance] application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:@{} notificationDelegate:self autoRegister:YES];
@@ -114,14 +134,28 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"notificationPrepared",@"notificationShown",@"notificationClicked",@"notificationDismissed",@"pushNotificationClicked"];
+    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked"];
 }
 
 - (void)notification:(NSMutableDictionary *)inAppNotificationData clickedWithAction:(NSString *)actionId {
+    RCTLogInfo(@"in-app notification clicked with action %@", actionId);
+    inAppNotificationData[@"clickId"] = actionId;
+    NSArray *actions = [inAppNotificationData valueForKey:@"actions"];
+    if (actions != nil) {
+        for (id action in actions) {
+            if (action != nil) {
+                NSString *actionEId = [action valueForKey:@"actionEId"];
+                if ([actionEId isEqualToString: actionId]) {
+                    inAppNotificationData[@"deepLink"] = [action valueForKey:@"actionLink"];
+                }
+            }
+        }
+    }
     [self sendEventWithName:@"notificationClicked" body:inAppNotificationData];
 }
 
 - (void)notificationDismissed:(NSMutableDictionary *)inAppNotificationData {
+    RCTLogInfo(@"webengageBridge: in-app notification dismissed");
     [self sendEventWithName:@"notificationDismissed" body:inAppNotificationData];
 }
 
@@ -131,6 +165,7 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (void)notificationShown:(NSMutableDictionary *)inAppNotificationData {
+    RCTLogInfo(@"webengageBridge: in-app notification shown");
     [self sendEventWithName:@"notificationShown" body:inAppNotificationData];
 }
 
@@ -139,4 +174,3 @@ RCT_EXPORT_METHOD(logout){
 }
 
 @end
-

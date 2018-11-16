@@ -8,21 +8,15 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
-import com.webengage.sdk.android.callbacks.LifeCycleCallbacks;
 
 import java.util.Arrays;
 import java.util.List;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.util.Log;
+
 import com.webengage.sdk.android.WebEngageConfig;
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
 import com.webengage.sdk.android.WebEngage;
 
-public class MainApplication extends Application implements ReactApplication, LifeCycleCallbacks {
+public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -54,33 +48,11 @@ public class MainApplication extends Application implements ReactApplication, Li
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-              .setWebEngageKey(YOUR-LICENSE-CODE)
-              .setAutoGCMRegistrationFlag(true)
-              .setGCMProjectNumber(YOUR-FCM-SENDER-ID)
-              .setDebugMode(true) // only in development mode
+              .setWebEngageKey(YOUR_LICENSE_CODE)
+              .setAutoGCMRegistrationFlag(true)  // Set false if using FCM.
+              .setGCMProjectNumber(YOUR-GCM-SENDER-ID)  // Not required if using FCM, this only required for GCM.
+              .setDebugMode(true)  // only in development mode
               .build();
     registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
-    WebEngage.registerLifeCycleCallback(this);
-  }
-
-  @Override
-  public void onGCMRegistered(Context context, String regID) {
-    Log.d("WebEngage-React", "GCM reg id: " + regID);
-  }
-
-
-  @Override
-  public void onGCMMessageReceived(Context context, Intent intent) {
-    Log.d("WebEngage-React", intent.getExtras().toString());
-  }
-
-  @Override
-  public void onAppInstalled(Context context, Intent intent) {
-    Log.d("WebEngage-React" + "Install Referrer", intent.getExtras().getString("referrer"));
-  }
-
-  @Override
-  public void onAppUpgraded(Context context, int oldVersion, int newVersion) {
-        
   }
 }

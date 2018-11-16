@@ -15,14 +15,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-//  NSURL *jsCodeLocation;
-//
-//  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  //  NSURL *jsCodeLocation;
+  //
+  //  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   
-//  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-//                                                      moduleName:@"ExampleApp"
-//                                               initialProperties:nil
-//                                                   launchOptions:launchOptions];
+  //  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
+  //                                                      moduleName:@"ExampleApp"
+  //                                               initialProperties:nil
+  //                                                   launchOptions:launchOptions];
   
   // TODO: Need to improve the SDK this so that clients don't have to make these changes as done in Android
   self.bridge = [WEGWebEngageBridge new];
@@ -37,11 +37,11 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   
-//  WEGWebEngageBridge* webEngageBridge = [WEGWebEngageBridge allocWithZone: nil];
+  //  WEGWebEngageBridge* webEngageBridge = [WEGWebEngageBridge allocWithZone: nil];
   
   [[WebEngage sharedInstance] application:application
             didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.bridge.wegBridge];
-
+  
   return YES;
 }
 

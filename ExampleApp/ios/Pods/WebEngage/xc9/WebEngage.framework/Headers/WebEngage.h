@@ -15,6 +15,31 @@ FOUNDATION_EXPORT double WebEngageVersionNumber;
 FOUNDATION_EXPORT const unsigned char WebEngageVersionString[];
 
 /**
+ *  This enum represents level of accuracy for tracking user's location.
+ */
+typedef NS_ENUM(NSInteger, WEGLocationAccuracy){
+    /**
+     *  Uses the highest level of accuracy. Recommended for real time location tracking, as it requires more time and more power.
+     */
+    WEGLocationAccuracyBest=1,
+    
+    /**
+    *  Accurate to the nearest kilometer. Recommended for city level location tracking, consumes less power.
+    */
+    WEGLocationAccuracyForCity=2,
+    
+    /**
+     *  Accurate to the nearest kilometer. Recommended for country level location tracking, consumes less power.
+     */
+    WEGLocationAccuracyForCountry=3,
+    
+    /**
+     *  Disables location tracking in WebEngage SDK. With this value, WebEngage will neither track any user location nor update it on dashboard.
+     */
+    WEGLocationAccuracyDisable=4
+};
+
+/**
  *  @interface WebEngage
  *  This is an umbrella header for WebEngage SDK. This facade will provide the app with all the features of WebEngage.
  */
@@ -82,4 +107,14 @@ FOUNDATION_EXPORT const unsigned char WebEngageVersionString[];
  */
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions notificationDelegate:(id<WEGInAppNotificationProtocol>)notificationDelegate autoRegister:(BOOL)apnRegister;
 
+/**
+ *  Enable or disable user location tracking in WebEngage SDK.
+ *  Calling this method after initializing the SDK will force every launch of your app to track location with the given accuracy.
+ *  If this method is not called then the SDK will track user location only if your app has permission to read location, with accuracy WEGLocationAccuracyForCity.
+ *  If your app does not have permission to read location, SDK will not track any location.
+ *  @param one of WEGLocationAccuracy values. It sets the location accuracy to the given value.
+ *  If WEGLocationAccuracyDisable is passed, WebEngage will stop tracking user's location, however you can manage location updates by using setUserLocationWithLatitude:andLongitude on user profile.
+ *
+ */
+- (void) autoTrackUserLocationWithAccuracy:(WEGLocationAccuracy) accuracy;
 @end

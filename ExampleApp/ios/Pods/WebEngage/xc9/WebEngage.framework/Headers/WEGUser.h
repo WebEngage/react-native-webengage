@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreLocation/CoreLocation.h>
 
 /**
  *  This enum represents the different user attributes which are known to WebEngage and are treated in its own symantically meaningful way.
@@ -215,4 +216,10 @@ typedef NS_ENUM(NSInteger, WEGEngagementChannel) {
  */
 -(void) logout;
 
+/**
+ *  Set location of user in WebEngage System. If auto location tracking is enabled for WebEngage, WebEngage will manage location updates on it's own, however you can call this method to set user location if you have disbaled auto location tracking, or to manually set the location.
+ *  @pram latitude
+ *  @param longitude
+ */
+-(void) setUserLocationWithLatitude:(NSNumber*)latitude andLongitude:(NSNumber*)longitude;
 @end

@@ -9,20 +9,12 @@ target 'ExampleApp' do
 
   pod 'WebEngage'
 
-  target 'ExampleAppTests' do
+  target 'ExampleApp-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end
 
-end
-
-target 'ExampleApp-tvOS' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  # use_frameworks!
-
-  # Pods for ExampleApp-tvOS
-
-  target 'ExampleApp-tvOSTests' do
+  target 'ExampleAppTests' do
     inherit! :search_paths
     # Pods for testing
   end

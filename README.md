@@ -192,7 +192,7 @@ apply plugin: 'com.google.gms.google-services'
 4. Add `MyFirebaseMessagingService.java` file in `android/app/src/main/java/[your-package-name]/`. This file must be parallel to `MainActivity.java` and `MainApplication.java` files.
 
 ```java
-package com.exampleapp;
+package your.package;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -217,6 +217,8 @@ class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 }
 ```
+
+**Note**: Replace your.package with your package name in the first line of MyFirebaseMessagingService.java file. This line should be same as in your MainActivity and MainApplication files.
 
 5. Add this Firebase Messaging service in the `AndroidManifest.xml` file.
 

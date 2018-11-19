@@ -141,6 +141,24 @@ WEGLicenseCode : YOUR_LICENSE_CODE
 If you are getting the error: 'react/rctbundleurlprovider.h' file not found, then simply exit Xcode and then run the command 'npm install' in your project's root directory.
 
 
+## Initialisation
+
+In your `App.js` file, initialise WebEngage bridge as shown.
+
+```javascript
+...
+import WebEngage from 'react-native-webengage';
+...
+
+var webengage = new WebEngage();
+
+export default class App extends Component<Props> {
+    ...
+}
+...
+```
+
+
 ## Push Notifications
 
 ### Push Notifications for Android using FCM

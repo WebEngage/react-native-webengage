@@ -255,8 +255,10 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        if (reactContext.hasActiveCatalystInstance()) {
+            reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
+        }
     }
 
     public static WritableMap convertJsonObjectToWriteable(JSONObject jsonObj) {

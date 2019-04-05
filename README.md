@@ -75,6 +75,27 @@ public class MainApplication extends Application implements ReactApplication {
 
 **Note**: Replace YOUR_LICENSE_CODE with your WebEngage license code.
 
+3. Attribution Tracking (Optional)
+
+If you need to track app installs and user acquisition attributes, then add the following receiver tag in your `android/app/src/main/AndroidManifest.xml` file.
+
+```xml
+<manifest
+    ...>
+    <application ...>
+        ...
+        <receiver
+            android:name="com.webengage.sdk.android.InstallTracker"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
+```
+
+
 ### Integration for iOS
 
 1. Install WebEngage pod in `ios/` directory.

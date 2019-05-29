@@ -51,6 +51,8 @@ import javax.annotation.Nullable;
 
 public class WebengageBridge extends ReactContextBaseJavaModule implements PushNotificationCallbacks, InAppNotificationCallbacks {
     private static final String TAG = "webengageBridge";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private static final int DATE_FORMAT_LENGTH = DATE_FORMAT.replaceAll("'", "").length();
 
     public WebengageBridge(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -70,6 +72,16 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         WebEngage.registerInAppNotificationCallback(this);
     }
 
+    private static Date getDate(String value) {
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return simpleDateFormat.parse(value);
+        } catch (Throwable t) {
+        }
+        return null;
+    }
+
     @ReactMethod
     public void trackEventWithName(String name) {
         Analytics weAnalytics = WebEngage.get().analytics();
@@ -78,7 +90,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
 
     @ReactMethod
     public void trackEventWithNameAndData(String name, ReadableMap values){
-        Map map=recursivelyDeconstructReadableMap(values);
+        Map<String, Object> map = recursivelyDeconstructReadableMap(values);
         WebEngage.get().analytics().track(name,map);
     }
 
@@ -100,35 +112,9 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     @ReactMethod
     public void setAttribute(ReadableMap readableMap) throws JSONException {
         JSONObject jsonObject = new JSONObject();
-
-        ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
-
-        while (iterator.hasNextKey()) {
-            String key = iterator.nextKey();
-            ReadableType type = readableMap.getType(key);
-
-            switch (type) {
-                case Boolean:
-                    WebEngage.get().user().setAttribute(key,readableMap.getBoolean(key));
-                    break;
-                case Number:
-                    WebEngage.get().user().setAttribute(key,readableMap.getDouble(key));
-                    break;
-                case String:
-                    WebEngage.get().user().setAttribute(key,readableMap.getString(key));
-                    break;
-                case Map:
-                    Map map=recursivelyDeconstructReadableMap(readableMap.getMap(key));
-                    Map<String, Object> integratedMap = new HashMap<String, Object>();
-                    integratedMap.put(key, map);
-                    WebEngage.get().user().setAttributes(integratedMap);
-                    break;
-                case Array:
-                    List attributeValue=recursivelyDeconstructReadableArray(readableMap.getArray(key));
-                    WebEngage.get().user().setAttribute(key,attributeValue);
-                    break;
-            }
-        }
+        Map<String, Object> hashMap = recursivelyDeconstructReadableMap(readableMap);
+        Logger.d(TAG, "Setting user attributes: " + hashMap);
+        WebEngage.get().user().setAttributes(hashMap);
     }
 
     @ReactMethod
@@ -138,7 +124,16 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
 
     @ReactMethod
     public void deleteAttributes(ReadableArray attributeNames){
-        List<String> result = new ArrayList<>(attributeNames.size());
+        int n = attributeNames.size();
+        List<String> result = new ArrayList<String>(n);
+        for (int i = 0; i < n; i++) {
+            ReadableType indexType = attributeNames.getType(i);
+            if (indexType == ReadableType.String) {
+                result.add(attributeNames.getString(i));
+            } else {
+                Logger.e(TAG, "Invalid data type at index " + i + ", key must be String.");
+            }
+        }
         WebEngage.get().user().deleteAttributes(result);
     }
 
@@ -209,13 +204,25 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
                     deconstructedMap.put(key, readableMap.getDouble(key));
                     break;
                 case String:
-                    deconstructedMap.put(key, readableMap.getString(key));
+                    String value = readableMap.getString(key);
+                    if (value.length() == DATE_FORMAT_LENGTH) {
+                        Date date = getDate(value);
+                        if (date != null) {
+                            deconstructedMap.put(key, date);
+                        } else {
+                            deconstructedMap.put(key, value);
+                        }
+                    } else {
+                        deconstructedMap.put(key, value);
+                    }
                     break;
                 case Map:
-                    deconstructedMap.put(key, readableMap.getMap(key));
+                    Map<String, Object> nestedMap = recursivelyDeconstructReadableMap(readableMap.getMap(key));
+                    deconstructedMap.put(key, nestedMap);
                     break;
                 case Array:
-                    deconstructedMap.put(key, readableMap.getArray(key));
+                    List<Object> nestedList = recursivelyDeconstructReadableArray(readableMap.getArray(key));
+                    deconstructedMap.put(key, nestedList);
                     break;
                 default:
                     Logger.e(TAG, "Could not convert object with key: " + key);
@@ -239,7 +246,17 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
                     deconstructedList.add(i, readableArray.getDouble(i));
                     break;
                 case String:
-                    deconstructedList.add(i, readableArray.getString(i));
+                    String value = readableArray.getString(i);
+                    if (value.length() == DATE_FORMAT_LENGTH) {
+                        Date date = getDate(value);
+                        if (date != null) {
+                            deconstructedList.add(i, date);
+                        } else {
+                            deconstructedList.add(i, value);
+                        }
+                    } else {
+                        deconstructedList.add(i, value);
+                    }
                     break;
                 case Map:
                     deconstructedList.add(i, recursivelyDeconstructReadableMap(readableArray.getMap(i)));

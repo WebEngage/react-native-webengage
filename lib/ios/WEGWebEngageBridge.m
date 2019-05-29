@@ -13,6 +13,9 @@
 #import <React/RCTBundleURLProvider.h>
 @import UserNotifications;
 
+NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+int const DATE_FORMAT_LENGTH = 24;
+
 @implementation WEGWebEngageBridge
 RCT_EXPORT_MODULE(webengageBridge);
 
@@ -36,6 +39,52 @@ RCT_EXPORT_MODULE(webengageBridge);
     return @[b];
 }
 
+- (NSDate *)getDate:(NSString *)strValue {
+    NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:DATE_FORMAT];
+    NSDate * date = [dateFormatter dateFromString:strValue];
+    return date;
+}
+
+- (NSDictionary *)setDatesInDictionary:(NSMutableDictionary *)mutableDict {
+    NSArray * keys = [mutableDict allKeys];
+    for (id key in keys) {
+        id value = mutableDict[key];
+        if ([value isKindOfClass:[NSString class]] && [value length] == DATE_FORMAT_LENGTH) {
+            NSDate * date = [self getDate:value];
+            if (date != nil) {
+                mutableDict[key] = date;
+            }
+        } else if ([value isKindOfClass:[NSDictionary class]]) {
+            NSMutableDictionary * nestedDict = [value mutableCopy];
+            mutableDict[key] = [self setDatesInDictionary:nestedDict];
+        } else if ([value isKindOfClass:[NSArray class]]) {
+            NSMutableArray * nestedArr = [value mutableCopy];
+            mutableDict[key] = [self setDatesInArray:nestedArr];
+        }
+    }
+    return mutableDict;
+}
+
+- (NSArray *)setDatesInArray:(NSMutableArray *)mutableArr {
+    for (int i = 0; i < [mutableArr count]; i++) {
+        id value = mutableArr[i];
+        if ([value isKindOfClass:[NSString class]] && [value length] == DATE_FORMAT_LENGTH) {
+            NSDate * date = [self getDate:value];
+            if (date != nil) {
+                mutableArr[i] = date;
+            }
+        } else if ([value isKindOfClass:[NSDictionary class]]) {
+            NSMutableDictionary * nestedDict = [value mutableCopy];
+            mutableArr[i] = [self setDatesInDictionary:nestedDict];
+        } else if ([value isKindOfClass:[NSArray class]]) {
+            NSMutableArray * nestedArr = [value mutableCopy];
+            mutableArr[i] = [self setDatesInArray:nestedArr];
+        }
+    }
+    return mutableArr;
+}
+
 RCT_EXPORT_METHOD(init:(BOOL)autoRegister) {
     UNUserNotificationCenter* center = [UNUserNotificationCenter  currentNotificationCenter];
     center.delegate = self;
@@ -48,10 +97,10 @@ RCT_EXPORT_METHOD(trackEventWithName:(NSString *)name){
 
 RCT_EXPORT_METHOD(trackEventWithNameAndData:(NSString *)name andValue:(NSDictionary *)value)
 {
+    NSMutableDictionary * mutableDict = [value mutableCopy];
     id<WEGAnalytics> weAnalytics = [WebEngage sharedInstance].analytics;
-    [weAnalytics trackEventWithName:name andValue:value];
+    [weAnalytics trackEventWithName:name andValue:[self setDatesInDictionary:mutableDict]];
 }
-
 
 RCT_EXPORT_METHOD(screenNavigated:(NSString *)screenName){
     [[WebEngage sharedInstance].analytics navigatingToScreenWithName:screenName];
@@ -59,7 +108,8 @@ RCT_EXPORT_METHOD(screenNavigated:(NSString *)screenName){
 
 RCT_EXPORT_METHOD(screenNavigatedWithData:(NSString*) screenName andData: (NSDictionary*) userData){
     if (userData) {
-        [[WebEngage sharedInstance].analytics navigatingToScreenWithName:screenName andData:userData];
+        NSMutableDictionary * mutableDict = [userData mutableCopy];
+        [[WebEngage sharedInstance].analytics navigatingToScreenWithName:screenName andData:[self setDatesInDictionary:mutableDict]];
     }
 }
 
@@ -69,7 +119,16 @@ RCT_EXPORT_METHOD(login:(NSString*)userIdentifier){
 
 RCT_EXPORT_METHOD(setAttribute:(NSString*)attributeName value:(id)value){
     if ([value isKindOfClass:[NSString class]]) {
-        [[WebEngage sharedInstance].user setAttribute:attributeName withStringValue:value];
+        if ([value length] == DATE_FORMAT_LENGTH) {
+            NSDate * date = [self getDate:value];
+            if (date != nil) {
+                [[WebEngage sharedInstance].user setAttribute:attributeName withDateValue:date];
+            } else {
+                [[WebEngage sharedInstance].user setAttribute:attributeName withStringValue:value];
+            }
+        } else {
+            [[WebEngage sharedInstance].user setAttribute:attributeName withStringValue:value];
+        }
     }
     else if ([value isKindOfClass:[NSNumber class]]) {
         [[WebEngage sharedInstance].user setAttribute:attributeName withValue:value];

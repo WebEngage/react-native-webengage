@@ -172,8 +172,34 @@ export default class App extends Component<Props> {
   buy() {
     var event = "Product Purchased";
     var attributes = {
-      "product-price": 25.50,
-      "product-name": "wrist watch"
+      "Amount": 2300,
+      //"Delivery Date": new Date("2017-01-09T00:00:00.000Z"),
+      "Delivery Date": new Date(),
+      "Products" : [
+        {
+            "SKU Code": "UHUH799",
+            "Product Name": "Armani Jeans",
+            "Price": 300.49,
+            "Details": {
+                "Size": "L"
+            }
+        },
+        {
+            "SKU Code": "FBHG746",
+            "Product Name": "Hugo Boss Jacket",
+            "Price": 507.99,
+            "Details": {
+                "Size": "L",
+            }
+        },
+      ],
+      "Delivery Address": {
+        "City": "San Francisco",
+        "ZIP": "94121"
+      },
+      "Coupons Applied": [
+        "BOGO17"
+      ]
     };
     webengage.track(event, attributes);
   }

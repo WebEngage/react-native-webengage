@@ -173,7 +173,8 @@ export default class App extends Component<Props> {
     var event = "Product Purchased";
     var attributes = {
       "Amount": 2300,
-      //"Delivery Date": new Date("2017-01-09T00:00:00.000Z"),
+      //"Delivery Date": new Date("2017-01-09T16:30:00.000Z"),
+      //"Delivery Date": new Date("Thu Jun 20 2019 09:30:00 GMT+0530 (India Standard Time)"),
       "Delivery Date": new Date(),
       "Products" : [
         {

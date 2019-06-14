@@ -42,6 +42,7 @@ RCT_EXPORT_MODULE(webengageBridge);
 - (NSDate *)getDate:(NSString *)strValue {
     NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:DATE_FORMAT];
+    [dateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
     NSDate * date = [dateFormatter dateFromString:strValue];
     return date;
 }

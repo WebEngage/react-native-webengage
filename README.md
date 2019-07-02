@@ -1,3 +1,9 @@
+
+<!-- [![Version](https://img.shields.io/cocoapods/v/WebEngage.svg?style=flat)](https://cocoapods.org/pods/WebEngage)
+[![License](https://img.shields.io/cocoapods/l/WebEngage.svg?style=flat)](https://cocoapods.org/pods/WebEngage)
+[![Platform](https://img.shields.io/cocoapods/p/WebEngage.svg)](https://cocoapods.org/pods/WebEngage) -->
+[![LastUpdated](https://img.shields.io/github/last-commit/WebEngage/react-native-webengage.svg)](https://cocoapods.org/pods/WebEngage)
+
 This project contains WebEngage React Native SDK(lib) and a Sample Project(ExampleApp).
 
 # Sample Project
@@ -149,10 +155,10 @@ WEGLicenseCode : YOUR_LICENSE_CODE
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   ...
-  
+
   [[WebEngage sharedInstance] application:application
             didFinishLaunchingWithOptions:launchOptions];
-  
+
   return YES;
 }
 

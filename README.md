@@ -1,7 +1,7 @@
 
 [![Version](https://img.shields.io/npm/v/react-native-webengage.svg)](https://www.npmjs.com/package/react-native-webengage)
 [![License](https://img.shields.io/cocoapods/l/WebEngage.svg?style=flat)](https://github.com/WebEngage/react-native-webengage/blob/master/LICENSE)
-[![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android-lightgrey.svg)](https://docs.webengage.com/docs/react-native-getting-started)
+[![Downloads](https://img.shields.io/npm/dm/react-native-webengage.svg)](https://www.npmjs.com/package/react-native-webengage)
 [![LastUpdated](https://img.shields.io/github/last-commit/WebEngage/react-native-webengage.svg)](https://docs.webengage.com/docs/react-native-getting-started)
 
 This project contains WebEngage React Native SDK(lib) and a Sample Project(ExampleApp).

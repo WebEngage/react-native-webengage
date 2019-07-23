@@ -244,7 +244,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.webengage.sdk.android.WebEngage;
 import java.util.Map;
 
-class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Map<String, String> data = remoteMessage.getData();

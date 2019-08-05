@@ -124,7 +124,7 @@ Add pod WebEngage under your target app in the newly created Podfile.
 ```
 target 'YourAppTarget' do
   ...
-  # For react-native-webengage v1.0.9 and above
+  # For react-native-webengage v1.1.0 and above
   pod 'react-native-webengage', :path => '../node_modules/react-native-webengage'
 
   # For react-native-webengage v1.0.8 and below

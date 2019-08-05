@@ -1,17 +1,29 @@
-
 {
   "name": "react-native-webengage",
-  "version": "1.0.8",
-  "description": "",
+  "version": "1.0.9",
+  "description": "WebEngage React Native library.",
+  "license": "MIT",
+  "author": "WebEngage",
+  "homepage": "https://docs.webengage.com/docs/react-native",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebEngage/react-native-webengage.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "react-native"
+    "webengage",
+    "react",
+    "react-native",
+    "analytics",
+    "push",
+    "in-app",
+    "notification",
+    "android",
+    "ios"
   ],
-  "author": "",
-  "license": "",
   "peerDependencies": {
     "react-native": ">=0.39.0"
   }

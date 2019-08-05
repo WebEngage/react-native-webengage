@@ -1,10 +1,8 @@
-//
-//  webengageBridge.m
-//  testReact1
-//
-//  Created by Uzma Sayyed on 10/16/17.
-//  Copyright © 2017 Facebook. All rights reserved.
-//
+/**
+ *  webengageBridge.m
+ *
+ *  Created by Uzma Sayyed on 10/16/17.
+ */
 
 #import "WEGWebEngageBridge.h"
 #import <React/RCTLog.h>

@@ -45,6 +45,13 @@ buck-out
 local.properties
 *.iml
 /android/
+lib/android/build
+lib/android/.classpath
+
+#iOS
+ExampleApp/ios/Pods
+ExampleApp/ios/Podfile.lock
+ExampleApp/ios/ExampleApp.xcworkspace
 
 # Node
 node_modules

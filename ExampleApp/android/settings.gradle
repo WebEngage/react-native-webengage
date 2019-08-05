@@ -1,5 +1,5 @@
 rootProject.name = 'ExampleApp'
 include ':react-native-webengage'
 project(':react-native-webengage').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webengage/android')
-
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'

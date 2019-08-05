@@ -1,7 +1,8 @@
 
 [![Version](https://img.shields.io/npm/v/react-native-webengage.svg)](https://www.npmjs.com/package/react-native-webengage)
-[![License](https://img.shields.io/cocoapods/l/WebEngage.svg?style=flat)](https://github.com/WebEngage/react-native-webengage/blob/master/LICENSE)
+
 [![Downloads](https://img.shields.io/npm/dm/react-native-webengage.svg)](https://www.npmjs.com/package/react-native-webengage)
+
 [![LastUpdated](https://img.shields.io/github/last-commit/WebEngage/react-native-webengage.svg)](https://docs.webengage.com/docs/react-native-getting-started)
 
 This project contains WebEngage React Native SDK(lib) and a Sample Project(ExampleApp).
@@ -123,7 +124,11 @@ Add pod WebEngage under your target app in the newly created Podfile.
 ```
 target 'YourAppTarget' do
   ...
-  pod 'WebEngage'
+  # For react-native-webengage v1.0.9 and above
+  pod 'react-native-webengage', :path => '../node_modules/react-native-webengage'
+
+  # For react-native-webengage v1.0.8 and below
+  # pod 'WebEngage'
   ...
 end
 ```

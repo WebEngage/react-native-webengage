@@ -47,6 +47,8 @@ local.properties
 /android/
 lib/android/build
 lib/android/.classpath
+lib/android/.project
+lib/android/bin
 
 #iOS
 ExampleApp/ios/Pods

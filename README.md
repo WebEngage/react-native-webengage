@@ -13,7 +13,7 @@ To run Sample Project please follow below steps:
 
 3.  For Android, replace ```YOUR_LICENSE_CODE``` with your WebEngage license code and ```YOUR_PUSH_PROJECT_NUMBER``` with your push project number in [MainApplication.java](https://github.com/WebEngage/react-native-webengage/blob/master/ExampleApp/android/app/src/main/java/com/exampleapp/MainApplication.java) file.
 
-4. For iOS, replace ```YOUR_LICENSE_CODE``` with your WebEngage license code in [info.plist](https://github.com/WebEngage/react-native-webengage/blob/master/ExampleApp/ios/ExampleApp/Info.plist) file.
+4. For iOS, replace ```YOUR_LICENSE_CODE``` with your WebEngage license code in [Info.plist](https://github.com/WebEngage/react-native-webengage/blob/master/ExampleApp/ios/ExampleApp/Info.plist) file.
 
 5. Now run you project using ```react-native run-android``` or ```react-native run-ios```.
 

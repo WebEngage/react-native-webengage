@@ -202,6 +202,7 @@ export default class App extends Component<Props> {
         "BOGO17"
       ]
     };
+    webengage.screen("MyRootScreen");
     webengage.track(event, attributes);
   }
 }

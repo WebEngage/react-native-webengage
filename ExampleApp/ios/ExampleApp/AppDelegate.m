@@ -36,6 +36,7 @@
   
   [[WebEngage sharedInstance] application:application
             didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.bridge.wegBridge];
+  [WebEngage sharedInstance].pushNotificationDelegate = self.bridge.wegBridge;
   
   return YES;
 }

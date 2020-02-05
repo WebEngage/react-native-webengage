@@ -38,6 +38,18 @@ target 'ExampleApp' do
   use_native_modules!
 end
 
+# ServiceExtension Target
+target 'NotificationService' do
+    platform :ios, '10.0'
+    pod 'WebEngageBannerPush'
+end
+
+# ContentExtension Target
+target 'NotificationViewController' do
+  platform :ios, '10.0'
+  pod 'WebEngageAppEx/ContentExtension'
+end
+
 target 'ExampleApp-tvOS' do
   # Pods for ExampleApp-tvOS
 

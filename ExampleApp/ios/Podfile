@@ -30,6 +30,8 @@ target 'ExampleApp' do
 
   pod 'react-native-webengage', :path => '../node_modules/react-native-webengage'
 
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
   target 'ExampleAppTests' do
     inherit! :search_paths
     # Pods for testing

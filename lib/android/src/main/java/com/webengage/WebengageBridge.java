@@ -32,6 +32,7 @@ import com.webengage.sdk.android.actions.render.PushNotificationData;
 import com.webengage.sdk.android.callbacks.InAppNotificationCallbacks;
 import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
 import com.webengage.sdk.android.utils.Gender;
+import com.webengage.sdk.android.Channel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -180,6 +181,23 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     @ReactMethod
     public void setCompany(String company){
         WebEngage.get().user().setCompany(company);
+    }
+
+    @ReactMethod
+    public void setOptIn(String channel, boolean status) {
+        if ("push".equalsIgnoreCase(channel)) {
+            WebEngage.get().user().setOptIn(Channel.PUSH, status);
+        } else if ("sms".equalsIgnoreCase(channel)) {
+            WebEngage.get().user().setOptIn(Channel.SMS, status);
+        } else if ("email".equalsIgnoreCase(channel)) {
+            WebEngage.get().user().setOptIn(Channel.EMAIL, status);
+        } else if ("in_app".equalsIgnoreCase(channel)) {
+            WebEngage.get().user().setOptIn(Channel.IN_APP, status);
+        } else if ("whatsapp".equalsIgnoreCase(channel)) {
+            WebEngage.get().user().setOptIn(Channel.WHATSAPP, status);
+        } else {
+            Logger.e(TAG, "Invalid channel: " + channel + ". Must be one of [push, sms, email, in_app, whatsapp].");
+        }
     }
 
     @ReactMethod

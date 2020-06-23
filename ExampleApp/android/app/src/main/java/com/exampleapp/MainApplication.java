@@ -3,6 +3,7 @@ package com.exampleapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.webengage.WebengagePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -28,6 +29,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new AsyncStoragePackage(),
             new WebengagePackage()
       );
     }
@@ -49,8 +51,8 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
     WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
               .setWebEngageKey(YOUR_LICENSE_CODE)
-              .setAutoGCMRegistrationFlag(true)  // Set false if using FCM.
-              .setGCMProjectNumber(YOUR-GCM-SENDER-ID)  // Not required if using FCM, this only required for GCM.
+              //.setAutoGCMRegistrationFlag(true)  // (Deprecated) Use FCM instead.
+              //.setGCMProjectNumber(YOUR-GCM-SENDER-ID)  // (Deprecated) Not required if using FCM, this was only required for GCM.
               .setDebugMode(true)  // only in development mode
               .build();
     registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));

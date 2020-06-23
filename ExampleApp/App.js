@@ -7,14 +7,16 @@
 import React, { Component } from 'react';
 import {
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   View,
   TextInput,
+  Switch,
   TouchableHighlight,
   Linking
 } from 'react-native';
-import { AsyncStorage } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 import WebEngage from 'react-native-webengage';
 
 const instructions = Platform.select({
@@ -32,11 +34,15 @@ export default class App extends Component<Props> {
       userId: null,
       userIdInput: null,
       loginButtonText: 'LOGIN',
-      event: ''
+      event: '',
+      isPushEnabled: true,
+      isInappEnabled: true
     }
     this.login = this.login.bind(this);
     this.track = this.track.bind(this);
     this.buy = this.buy.bind(this);
+    this.togglePushSwitch = this.togglePushSwitch.bind(this);
+    this.toggleInappSwitch = this.toggleInappSwitch.bind(this);
   }
 
   componentDidMount() {
@@ -59,9 +65,38 @@ export default class App extends Component<Props> {
             })
           }
         });
+
+      AsyncStorage.getItem('push_optin')
+        .then((value) => {
+          var isEnabled = JSON.parse(value);
+          console.log('Initial push_optin: ' + isEnabled);
+          if (isEnabled === null) {
+            isEnabled = true;
+            AsyncStorage.setItem('push_optin', JSON.stringify(true));
+          }
+          this.setState({
+              isPushEnabled: isEnabled
+          });
+        });
+
+        AsyncStorage.getItem('inapp_optin')
+          .then((value) => {
+            var isEnabled = JSON.parse(value);
+            console.log('Initial inapp_optin: ' + isEnabled);
+            if (isEnabled === null) {
+              isEnabled = true;
+              AsyncStorage.setItem('inapp_optin', JSON.stringify(true));
+            }
+            this.setState({
+              isInappEnabled: isEnabled
+            });
+          });
     } catch (error) {
         console.log(error);
     }
+
+    // Screen
+    //webengage.screen("Home");
 
     // In-app notification callbacks
     webengage.notification.onPrepare(function(notificationData) {
@@ -98,33 +133,59 @@ export default class App extends Component<Props> {
   render() {
     console.log("App: Render called");
     return (
-        <View style={styles.container}>
-          <TextInput
-            style={{width: 250,height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10}}
-            onChangeText={(text) => this.setState({userIdInput: text})}
-            value={this.state.userIdInput}
-          />
+        <View>
+          <ScrollView>
+            <View style={styles.container}>
+              <TextInput
+                style={{width: 250,height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10}}
+                onChangeText={(text) => this.setState({userIdInput: text})}
+                value={this.state.userIdInput}
+              />
 
-          <TouchableHighlight style={styles.button}
-            onPress={this.login}>
-            <Text>{this.state.loginButtonText}</Text>
-          </TouchableHighlight>
+              <TouchableHighlight style={styles.button}
+                onPress={this.login}>
+                <Text>{this.state.loginButtonText}</Text>
+              </TouchableHighlight>
 
-          <TextInput
-            style={{width: 250,height: 40, borderColor: 'gray', borderWidth: 1, marginTop: 50, marginBottom: 10}}
-            onChangeText={(text) => this.setState({event: text})}
-            value={this.state.event}
-          />
+              <TextInput
+                style={{width: 250,height: 40, borderColor: 'gray', borderWidth: 1, marginTop: 50, marginBottom: 10}}
+                onChangeText={(text) => this.setState({event: text})}
+                value={this.state.event}
+              />
 
-          <TouchableHighlight style={styles.button}
-            onPress={this.track}>
-            <Text>TRACK</Text>
-          </TouchableHighlight>
+              <TouchableHighlight style={styles.button}
+                onPress={this.track}>
+                <Text>TRACK</Text>
+              </TouchableHighlight>
 
-          <TouchableHighlight style={styles.button}
-            onPress={this.buy}>
-            <Text>BUY NOW</Text>
-          </TouchableHighlight>
+              <TouchableHighlight style={styles.button}
+                onPress={this.buy}>
+                <Text>BUY NOW</Text>
+              </TouchableHighlight>
+
+              <View style={styles.channel}>
+                <Text style={styles.label}>Push</Text>
+                <Switch
+                  trackColor={{ true: "skyblue", false: "#c4c4c4" }}
+                  thumbColor={this.state.isPushEnabled ? "lightblue" : "#e1e1e1"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={this.togglePushSwitch}
+                  value={this.state.isPushEnabled}
+                />
+              </View>
+
+              <View style={styles.channel}>
+                <Text style={styles.label}>In-app</Text>
+                <Switch
+                  trackColor={{ true: "skyblue", false: "#f1f1f1" }}
+                  thumbColor={this.state.isInappEnabled ? "lightblue" : "#e4e4e4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={this.toggleInappSwitch}
+                  value={this.state.isInappEnabled}
+                />
+              </View>
+            </View>
+          </ScrollView>
         </View>
     );
   }
@@ -202,8 +263,30 @@ export default class App extends Component<Props> {
         "BOGO17"
       ]
     };
-    webengage.screen("MyRootScreen");
     webengage.track(event, attributes);
+  }
+
+  togglePushSwitch() {
+    var isEnabled = !this.state.isPushEnabled;
+    console.log('Push switch toggled: ' + isEnabled);
+    this.setState({
+      isPushEnabled: isEnabled
+    });
+    webengage.user.setOptIn("push", isEnabled);
+    AsyncStorage.setItem('push_optin', JSON.stringify(isEnabled));
+  }
+
+  toggleInappSwitch() {
+    var isEnabled = !this.state.isInappEnabled;
+    console.log('In-app switch toggled: ' + isEnabled);
+    this.setState({
+      isInappEnabled: isEnabled
+    });
+    webengage.user.setOptIn("in_app", isEnabled);
+    //webengage.user.setOptIn("email", isEnabled);
+    //webengage.user.setOptIn("sms", isEnabled);
+    //webengage.user.setOptIn("whatsapp", isEnabled);
+    AsyncStorage.setItem('inapp_optin', JSON.stringify(isEnabled));
   }
 }
 
@@ -213,6 +296,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+    marginTop: 80
   },
   welcome: {
     fontSize: 20,
@@ -230,5 +314,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDDDDD',
     padding: 10,
     marginBottom: 25
+  },
+  channel: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 144,
+    marginTop: 16
+  },
+  label: {
+    flex: 1
   }
 });

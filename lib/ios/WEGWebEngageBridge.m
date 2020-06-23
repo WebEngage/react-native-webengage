@@ -187,6 +187,24 @@ RCT_EXPORT_METHOD(setCompany:(NSString*)company){
     [[WebEngage sharedInstance].user setCompany:company];
 }
 
+RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {
+    NSLocale* locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
+    NSString* ch = [channel lowercaseStringWithLocale:locale];
+    if ([ch isEqualToString:@"push"]) {
+        [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelPush status:status];
+    } else if ([ch isEqualToString:@"sms"]) {
+        [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelSMS status:status];
+    } else if ([ch isEqualToString:@"email"]) {
+        [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelEmail status:status];
+    } else if ([ch isEqualToString:@"in_app"]) {
+        [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelInApp status:status];
+    } else if ([ch isEqualToString:@"whatsapp"]) {
+        [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelWhatsapp status:status];
+    } else {
+        NSLog(@"WebEngage: Invalid channel: %@. Must be one of [push, sms, email, in_app, whatsapp].", ch);
+    }
+}
+
 RCT_EXPORT_METHOD(logout){
     [[WebEngage sharedInstance].user logout];
 }

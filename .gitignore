@@ -49,6 +49,7 @@ lib/android/build
 lib/android/.classpath
 lib/android/.project
 lib/android/bin
+lib/android/.settings
 
 #iOS
 ExampleApp/ios/Pods

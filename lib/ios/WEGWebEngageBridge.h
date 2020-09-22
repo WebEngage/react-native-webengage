@@ -10,10 +10,9 @@
 #import <React/RCTBridgeModule.h>
 #import <WebEngage/WebEngage.h>
 #import <React/RCTEventEmitter.h>
-#import <UserNotifications/UserNotifications.h>
 #import <React/RCTBridgeDelegate.h>
 
-@interface WEGWebEngageBridge : RCTEventEmitter<RCTBridgeModule, WEGInAppNotificationProtocol, UNUserNotificationCenterDelegate, RCTBridgeDelegate>
+@interface WEGWebEngageBridge : RCTEventEmitter<RCTBridgeModule, WEGInAppNotificationProtocol, RCTBridgeDelegate, WEGAppDelegate>
 
 @property WEGWebEngageBridge* wegBridge;
 

@@ -120,6 +120,10 @@ export default class App extends Component<Props> {
     webengage.notification.onDismiss(function(notificationData) {
       console.log("App: in-app notification dismissed");
     });
+
+    webengage.push.onClick(function(notificationData) {
+      console.log("App: push-notiifcation clicked with deeplink: " + notificationData["deeplink"]);
+    });
   }
 
   componentWillUnmount() {

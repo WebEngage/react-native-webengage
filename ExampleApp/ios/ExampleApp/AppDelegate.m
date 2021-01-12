@@ -38,7 +38,36 @@
             didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.bridge.wegBridge];
   [WebEngage sharedInstance].pushNotificationDelegate = self.bridge.wegBridge;
   
+  [[WebEngage sharedInstance].deeplinkManager setCustomDomain:@[@"test-custom"]];
+  
+  NSString *test = [NSString stringWithFormat:@"http://test-custom.webengage.biz/d/lw/g1.jpg?p=eyJsYyI6In43MTY4MDFhNiIsImwiOiIzYWE4MDdmNWU1Y2MyMGE1Y2Y2NzAxZmRjNjYyZDUwNCIsImMiOiJ1em1hODEyIiwiZW0iOiJ1em1hLnNheXllZEB3ZWJrbGlwcGVyLmNvbSIsImUiOiJ%2BMWFmbGo5cSIsInYiOiJ%2BMjltZzEzNSIsInMiOiJ%2BM2I0ajZnYjIyYzJiYWppX2Q2N2ZmZmViLTlmYTMtNDM5OC04MDQzLWJmMmE0MzY4OThkOToxNjA3NTExMjEyMzAxIiwiZXZlbnQiOiJlbWFpbF9jbGljayIsImN0YSI6In44YTA4NjA1NCIsInRvVVJMIjoiaHR0cHM6Ly93d3cuZmFjZWJvb2suY29tLyJ9"];
+  
+  [[WebEngage sharedInstance].deeplinkManager getAndTrackDeeplink:[NSURL URLWithString:test] callbackBlock:^(NSString * location) {
+      if (!self.bridge) {
+        self.bridge = [WEGWebEngageBridge new];
+      }
+      [self.bridge sendUniversalLinkLocation:location];
+    }];
   return YES;
+}
+
+-(BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler{
+  [[WebEngage sharedInstance].deeplinkManager getAndTrackDeeplink:userActivity.webpageURL callbackBlock:^(NSString * location) {
+    if (!self.bridge) {
+      self.bridge = [WEGWebEngageBridge new];
+    }
+    [self.bridge sendUniversalLinkLocation:location];
+  }];
+  return YES;
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+#if DEBUG
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+#else
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+#endif
 }
 
 @end

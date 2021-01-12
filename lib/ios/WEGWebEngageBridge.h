@@ -16,4 +16,5 @@
 
 @property WEGWebEngageBridge* wegBridge;
 
+- (void) sendUniversalLinkLocation:(NSString *)location;
 @end

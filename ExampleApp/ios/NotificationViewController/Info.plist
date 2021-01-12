@@ -20,12 +20,22 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>UNNotificationExtensionCategory</key>
-			<string>myNotificationCategory</string>
+			<array>
+				<string>WEG_CAROUSEL_V1</string>
+				<string>WEG_RATING_V1</string>
+			</array>
+			<key>UNNotificationExtensionDefaultContentHidden</key>
+			<true/>
 			<key>UNNotificationExtensionInitialContentSizeRatio</key>
 			<real>1</real>
 		</dict>
@@ -34,29 +44,5 @@
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.usernotifications.content-extension</string>
 	</dict>
-  <key>NSAppTransportSecurity</key>
-  <dict>
-      <key>NSAllowsArbitraryLoads</key>
-      <true/>
-  </dict>
-  <key>NSExtension</key>
-  <dict>
-      <key>NSExtensionAttributes</key>
-      <dict>
-          <key>UNNotificationExtensionDefaultContentHidden</key>
-          <true/>
-          <key>UNNotificationExtensionCategory</key>
-          <array>
-              <string>WEG_CAROUSEL_V1</string>
-              <string>WEG_RATING_V1</string>
-          </array>
-          <key>UNNotificationExtensionInitialContentSizeRatio</key>
-          <real>1</real>
-      </dict>
-      <key>NSExtensionMainStoryboard</key>
-      <string>MainInterface</string>
-      <key>NSExtensionPointIdentifier</key>
-      <string>com.apple.usernotifications.content-extension</string>
-  </dict>
 </dict>
 </plist>

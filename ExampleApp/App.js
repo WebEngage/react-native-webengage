@@ -121,8 +121,11 @@ export default class App extends Component<Props> {
       console.log("App: in-app notification dismissed");
     });
 
-    webengage.push.onClick(function(notificationData) {
-      console.log("App: push-notiifcation clicked with deeplink: " + notificationData["deeplink"]);
+    // webengage.push.onClick(function(notificationData) {
+    //   console.log("App: push-notiifcation clicked with deeplink: " + notificationData["deeplink"]);
+    // });
+    WebEngage.universalLink.onClick(function(location){
+            console.log("App: universal link clicked with location: " + location);
     });
   }
 

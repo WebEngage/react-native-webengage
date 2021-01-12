@@ -208,7 +208,7 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked"];
+    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked"];
 }
 
 - (void)notification:(NSMutableDictionary *)inAppNotificationData clickedWithAction:(NSString *)actionId {
@@ -249,4 +249,9 @@ RCT_EXPORT_METHOD(logout){
     [self sendEventWithName:@"pushNotificationClicked" body:pushData];
 }
 
+- (void)sendUniversalLinkLocation:(NSString *)location{
+    RCTLogInfo(@"webengageBridge: universal link clicked with location: %@", location);
+    NSDictionary *data = @{@"location":location};
+    [self sendEventWithName:@"universalLinkClicked" body:data];
+}
 @end

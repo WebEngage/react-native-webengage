@@ -38,13 +38,12 @@
             didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.bridge.wegBridge];
   [WebEngage sharedInstance].pushNotificationDelegate = self.bridge.wegBridge;
   
-  [[WebEngage sharedInstance].deeplinkManager setCustomDomain:@[@"test-custom"]];
-  
   return YES;
 }
 
 -(BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler{
   [[WebEngage sharedInstance].deeplinkManager getAndTrackDeeplink:userActivity.webpageURL callbackBlock:^(NSString * location) {
+    //send location to react
     if (!self.bridge) {
       self.bridge = [WEGWebEngageBridge new];
     }

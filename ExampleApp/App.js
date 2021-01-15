@@ -14,7 +14,9 @@ import {
   TextInput,
   Switch,
   TouchableHighlight,
-  Linking
+  Linking,
+  ToastAndroid,
+  Alert
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import WebEngage from 'react-native-webengage';
@@ -23,6 +25,14 @@ const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android: 'Double tap R on your keyboard to reload,\n' + 'Shake or press menu button for dev menu'
 });
+
+function notifyMessage(msg: string) {
+  if (Platform.OS === 'android') {
+    ToastAndroid.show(msg, ToastAndroid.SHORT);
+  } else {
+    Alert.alert(msg);
+  }
+}
 
 var webengage = new WebEngage();
 
@@ -123,6 +133,10 @@ export default class App extends Component<Props> {
 
     webengage.push.onClick(function(notificationData) {
       console.log("App: push-notiifcation clicked with deeplink: " + notificationData["deeplink"]);
+    });
+    webengage.universalLink.onClick(function(location){
+      console.log("App: universal link clicked with location: " + location);
+      notifyMessage(location);
     });
   }
 

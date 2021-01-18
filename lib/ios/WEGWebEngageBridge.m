@@ -17,14 +17,14 @@ int const DATE_FORMAT_LENGTH = 24;
 @implementation WEGWebEngageBridge
 RCT_EXPORT_MODULE(webengageBridge);
 
-// + (id)allocWithZone:(NSZone *)zone {
-//     static WEGWebEngageBridge *sharedInstance = nil;
-//     static dispatch_once_t onceToken;
-//     dispatch_once(&onceToken, ^{
-//         sharedInstance = [super allocWithZone:zone];
-//     });
-//     return sharedInstance;
-// }
+ + (id)allocWithZone:(NSZone *)zone {
+     static WEGWebEngageBridge *sharedInstance = nil;
+     static dispatch_once_t onceToken;
+     dispatch_once(&onceToken, ^{
+         sharedInstance = [super allocWithZone:zone];
+     });
+     return sharedInstance;
+ }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge{
     return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];

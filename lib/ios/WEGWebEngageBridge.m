@@ -13,18 +13,20 @@
 
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
+bool hasListeners = NO;
 
 @implementation WEGWebEngageBridge
+
 RCT_EXPORT_MODULE(webengageBridge);
 
- + (id)allocWithZone:(NSZone *)zone {
-     static WEGWebEngageBridge *sharedInstance = nil;
-     static dispatch_once_t onceToken;
-     dispatch_once(&onceToken, ^{
-         sharedInstance = [super allocWithZone:zone];
-     });
-     return sharedInstance;
- }
++ (id)allocWithZone:(NSZone *)zone {
+    static WEGWebEngageBridge *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [super allocWithZone:zone];
+    });
+    return sharedInstance;
+}
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge{
     return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
@@ -252,6 +254,27 @@ RCT_EXPORT_METHOD(logout){
 - (void)sendUniversalLinkLocation:(NSString *)location{
     RCTLogInfo(@"webengageBridge: universal link clicked with location: %@", location);
     NSDictionary *data = @{@"location":location};
-    [self sendEventWithName:@"universalLinkClicked" body:data];
+    if (hasListeners) {
+        [self sendEventWithName:@"universalLinkClicked" body:data];
+    } else {
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"universalLinkClicked"] = data;
+        }
+    }
+}
+
+// Will be called when this module's first listener is added.
+- (void) startObserving {
+    hasListeners = YES;
+    if (self.pendingEventsDict != nil) {
+        for (id key in self.pendingEventsDict) {
+            [self sendEventWithName:key body:self.pendingEventsDict[key]];
+        }
+    }
+}
+
+- (void)stopObserving {
+    hasListeners = NO;
 }
 @end

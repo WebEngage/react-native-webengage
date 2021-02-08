@@ -15,6 +15,6 @@
 @interface WEGWebEngageBridge : RCTEventEmitter<RCTBridgeModule, WEGInAppNotificationProtocol, RCTBridgeDelegate, WEGAppDelegate>
 
 @property WEGWebEngageBridge* wegBridge;
-
+@property NSMutableDictionary *pendingEventsDict;
 - (void) sendUniversalLinkLocation:(NSString *)location;
 @end

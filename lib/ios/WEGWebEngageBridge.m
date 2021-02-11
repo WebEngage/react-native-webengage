@@ -28,8 +28,12 @@ RCT_EXPORT_MODULE(webengageBridge);
     return sharedInstance;
 }
 
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge{
-    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+    #if DEBUG
+      return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+    #else
+      return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+    #endif
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {

@@ -252,7 +252,16 @@ RCT_EXPORT_METHOD(logout){
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
     RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-    [self sendEventWithName:@"pushNotificationClicked" body:pushData];
+     if (hasListeners) {
+        [self sendEventWithName:@"pushNotificationClicked" body:pushData];
+    } else {
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
+        } else {
+            self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
+        }
+    }
 }
 
 - (void)sendUniversalLinkLocation:(NSString *)location{
@@ -264,6 +273,8 @@ RCT_EXPORT_METHOD(logout){
         if (self.pendingEventsDict == nil) {
             self.pendingEventsDict = [NSMutableDictionary dictionary];
             self.pendingEventsDict[@"universalLinkClicked"] = data;
+        } else {
+            self.pendingEventsDict[@"universalLinkClicked"] = data;
         }
     }
 }
@@ -274,6 +285,7 @@ RCT_EXPORT_METHOD(logout){
     if (self.pendingEventsDict != nil) {
         for (id key in self.pendingEventsDict) {
             [self sendEventWithName:key body:self.pendingEventsDict[key]];
+            [self.pendingEventsDict removeObjectForKey: key];
         }
     }
 }

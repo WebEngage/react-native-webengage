@@ -252,15 +252,14 @@ RCT_EXPORT_METHOD(logout){
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
     RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-
      if (hasListeners) {
         [self sendEventWithName:@"pushNotificationClicked" body:pushData];
     } else {
         if (self.pendingEventsDict == nil) {
             self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"pushNotificationClicked"] = data;
+            self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
         } else {
-            self.pendingEventsDict[@"pushNotificationClicked"] = data;
+            self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
         }
     }
 }

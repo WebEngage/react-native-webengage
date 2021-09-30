@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.facebook.react:react-native:+'
-    implementation 'com.webengage:android-sdk:3.+'
+    compileOnly 'com.facebook.react:react-native:+'
+    compileOnly 'com.webengage:android-sdk:3.+'
 }
   

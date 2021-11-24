@@ -19,5 +19,5 @@ Pod::Spec.new do |s|
   s.source_files   = 'ios/*.{h,m}'
 
   s.dependency 'WebEngage'
-  s.dependency 'React'
+  s.dependency 'React-Core'
 end

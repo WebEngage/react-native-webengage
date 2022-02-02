@@ -13,7 +13,7 @@
 
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
-bool hasListeners = NO;
+bool hasListenersBool = NO;
 
 @implementation WEGWebEngageBridge
 
@@ -252,7 +252,7 @@ RCT_EXPORT_METHOD(logout){
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
     RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-     if (hasListeners) {
+     if (hasListenersBool) {
         [self sendEventWithName:@"pushNotificationClicked" body:pushData];
     } else {
         if (self.pendingEventsDict == nil) {
@@ -267,7 +267,7 @@ RCT_EXPORT_METHOD(logout){
 - (void)sendUniversalLinkLocation:(NSString *)location{
     RCTLogInfo(@"webengageBridge: universal link clicked with location: %@", location);
     NSDictionary *data = @{@"location":location};
-    if (hasListeners) {
+    if (hasListenersBool) {
         [self sendEventWithName:@"universalLinkClicked" body:data];
     } else {
         if (self.pendingEventsDict == nil) {
@@ -281,7 +281,7 @@ RCT_EXPORT_METHOD(logout){
 
 // Will be called when this module's first listener is added.
 - (void) startObserving {
-    hasListeners = YES;
+    hasListenersBool = YES;
     if (self.pendingEventsDict != nil) {
         for (id key in self.pendingEventsDict) {
             [self sendEventWithName:key body:self.pendingEventsDict[key]];
@@ -291,6 +291,6 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (void)stopObserving {
-    hasListeners = NO;
+    hasListenersBool = NO;
 }
 @end

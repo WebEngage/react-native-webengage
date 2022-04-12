@@ -191,6 +191,9 @@ RCT_EXPORT_METHOD(setCompany:(NSString*)company){
     [[WebEngage sharedInstance].user setCompany:company];
 }
 
+RCT_EXPORT_METHOD(updateListenerCount){
+}
+
 RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {
     NSLocale* locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
     NSString* ch = [channel lowercaseStringWithLocale:locale];
@@ -278,6 +281,7 @@ RCT_EXPORT_METHOD(logout){
         }
     }
 }
+
 
 // Will be called when this module's first listener is added.
 - (void) startObserving {

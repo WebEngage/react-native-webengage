@@ -35,6 +35,6 @@ repositories {
 
 dependencies {
     compileOnly 'com.facebook.react:react-native:+'
-    compileOnly 'com.webengage:android-sdk:3.+'
+    api 'com.webengage:android-sdk:[3.20,)'
 }
   

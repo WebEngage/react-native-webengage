@@ -38,7 +38,8 @@ import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
 
 import javax.annotation.Nullable;
 
-public class MainApplication extends Application implements ReactApplication {
+public class MainApplication extends Application implements ReactApplication , PushNotificationCallbacks{
+    private ReactApplicationContext mReactAppContext;
 
     private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
         @Override
@@ -79,9 +80,9 @@ public class MainApplication extends Application implements ReactApplication {
 //                mReactInstanceManager.removeReactInstanceEventListener(this);
 //            }
 //        });
-        WebengageBridge.getInstance();
+
         WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-                .setWebEngageKey("~47b66161")
+                .setWebEngageKey("8261782b")
                 .setDebugMode(true)  // only in development mode
                 .build();
         registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
@@ -97,75 +98,34 @@ public class MainApplication extends Application implements ReactApplication {
                 }
             }
         });
-        //WebEngage.registerPushNotificationCallback(this);
+
+        mReactAppContext = new ReactApplicationContext(getApplicationContext());
+        WebEngage.registerPushNotificationCallback(this);
     }
-//
-//  @Override
-//  public PushNotificationData onPushNotificationReceived(Context context, PushNotificationData pushNotificationData) {
-//    WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-//    // sendEvent(getReactApplicationContext(), "pushNotificationReceived", map);
-//    return pushNotificationData;
-//  }
-//
-//  @Override
-//  public void onPushNotificationShown(Context context, PushNotificationData pushNotificationData) {
-//    WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-//    // sendEvent(getReactApplicationContext(), "pushNotificationShown", map);
-//  }
-//
-//  @Override
-//  public boolean onPushNotificationClicked(Context context, PushNotificationData pushNotificationData) {
-//    Log.e("TAG", "MyLogs WebengageBridge onPushNotificationClicked: ");
-//    WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-//    sendEvent(context, "pushNotificationClicked", map);
-//    return false;
-//  }
-//
-//  @Override
-//  public void onPushNotificationDismissed(Context context, PushNotificationData pushNotificationData) {
-//    WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-//    sendEvent(context, "pushNotificationDismissed", map);
-//  }
-//
-//  @Override
-//  public boolean onPushNotificationActionClicked(Context context, PushNotificationData pushNotificationData, String buttonId) {
-//    return false;
-//  }
-//
-//  private void sendEvent(Context context, String eventName, @Nullable WritableMap params) {
-//    Handler handler = new Handler(Looper.getMainLooper());
-//    handler.post(new Runnable() {
-//      public void run() {
-//        final ReactInstanceManager mReactInstanceManager = ((ReactApplication)
-//                context.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
-//        ReactContext context = mReactInstanceManager.getCurrentReactContext();
-//        if (context != null) {
-//          Log.d("Clicker", "Context Available. Emitting event to RCT.");
-//          // emitEvent(context, WE_PUSH_CLICK_EVENT, map);
-//        } else {
-//          Log.d("Clicker", "Waiting for context creation.");
-//          mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
-//            public void onReactContextInitialized(ReactContext context) {
-//              Log.d("Clicker", "Emitting event to RCT.");
-//              emitEvent(context, eventName, params);
-//              mReactInstanceManager.removeReactInstanceEventListener(this);
-//            }
-//          });
-//          if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
-//            Log.d("Clicker", "Creating context in background");
-//            mReactInstanceManager.createReactContextInBackground();
-//          }
-//        }
-//      }
-//    });
-//  }
-//
-//  private void emitEvent(ReactContext reactContext, String eventName, @Nullable
-//          WritableMap params) {
-//    if (reactContext.hasActiveCatalystInstance()) {
-//      reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-//              .emit(eventName, params);
-//    }
-//  }
+
+    @Override
+    public PushNotificationData onPushNotificationReceived(Context context, PushNotificationData pushNotificationData) {
+      return WebengageBridge.getInstance(mReactAppContext).onPushNotificationReceived(context,pushNotificationData);
+    }
+  
+    @Override
+    public void onPushNotificationShown(Context context, PushNotificationData pushNotificationData) {
+      WebengageBridge.getInstance(mReactAppContext).onPushNotificationShown(context,pushNotificationData);
+    }
+  
+    @Override
+    public boolean onPushNotificationClicked(Context context, PushNotificationData pushNotificationData) {
+      return  WebengageBridge.getInstance(mReactAppContext).onPushNotificationClicked(context,pushNotificationData);
+    }
+  
+    @Override
+    public void onPushNotificationDismissed(Context context, PushNotificationData pushNotificationData) {
+      WebengageBridge.getInstance(mReactAppContext).onPushNotificationDismissed(context,pushNotificationData);
+    }
+  
+    @Override
+    public boolean onPushNotificationActionClicked(Context context, PushNotificationData pushNotificationData, String buttonId) {
+      return  WebengageBridge.getInstance(mReactAppContext).onPushNotificationActionClicked(context,pushNotificationData,buttonId);
+    }
 
 }

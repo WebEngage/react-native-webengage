@@ -64,16 +64,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     private final HashMap<String, WritableMap> queuedMap = new HashMap<>();
     private ReactApplicationContext reactApplicationContext;
 
-    public static WebengageBridge getInstance() {
-        Logger.d(TAG, "getInstance without context: ");
-        if (INSTANCE == null) {
-            synchronized (lock) {
-                INSTANCE = new WebengageBridge(null);
-            }
-        }
-        return INSTANCE;
-    }
-
     public void setReactNativeContext(ReactApplicationContext context) {
         listenerCount = 0;
         reactApplicationContext = context;

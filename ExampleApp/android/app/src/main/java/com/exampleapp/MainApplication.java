@@ -71,16 +71,6 @@ public class MainApplication extends Application implements ReactApplication , P
     public void onCreate() {
         super.onCreate();
         SoLoader.init(this, /* native exopackage */ false);
-        final ReactInstanceManager mReactInstanceManager = getReactNativeHost().getReactInstanceManager();
-
-//        mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
-//            public void onReactContextInitialized(ReactContext context) {
-//                Log.d("Clicker", "Emitting event to RCT.");
-//                WebengageBridge.getInstance((ReactApplicationContext) context);
-//                mReactInstanceManager.removeReactInstanceEventListener(this);
-//            }
-//        });
-
         WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
                 .setWebEngageKey("8261782b")
                 .setDebugMode(true)  // only in development mode

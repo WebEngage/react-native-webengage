@@ -1,5 +1,7 @@
 package com.exampleapp;
 
+import static com.webengage.WebengageBridge.convertJsonObjectToWriteable;
+
 import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
@@ -30,6 +32,7 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
+import com.webengage.sdk.android.Logger;
 import com.webengage.sdk.android.WebEngageConfig;
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
 import com.webengage.sdk.android.WebEngage;
@@ -72,7 +75,7 @@ public class MainApplication extends Application implements ReactApplication , P
         super.onCreate();
         SoLoader.init(this, /* native exopackage */ false);
         WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-                .setWebEngageKey("8261782b")
+                .setWebEngageKey("aa131d2c")
                 .setDebugMode(true)  // only in development mode
                 .build();
         registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
@@ -95,27 +98,29 @@ public class MainApplication extends Application implements ReactApplication , P
 
     @Override
     public PushNotificationData onPushNotificationReceived(Context context, PushNotificationData pushNotificationData) {
-      return WebengageBridge.getInstance(mReactAppContext).onPushNotificationReceived(context,pushNotificationData);
+        return WebengageBridge.getInstance(mReactAppContext).onPushNotificationReceivedBridge(context,pushNotificationData);
     }
-  
+
     @Override
     public void onPushNotificationShown(Context context, PushNotificationData pushNotificationData) {
-      WebengageBridge.getInstance(mReactAppContext).onPushNotificationShown(context,pushNotificationData);
+            WebengageBridge.getInstance(mReactAppContext).onPushNotificationShownBridge(context,pushNotificationData);
     }
-  
+
     @Override
     public boolean onPushNotificationClicked(Context context, PushNotificationData pushNotificationData) {
-      return  WebengageBridge.getInstance(mReactAppContext).onPushNotificationClicked(context,pushNotificationData);
+            Logger.d("ClickTrack","MyLogs MainApp clicked");
+            return WebengageBridge.getInstance(mReactAppContext).onPushNotificationClickedBridge(context, pushNotificationData);
     }
-  
+
     @Override
     public void onPushNotificationDismissed(Context context, PushNotificationData pushNotificationData) {
-      WebengageBridge.getInstance(mReactAppContext).onPushNotificationDismissed(context,pushNotificationData);
+            WebengageBridge.getInstance(mReactAppContext).onPushNotificationDismissedBridge(context,pushNotificationData);
     }
-  
+
     @Override
     public boolean onPushNotificationActionClicked(Context context, PushNotificationData pushNotificationData, String buttonId) {
-      return  WebengageBridge.getInstance(mReactAppContext).onPushNotificationActionClicked(context,pushNotificationData,buttonId);
+        return  WebengageBridge.getInstance(mReactAppContext).onPushNotificationActionClickedBridge(context,pushNotificationData,buttonId);
     }
+
 
 }

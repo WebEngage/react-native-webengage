@@ -58,16 +58,12 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     private static final String TAG = "webengageBridge";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final int DATE_FORMAT_LENGTH = DATE_FORMAT.replaceAll("'", "").length();
-    private int listenerCount = 0;
+    private static int listenerCount = 0;
     private static volatile WebengageBridge INSTANCE = null;
     private static final Object lock = new Object();
-    private final HashMap<String, WritableMap> queuedMap = new HashMap<>();
+    private static final HashMap<String, WritableMap> queuedMap = new HashMap<>();
     private ReactApplicationContext reactApplicationContext;
-
-    public void setReactNativeContext(ReactApplicationContext context) {
-        listenerCount = 0;
-        reactApplicationContext = context;
-    }
+    private static final HashMap<String,WritableMap> eventMap = new HashMap<>();
 
     public static WebengageBridge getInstance(ReactApplicationContext reactContext) {
         Logger.d(TAG, "getInstance: " + reactContext);
@@ -78,10 +74,14 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         }
         return INSTANCE;
     }
+    public void setReactNativeContext(ReactApplicationContext context) {
+        listenerCount = 0;
+        reactApplicationContext = context;
+    }
 
     private WebengageBridge(ReactApplicationContext reactContext) {
         super(reactContext);
-        Log.d(TAG, "Constructor called");
+        Log.d(TAG, "MyLogs Constructor called");
         WebEngage.registerPushNotificationCallback(this);
         WebEngage.registerInAppNotificationCallback(this);
         listenerCount = 0;
@@ -331,20 +331,27 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         return deconstructedList;
     }
 
-    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+    public static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
         Logger.d(TAG, " sendEvent: " + eventName + " context: " + reactContext);
         if (listenerCount > 0 && reactContext != null) {
-            if (reactContext.hasActiveCatalystInstance()) {
+            if (reactContext.hasCatalystInstance()) {
+                Logger.d("ClickTrack","Bridge hasActiveCatalystInstance");
                 reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                         .emit(eventName, params);
             }
+            else {
+                Logger.d("ClickTrack", "hasActiveCatalystInstance fasle QUEUEING event: " + eventName);
+              //  Logger.d(TAG, " context null QUEUEING event: " + eventName);
+                queuedMap.put(eventName, params);
+            }
         } else {
-            Logger.d(TAG, "QUEUEING event: " + eventName);
+            Logger.d("ClickTrack", "QUEUEING event: " + eventName);
+            //Logger.d(TAG, "QUEUEING event: " + eventName);
             queuedMap.put(eventName, params);
         }
     }
 
-    public static ReadableMap convertJsonObjectToReadable(JSONObject jsonObject){
+    private ReadableMap convertJsonObjectToReadable(JSONObject jsonObject){
         return convertJsonObjectToWriteable(jsonObject);
     }
 
@@ -413,6 +420,13 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         return arr;
     }
 
+    public PushNotificationData onPushNotificationReceivedBridge(Context context, PushNotificationData pushNotificationData) {
+        if(reactApplicationContext.getCurrentActivity() == null)
+            return this.onPushNotificationReceived(context,pushNotificationData);
+        else
+            return pushNotificationData;
+    }
+
     @Override
     public PushNotificationData onPushNotificationReceived(Context context, PushNotificationData pushNotificationData) {
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
@@ -420,6 +434,11 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         map.putString("deeplink",pushNotificationData.getPrimeCallToAction().getAction());
         sendEvent(reactApplicationContext, "pushNotificationReceived", map);
         return pushNotificationData;
+    }
+
+    public void onPushNotificationShownBridge(Context context, PushNotificationData pushNotificationData) {
+        if(reactApplicationContext.getCurrentActivity() == null)
+            this.onPushNotificationShown(context,pushNotificationData);
     }
 
     @Override
@@ -430,13 +449,26 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         sendEvent(reactApplicationContext, "pushNotificationShown", map);
     }
 
+    public boolean onPushNotificationClickedBridge(Context context, PushNotificationData pushNotificationData) {
+        if(reactApplicationContext.getCurrentActivity() == null)
+            return this.onPushNotificationClicked(context,pushNotificationData);
+        return false;
+    }
+
+
     @Override
     public boolean onPushNotificationClicked(Context context, PushNotificationData pushNotificationData) {
+        Logger.d("ClickTrack","MyLogs Bridge clicked");
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
         map.putMap("userData",convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
         map.putString("deeplink",pushNotificationData.getPrimeCallToAction().getAction());
         sendEvent(reactApplicationContext, "pushNotificationClicked", map);
         return false;
+    }
+
+    public void onPushNotificationDismissedBridge(Context context, PushNotificationData pushNotificationData) {
+        if(reactApplicationContext.getCurrentActivity() == null)
+            this.onPushNotificationDismissed(context,pushNotificationData);
     }
 
     @Override
@@ -445,6 +477,11 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         map.putMap("userData",convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
         map.putString("deeplink",pushNotificationData.getPrimeCallToAction().getAction());
         sendEvent(reactApplicationContext, "pushNotificationDismissed", map);
+    }
+    public boolean onPushNotificationActionClickedBridge(Context context, PushNotificationData pushNotificationData, String buttonId) {
+        if(reactApplicationContext.getCurrentActivity() == null)
+            return this.onPushNotificationActionClicked(context,pushNotificationData,buttonId);
+        return false;
     }
 
     @Override
@@ -515,4 +552,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     public void onInAppNotificationDismissed(Context context, InAppNotificationData inAppNotificationData) {
         sendEvent(reactApplicationContext, "notificationDismissed", convertJsonObjectToWriteable(inAppNotificationData.getData()));
     }
+
+
+
 }

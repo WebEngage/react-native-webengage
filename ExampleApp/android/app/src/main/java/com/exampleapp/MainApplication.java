@@ -1,27 +1,17 @@
 package com.exampleapp;
 
-import static com.webengage.WebengageBridge.convertJsonObjectToWriteable;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.webengage.WebengageBridge;
 import com.webengage.WebengagePackage;
 import com.facebook.react.ReactNativeHost;
@@ -39,9 +29,8 @@ import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.actions.render.PushNotificationData;
 import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
 
-import javax.annotation.Nullable;
 
-public class MainApplication extends Application implements ReactApplication , PushNotificationCallbacks{
+public class MainApplication extends Application implements ReactApplication {
     private ReactApplicationContext mReactAppContext;
 
     private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -73,7 +62,11 @@ public class MainApplication extends Application implements ReactApplication , P
     @Override
     public void onCreate() {
         super.onCreate();
+
         SoLoader.init(this, /* native exopackage */ false);
+        //initialize webengage bridge to register callbacks
+        WebengageBridge.getInstance();
+
         WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
                 .setWebEngageKey("aa131d2c")
                 .setDebugMode(true)  // only in development mode
@@ -92,35 +85,6 @@ public class MainApplication extends Application implements ReactApplication , P
             }
         });
 
-        mReactAppContext = new ReactApplicationContext(getApplicationContext());
-        WebEngage.registerPushNotificationCallback(this);
     }
-
-    @Override
-    public PushNotificationData onPushNotificationReceived(Context context, PushNotificationData pushNotificationData) {
-        return WebengageBridge.getInstance(mReactAppContext).onPushNotificationReceivedBridge(context,pushNotificationData);
-    }
-
-    @Override
-    public void onPushNotificationShown(Context context, PushNotificationData pushNotificationData) {
-            WebengageBridge.getInstance(mReactAppContext).onPushNotificationShownBridge(context,pushNotificationData);
-    }
-
-    @Override
-    public boolean onPushNotificationClicked(Context context, PushNotificationData pushNotificationData) {
-            Logger.d("ClickTrack","MyLogs MainApp clicked");
-            return WebengageBridge.getInstance(mReactAppContext).onPushNotificationClickedBridge(context, pushNotificationData);
-    }
-
-    @Override
-    public void onPushNotificationDismissed(Context context, PushNotificationData pushNotificationData) {
-            WebengageBridge.getInstance(mReactAppContext).onPushNotificationDismissedBridge(context,pushNotificationData);
-    }
-
-    @Override
-    public boolean onPushNotificationActionClicked(Context context, PushNotificationData pushNotificationData, String buttonId) {
-        return  WebengageBridge.getInstance(mReactAppContext).onPushNotificationActionClickedBridge(context,pushNotificationData,buttonId);
-    }
-
 
 }

@@ -61,7 +61,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     private static final Object lock = new Object();
     private static final HashMap<String, WritableMap> queuedMap = new HashMap<>();
     private ReactApplicationContext reactApplicationContext;
-    private static final HashMap<String, WritableMap> eventMap = new HashMap<>();
 
     //no parameter initialization to be called from application class during react native initialization
     public static WebengageBridge getInstance() {

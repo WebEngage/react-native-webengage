@@ -236,6 +236,11 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @ReactMethod
+    public void setDevicePushOptIn(Boolean state) {
+        WebEngage.get().user().setDevicePushOptIn(state);
+    }
+
+    @ReactMethod
     public void setOptIn(String channel, boolean status) {
         if ("push".equalsIgnoreCase(channel)) {
             WebEngage.get().user().setOptIn(Channel.PUSH, status);

@@ -6,9 +6,8 @@ package com.webengage;
 
 import android.net.Uri;
 import android.content.Context;
-import android.os.Bundle;
-import android.renderscript.Sampler;
 import android.util.Log;
+
 import com.webengage.sdk.android.Logger;
 
 import com.facebook.react.bridge.Arguments;
@@ -50,16 +49,69 @@ import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
-public class WebengageBridge extends ReactContextBaseJavaModule implements PushNotificationCallbacks, InAppNotificationCallbacks {
+//WebEngageBridge singelton
+
+public class WebengageBridge extends ReactContextBaseJavaModule implements PushNotificationCallbacks,
+        InAppNotificationCallbacks {
     private static final String TAG = "webengageBridge";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final int DATE_FORMAT_LENGTH = DATE_FORMAT.replaceAll("'", "").length();
+    private static int listenerCount = 0;
+    private static volatile WebengageBridge INSTANCE = null;
+    private static final Object lock = new Object();
+    private static final HashMap<String, WritableMap> queuedMap = new HashMap<>();
+    private ReactApplicationContext reactApplicationContext;
 
-    public WebengageBridge(ReactApplicationContext reactContext) {
+    //no parameter initialization to be called from application class during react native initialization
+    public static WebengageBridge getInstance() {
+        Logger.d(TAG, "getInstance without context: ");
+        if (INSTANCE == null) {
+            synchronized (lock) {
+                INSTANCE = new WebengageBridge(null);
+            }
+        }
+        return INSTANCE;
+    }
+
+    //to be called during setting up package list
+    public static WebengageBridge getInstance(ReactApplicationContext reactContext) {
+        Logger.d(TAG, "getInstance: " + reactContext);
+        if (INSTANCE == null) {
+            synchronized (lock) {
+                INSTANCE = new WebengageBridge(reactContext);
+            }
+        }
+        return INSTANCE;
+    }
+
+    public void setReactNativeContext(ReactApplicationContext context) {
+        listenerCount = 0;
+        reactApplicationContext = context;
+    }
+
+    private WebengageBridge(ReactApplicationContext reactContext) {
         super(reactContext);
-        Log.d(TAG, "Constructor called");
+        Log.d(TAG, "MyLogs Constructor called");
         WebEngage.registerPushNotificationCallback(this);
         WebEngage.registerInAppNotificationCallback(this);
+        listenerCount = 0;
+    }
+
+    @ReactMethod
+    public void updateListenerCount() {
+        listenerCount++;
+        Logger.e(TAG, "updateListenerCount: " + listenerCount);
+        synchronized (lock) {
+            if (listenerCount > 0) {
+                HashMap<String, WritableMap> map = new HashMap<>();
+                map.putAll(queuedMap);
+                for (Map.Entry<String, WritableMap> entry : map.entrySet()) {
+                    sendEvent(reactApplicationContext, entry.getKey(), entry.getValue());
+                    queuedMap.remove(entry.getKey());
+                    Logger.d(TAG, "Sending queued event: " + entry.getKey());
+                }
+            }
+        }
     }
 
     @Override
@@ -90,9 +142,9 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @ReactMethod
-    public void trackEventWithNameAndData(String name, ReadableMap values){
+    public void trackEventWithNameAndData(String name, ReadableMap values) {
         Map<String, Object> map = recursivelyDeconstructReadableMap(values);
-        WebEngage.get().analytics().track(name,map);
+        WebEngage.get().analytics().track(name, map);
     }
 
     @ReactMethod
@@ -101,12 +153,12 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @ReactMethod
-    public void screenNavigatedWithData(String name, ReadableMap userData){
-        WebEngage.get().analytics().screenNavigated(name,recursivelyDeconstructReadableMap(userData));
+    public void screenNavigatedWithData(String name, ReadableMap userData) {
+        WebEngage.get().analytics().screenNavigated(name, recursivelyDeconstructReadableMap(userData));
     }
 
     @ReactMethod
-    public void login(String userIdentifier){
+    public void login(String userIdentifier) {
         WebEngage.get().user().login(userIdentifier);
     }
 
@@ -119,12 +171,12 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @ReactMethod
-    public void deleteAttribute(String attributeName){
+    public void deleteAttribute(String attributeName) {
         WebEngage.get().user().deleteAttribute(attributeName);
     }
 
     @ReactMethod
-    public void deleteAttributes(ReadableArray attributeNames){
+    public void deleteAttributes(ReadableArray attributeNames) {
         int n = attributeNames.size();
         List<String> result = new ArrayList<String>(n);
         for (int i = 0; i < n; i++) {
@@ -139,48 +191,53 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @ReactMethod
-    public void setEmail(String email){
+    public void setEmail(String email) {
         WebEngage.get().user().setEmail(email);
     }
 
     @ReactMethod
-    public void setHashedEmail(String hashedEmail){
+    public void setHashedEmail(String hashedEmail) {
         WebEngage.get().user().setHashedEmail(hashedEmail);
     }
 
     @ReactMethod
-    public void setPhone(String phone){
+    public void setPhone(String phone) {
         WebEngage.get().user().setPhoneNumber(phone);
     }
 
     @ReactMethod
-    public void setHashedPhone(String hashedPhone){
+    public void setHashedPhone(String hashedPhone) {
         WebEngage.get().user().setHashedPhoneNumber(hashedPhone);
     }
 
     @ReactMethod
-    public void setBirthDateString(String birthDateString){
+    public void setBirthDateString(String birthDateString) {
         WebEngage.get().user().setBirthDate(birthDateString);
     }
 
     @ReactMethod
-    public void setGender(String gender){
+    public void setGender(String gender) {
         WebEngage.get().user().setGender(Gender.valueByString(gender));
     }
 
     @ReactMethod
-    public void setFirstName(String name){
+    public void setFirstName(String name) {
         WebEngage.get().user().setFirstName(name);
     }
 
     @ReactMethod
-    public void setLastName(String name){
+    public void setLastName(String name) {
         WebEngage.get().user().setLastName(name);
     }
 
     @ReactMethod
-    public void setCompany(String company){
+    public void setCompany(String company) {
         WebEngage.get().user().setCompany(company);
+    }
+
+    @ReactMethod
+    public void setDevicePushOptIn(Boolean state) {
+        WebEngage.get().user().setDevicePushOptIn(state);
     }
 
     @ReactMethod
@@ -201,7 +258,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @ReactMethod
-    public void logout(){
+    public void logout() {
         WebEngage.get().user().logout();
     }
 
@@ -253,7 +310,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         List<Object> deconstructedList = new ArrayList<>(readableArray.size());
         for (int i = 0; i < readableArray.size(); i++) {
             ReadableType indexType = readableArray.getType(i);
-            switch(indexType) {
+            switch (indexType) {
                 case Null:
                     deconstructedList.add(i, null);
                     break;
@@ -289,11 +346,25 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         return deconstructedList;
     }
 
-    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
-        if (reactContext.hasActiveCatalystInstance()) {
-            reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit(eventName, params);
+    public static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+        Logger.d(TAG, " sendEvent: " + eventName + " context: " + reactContext);
+        if (listenerCount > 0 && reactContext != null) {
+            if (reactContext.hasCatalystInstance()) {
+                Logger.d(TAG, "Bridge hasActiveCatalystInstance");
+                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit(eventName, params);
+            } else {
+                Logger.d(TAG, "QUEUEING event: " + eventName);
+                queuedMap.put(eventName, params);
+            }
+        } else {
+            Logger.d(TAG, "QUEUEING event: " + eventName);
+            queuedMap.put(eventName, params);
         }
+    }
+
+    private ReadableMap convertJsonObjectToReadable(JSONObject jsonObject) {
+        return convertJsonObjectToWriteable(jsonObject);
     }
 
     public static WritableMap convertJsonObjectToWriteable(JSONObject jsonObj) {
@@ -309,7 +380,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
             } catch (Exception e) {
                 Logger.e(TAG, "Exception while getting value for " + key, e);
             }
-            
+
             if (obj instanceof JSONObject)
                 map.putMap(key, convertJsonObjectToWriteable((JSONObject) obj));
             else if (obj instanceof JSONArray)
@@ -322,7 +393,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
                 map.putInt(key, (Integer) obj);
             else if (obj instanceof Boolean)
                 map.putBoolean(key, (Boolean) obj);
-            else if (obj == null || (obj == JSONObject.NULL)) 
+            else if (obj == null || (obj == JSONObject.NULL))
                 map.putNull(key);
             else
                 Logger.e(TAG, "Unrecognized value for " + key + ": " + String.valueOf(obj));
@@ -332,7 +403,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
 
     public static WritableArray convertJsonArrayToWriteable(JSONArray jsonArr) {
         WritableArray arr = Arguments.createArray();
-        for (int i=0; i<jsonArr.length(); i++) {
+        for (int i = 0; i < jsonArr.length(); i++) {
             Object obj = null;
             try {
                 obj = jsonArr.get(i);
@@ -364,39 +435,50 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     @Override
     public PushNotificationData onPushNotificationReceived(Context context, PushNotificationData pushNotificationData) {
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        sendEvent(getReactApplicationContext(), "pushNotificationReceived", map);
+        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
+        map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
+        sendEvent(reactApplicationContext, "pushNotificationReceived", map);
         return pushNotificationData;
     }
 
     @Override
     public void onPushNotificationShown(Context context, PushNotificationData pushNotificationData) {
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        sendEvent(getReactApplicationContext(), "pushNotificationShown", map);
+        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
+        map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
+        sendEvent(reactApplicationContext, "pushNotificationShown", map);
     }
 
     @Override
     public boolean onPushNotificationClicked(Context context, PushNotificationData pushNotificationData) {
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        sendEvent(getReactApplicationContext(), "pushNotificationClicked", map);
+        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
+        map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
+        sendEvent(reactApplicationContext, "pushNotificationClicked", map);
         return false;
     }
 
     @Override
     public void onPushNotificationDismissed(Context context, PushNotificationData pushNotificationData) {
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        sendEvent(getReactApplicationContext(), "pushNotificationDismissed", map);
+        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
+        map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
+        sendEvent(reactApplicationContext, "pushNotificationDismissed", map);
     }
 
     @Override
     public boolean onPushNotificationActionClicked(Context context, PushNotificationData pushNotificationData, String buttonId) {
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        sendEvent(getReactApplicationContext(), "pushNotificationClicked", map);
+        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
+        map.putString("deeplink", pushNotificationData.getCallToActionById(buttonId).getAction());
+
+        sendEvent(reactApplicationContext, "pushNotificationClicked", map);
         return false;
     }
 
     @Override
     public InAppNotificationData onInAppNotificationPrepared(Context context, InAppNotificationData inAppNotificationData) {
-        sendEvent(getReactApplicationContext(), "notificationPrepared", convertJsonObjectToWriteable(inAppNotificationData.getData()));
+        sendEvent(reactApplicationContext, "notificationPrepared", convertJsonObjectToWriteable(inAppNotificationData.getData()));
         return inAppNotificationData;
     }
 
@@ -404,7 +486,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     public void onInAppNotificationShown(Context context, InAppNotificationData inAppNotificationData) {
         WritableMap map = convertJsonObjectToWriteable(inAppNotificationData.getData());
         Logger.d(TAG, "in-app notification data: " + map);
-        sendEvent(getReactApplicationContext(), "notificationShown", map);
+        sendEvent(reactApplicationContext, "notificationShown", map);
     }
 
     @Override
@@ -444,12 +526,14 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         WritableMap map = convertJsonObjectToWriteable(jsonObject);
         map.putString("deepLink", actionLink);
         map.putString("clickId", actionId);
-        sendEvent(getReactApplicationContext(), "notificationClicked", map);
+        sendEvent(reactApplicationContext, "notificationClicked", map);
         return false;
     }
 
     @Override
     public void onInAppNotificationDismissed(Context context, InAppNotificationData inAppNotificationData) {
-        sendEvent(getReactApplicationContext(), "notificationDismissed", convertJsonObjectToWriteable(inAppNotificationData.getData()));
+        sendEvent(reactApplicationContext, "notificationDismissed", convertJsonObjectToWriteable(inAppNotificationData.getData()));
     }
+
+
 }

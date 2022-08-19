@@ -13,7 +13,7 @@
 
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
-bool hasListeners = NO;
+bool weHasListeners = NO;
 
 @implementation WEGWebEngageBridge
 
@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE(webengageBridge);
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
     #if DEBUG
-      return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
     #else
       return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
     #endif
@@ -191,6 +191,9 @@ RCT_EXPORT_METHOD(setCompany:(NSString*)company){
     [[WebEngage sharedInstance].user setCompany:company];
 }
 
+RCT_EXPORT_METHOD(updateListenerCount){
+}
+
 RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {
     NSLocale* locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
     NSString* ch = [channel lowercaseStringWithLocale:locale];
@@ -252,7 +255,7 @@ RCT_EXPORT_METHOD(logout){
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
     RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-     if (hasListeners) {
+     if (weHasListeners) {
         [self sendEventWithName:@"pushNotificationClicked" body:pushData];
     } else {
         if (self.pendingEventsDict == nil) {
@@ -267,7 +270,7 @@ RCT_EXPORT_METHOD(logout){
 - (void)sendUniversalLinkLocation:(NSString *)location{
     RCTLogInfo(@"webengageBridge: universal link clicked with location: %@", location);
     NSDictionary *data = @{@"location":location};
-    if (hasListeners) {
+    if (weHasListeners) {
         [self sendEventWithName:@"universalLinkClicked" body:data];
     } else {
         if (self.pendingEventsDict == nil) {
@@ -279,9 +282,10 @@ RCT_EXPORT_METHOD(logout){
     }
 }
 
+
 // Will be called when this module's first listener is added.
 - (void) startObserving {
-    hasListeners = YES;
+    weHasListeners = YES;
     if (self.pendingEventsDict != nil) {
         for (id key in self.pendingEventsDict) {
             [self sendEventWithName:key body:self.pendingEventsDict[key]];
@@ -291,6 +295,6 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (void)stopObserving {
-    hasListeners = NO;
+    weHasListeners = NO;
 }
 @end

@@ -1,0 +1,213 @@
+{
+  "project_info": {
+    "project_number": "354561047304",
+    "project_id": "react-webengage-sample",
+    "storage_bucket": "react-webengage-sample.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354561047304:android:b1258905068a2d3e1fcabd",
+        "android_client_info": {
+          "package_name": "com.exampleapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZVQ2U2vd9QSdg9nzhPseJArT8tu0lPfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354561047304:android:5a87fea833ebe7a61fcabd",
+        "android_client_info": {
+          "package_name": "com.hiltonpharma.nowchayn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZVQ2U2vd9QSdg9nzhPseJArT8tu0lPfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354561047304:android:ac098a48c3398d781fcabd",
+        "android_client_info": {
+          "package_name": "com.nowchayn.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZVQ2U2vd9QSdg9nzhPseJArT8tu0lPfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354561047304:android:4d1138ad47178cfd1fcabd",
+        "android_client_info": {
+          "package_name": "com.webengage.cordovaSample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZVQ2U2vd9QSdg9nzhPseJArT8tu0lPfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354561047304:android:1a48a28f52d81f451fcabd",
+        "android_client_info": {
+          "package_name": "com.webengage.flutter.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZVQ2U2vd9QSdg9nzhPseJArT8tu0lPfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354561047304:android:594decec8a9f4e7a1fcabd",
+        "android_client_info": {
+          "package_name": "com.webengage.react.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZVQ2U2vd9QSdg9nzhPseJArT8tu0lPfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354561047304:android:3fef4ad38ad38fe51fcabd",
+        "android_client_info": {
+          "package_name": "vcv.hvjkj"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZVQ2U2vd9QSdg9nzhPseJArT8tu0lPfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354561047304-furq946691n3ub2t2784uuqm580iapib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

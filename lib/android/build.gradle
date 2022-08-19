@@ -13,12 +13,11 @@ buildscript {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "31.0.0"
+    compileSdkVersion 33
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 31
+        minSdkVersion 21
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
     }
@@ -35,6 +34,5 @@ repositories {
 
 dependencies {
     compileOnly 'com.facebook.react:react-native:+'
-    compileOnly 'com.webengage:android-sdk:3.+'
+    api 'com.webengage:android-sdk:[3,)'
 }
-  

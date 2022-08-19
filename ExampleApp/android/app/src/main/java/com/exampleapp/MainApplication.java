@@ -1,9 +1,21 @@
 package com.exampleapp;
 
+
 import android.app.Application;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.facebook.react.ReactApplication;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.webengage.WebengageBridge;
 import com.webengage.WebengagePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -13,48 +25,69 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
+import com.webengage.sdk.android.Logger;
 import com.webengage.sdk.android.WebEngageConfig;
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
 import com.webengage.sdk.android.WebEngage;
+import com.webengage.sdk.android.actions.render.PushNotificationData;
+import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
+
 
 public class MainApplication extends Application implements ReactApplication {
+    private ReactApplicationContext mReactAppContext;
 
-  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+    private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+        @Override
+        public boolean getUseDeveloperSupport() {
+            return BuildConfig.DEBUG;
+        }
+
+        @Override
+        protected List<ReactPackage> getPackages() {
+            return Arrays.<ReactPackage>asList(
+                    new MainReactPackage(),
+                    new AsyncStoragePackage(),
+                    new WebengagePackage()
+            );
+        }
+
+        @Override
+        protected String getJSMainModuleName() {
+            return "index";
+        }
+    };
+
     @Override
-    public boolean getUseDeveloperSupport() {
-      return BuildConfig.DEBUG;
+    public ReactNativeHost getReactNativeHost() {
+        return mReactNativeHost;
     }
 
     @Override
-    protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-            new AsyncStoragePackage(),
-            new WebengagePackage()
-      );
+    public void onCreate() {
+        super.onCreate();
+
+        SoLoader.init(this, /* native exopackage */ false);
+        //initialize webengage bridge to register callbacks
+        WebengageBridge.getInstance();
+
+        WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
+                .setWebEngageKey("aa131d2c")
+                .setDebugMode(true)  // only in development mode
+                .build();
+        registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
+
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                try {
+                    String token = task.getResult();
+                    WebEngage.get().setRegistrationID(token);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
-    @Override
-    protected String getJSMainModuleName() {
-      return "index";
-    }
-  };
-
-  @Override
-  public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
-  }
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
-    WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-              .setWebEngageKey(YOUR_LICENSE_CODE)
-              //.setAutoGCMRegistrationFlag(true)  // (Deprecated) Use FCM instead.
-              //.setGCMProjectNumber(YOUR-GCM-SENDER-ID)  // (Deprecated) Not required if using FCM, this was only required for GCM.
-              .setDebugMode(true)  // only in development mode
-              .build();
-    registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
-  }
 }

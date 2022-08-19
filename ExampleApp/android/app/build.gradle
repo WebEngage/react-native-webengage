@@ -189,9 +189,7 @@ android {
 
 dependencies {
     implementation project(':@react-native-community_async-storage')
-    implementation(project(':react-native-webengage')) {
-        exclude group: "com.webengage"
-    }
+    implementation(project(':react-native-webengage'))
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation "com.facebook.react:react-native:0.20.1"  // From node_modules
 
@@ -203,7 +201,7 @@ dependencies {
         implementation jscFlavor
     }
 
-    implementation 'com.webengage:android-sdk:3.+'
+   // implementation 'com.webengage:android-sdk:3.+'
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
     // Firebase
     implementation 'com.google.firebase:firebase-messaging:22.0.0'

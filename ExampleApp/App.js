@@ -33,7 +33,7 @@ import WebEngage from 'react-native-webengage';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Section = ({children, title}): Node => {
-  const isDarkMode = false;
+  const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={{...styles.sectionContainer, backgroundColor: 'white'}}>
       <Text
@@ -49,7 +49,7 @@ const Section = ({children, title}): Node => {
         style={[
           styles.sectionDescription,
           {
-            color: isDarkMode ? Colors.light : Colors.white,
+            color: isDarkMode ? Colors.light : Colors.dark,
           },
         ]}>
         {children}

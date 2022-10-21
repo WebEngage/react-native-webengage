@@ -28,7 +28,7 @@ target 'ExampleApp' do
     # Pods for testing
   end
   
-  target 'NotificationViewController' do
+  target 'ContentExtension' do
     platform :ios, '10.0'
     pod 'WebEngageAppEx/ContentExtension'
   end

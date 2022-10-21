@@ -82,52 +82,52 @@ export default class App extends Component<Props> {
     Toast.show('This is a toast.');
     Linking.addEventListener('url', this.handleOpenURL);
 
-    try {
-      AsyncStorage.getItem('userid')
-        .then((user_id) => {
-          console.log("user id: " + user_id);
-          if (user_id && user_id !== null && user_id !== '') {
-            console.log("logged in user id: " + user_id);
-            this.setState({
-              userId: user_id,
-              userIdInput: user_id,
-              loginButtonText: "LOGOUT"
-            })
-          } else {
-            this.setState({
-              loginButtonText: "LOGIN"
-            })
-          }
-        });
-
-      AsyncStorage.getItem('push_optin')
-        .then((value) => {
-          var isEnabled = JSON.parse(value);
-          console.log('Initial push_optin: ' + isEnabled);
-          if (isEnabled === null) {
-            isEnabled = true;
-            AsyncStorage.setItem('push_optin', JSON.stringify(true));
-          }
-          this.setState({
-            isPushEnabled: isEnabled
-          });
-        });
-
-      AsyncStorage.getItem('inapp_optin')
-        .then((value) => {
-          var isEnabled = JSON.parse(value);
-          console.log('Initial inapp_optin: ' + isEnabled);
-          if (isEnabled === null) {
-            isEnabled = true;
-            AsyncStorage.setItem('inapp_optin', JSON.stringify(true));
-          }
-          this.setState({
-            isInappEnabled: isEnabled
-          });
-        });
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   AsyncStorage.getItem('userid')
+    //     .then((user_id) => {
+    //       console.log("user id: " + user_id);
+    //       if (user_id && user_id !== null && user_id !== '') {
+    //         console.log("logged in user id: " + user_id);
+    //         this.setState({
+    //           userId: user_id,
+    //           userIdInput: user_id,
+    //           loginButtonText: "LOGOUT"
+    //         })
+    //       } else {
+    //         this.setState({
+    //           loginButtonText: "LOGIN"
+    //         })
+    //       }
+    //     });
+    //
+    //   AsyncStorage.getItem('push_optin')
+    //     .then((value) => {
+    //       var isEnabled = JSON.parse(value);
+    //       console.log('Initial push_optin: ' + isEnabled);
+    //       // if (isEnabled === null) {
+    //       //   isEnabled = true;
+    //       //   AsyncStorage.setItem('push_optin', JSON.stringify(true));
+    //       // }
+    //       this.setState({
+    //         isPushEnabled: isEnabled
+    //       });
+    //     });
+    //
+    //   AsyncStorage.getItem('inapp_optin')
+    //     .then((value) => {
+    //       var isEnabled = JSON.parse(value);
+    //       console.log('Initial inapp_optin: ' + isEnabled);
+    //       if (isEnabled === null) {
+    //         isEnabled = true;
+    //         AsyncStorage.setItem('inapp_optin', JSON.stringify(true));
+    //       }
+    //       this.setState({
+    //         isInappEnabled: isEnabled
+    //       });
+    //     });
+    // } catch (error) {
+    //   console.log(error);
+    // }
 
     // Screen
     //webengage.screen("Home");
@@ -238,14 +238,14 @@ export default class App extends Component<Props> {
   }
 
   login() {
-    webengage.user.setDevicePushOptIn(true);
+    // webengage.user.setDevicePushOptIn(true);
     if (this.state.userId === undefined || this.state.userId === null) {
       // Login
       var newUserId = this.state.userIdInput;
       if (newUserId && newUserId !== null && newUserId !== '') {
         webengage.user.login(newUserId);
 
-        AsyncStorage.setItem('userid', newUserId);
+        // AsyncStorage.setItem('userid', newUserId);
 
         this.setState({
           userId: newUserId,
@@ -260,7 +260,7 @@ export default class App extends Component<Props> {
       // Logout
       webengage.user.logout();
 
-      AsyncStorage.setItem('userid', '');
+      // AsyncStorage.setItem('userid', '');
 
       this.setState({
         userId: null,

@@ -25,6 +25,9 @@ RCT_EXPORT_MODULE(webengageBridge);
     dispatch_once(&onceToken, ^{
         sharedInstance = [super allocWithZone:zone];
     });
+    WEGJWTManager.shared.tokenInvalidatedCallback = ^(void){
+        [self sendEventWithName:@"tokenInvalidatedCallback", body: "expired"];
+    };
     return sharedInstance;
 }
 
@@ -118,6 +121,10 @@ RCT_EXPORT_METHOD(screenNavigatedWithData:(NSString*) screenName andData: (NSDic
 
 RCT_EXPORT_METHOD(login:(NSString*)userIdentifier){
     [[WebEngage sharedInstance].user login:userIdentifier];
+}
+
+RCT_EXPORT_METHOD(login:(NSString*)userIdentifier jwtToken:(NSString*)jwtToken){
+    [[WebEngage sharedInstance].user login:userIdentifier jwtToken:jwtToken];
 }
 
 RCT_EXPORT_METHOD(setAttribute:(NSString*)attributeName value:(id)value){

@@ -4,11 +4,5 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:account4.weurl.co</string>
-	</array>
-	<key>com.apple.security.application-groups</key>
-	<array/>
 </dict>
 </plist>

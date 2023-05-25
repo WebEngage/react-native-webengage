@@ -207,8 +207,10 @@ RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {
         [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelInApp status:status];
     } else if ([ch isEqualToString:@"whatsapp"]) {
         [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelWhatsapp status:status];
+    } else if ([ch isEqualToString:@"viber"]) {
+        [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelViber status:status];
     } else {
-        NSLog(@"WebEngage: Invalid channel: %@. Must be one of [push, sms, email, in_app, whatsapp].", ch);
+        NSLog(@"WebEngage: Invalid channel: %@. Must be one of [push, sms, email, in_app, whatsapp, viber].", ch);
     }
 }
 

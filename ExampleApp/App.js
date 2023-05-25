@@ -69,14 +69,20 @@ export default class App extends Component<Props> {
       userIdInput: null,
       loginButtonText: 'LOGIN',
       event: '',
+      phoneNumber: '',
       isPushEnabled: true,
       isInappEnabled: true,
+      isViberEnabled: true,
+      isWhatsappEnabled: true,
     };
     this.login = this.login.bind(this);
     this.track = this.track.bind(this);
     this.buy = this.buy.bind(this);
     this.togglePushSwitch = this.togglePushSwitch.bind(this);
     this.toggleInappSwitch = this.toggleInappSwitch.bind(this);
+    this.toggleViberSwitch = this.toggleViberSwitch.bind(this);
+    this.toggleWhatsappSwitch = this.toggleWhatsappSwitch.bind(this);
+
     console.log('MyLogs: In constructor');
   }
 
@@ -114,6 +120,30 @@ export default class App extends Component<Props> {
         });
       });
 
+      // isViberEnabled
+      AsyncStorage.getItem('viber_optin').then(value => {
+        var isEnabled = JSON.parse(value);
+        if (isEnabled === null) {
+          isEnabled = true;
+          AsyncStorage.setItem('viber_optin', JSON.stringify(true));
+        }
+        this.setState({
+          isPushEnabled: isEnabled,
+        });
+      });
+
+      // isWhatsappEnabled
+      AsyncStorage.getItem('whatsapp_optin').then(value => {
+        var isEnabled = JSON.parse(value);
+        if (isEnabled === null) {
+          isEnabled = true;
+          AsyncStorage.setItem('whatsapp_optin', JSON.stringify(true));
+        }
+        this.setState({
+          isPushEnabled: isEnabled,
+        });
+      });
+
       AsyncStorage.getItem('inapp_optin').then(value => {
         var isEnabled = JSON.parse(value);
         console.log('Initial inapp_optin: ' + isEnabled);
@@ -129,9 +159,6 @@ export default class App extends Component<Props> {
       console.log(error);
     }
 
-    // Screen
-    //webengage.screen("Home");
-
     // In-app notification callbacks
     webengage.notification.onPrepare(function (notificationData) {
       Toast.show('InApp :  onPrepare');
@@ -139,13 +166,13 @@ export default class App extends Component<Props> {
 
     webengage.notification.onShown(function (notificationData) {
       var message;
-      if (notificationData['title'] && notificationData['title'] !== null) {
-        message = 'title: ' + notificationData['title'];
+      if (notificationData.title && notificationData.title !== null) {
+        message = 'title: ' + notificationData.title;
       } else if (
-        notificationData['description'] &&
-        notificationData['description'] !== null
+        notificationData.description &&
+        notificationData.description !== null
       ) {
-        message = 'description: ' + notificationData['description'];
+        message = 'description: ' + notificationData.description;
       }
       Toast.show('InApp :  onShown -->' + message);
     });
@@ -153,7 +180,7 @@ export default class App extends Component<Props> {
     webengage.notification.onClick(function (notificationData, clickId) {
       //console.log("App: in-app notification clicked: click-id: " + clickId + ", deep-link: " + notificationData["deeplink"]);
       Toast.show('InApp :  onClick -->' + clickId);
-      Toast.show(', deep-link: ' + notificationData['deeplink']);
+      Toast.show(', deep-link: ' + notificationData.deeplink);
     });
 
     webengage.notification.onDismiss(function (notificationData) {
@@ -163,7 +190,7 @@ export default class App extends Component<Props> {
     webengage.push.onClick(function (notificationData) {
       // console.log("MyLogs App: push-notiifcation clicked with deeplink: " + notificationData["deeplink"]);
       // console.log("MyLogs App: push-notiifcation clicked with payload: " + JSON.stringify(notificationData["userData"]));
-      Toast.show('Push :  onClick -->' + notificationData['deeplink']);
+      Toast.show('Push :  onClick -->' + notificationData.deeplink);
     });
     webengage.universalLink.onClick(function (location) {
       console.log('App: universal link clicked with location: ' + location);
@@ -178,6 +205,27 @@ export default class App extends Component<Props> {
   handleOpenURL(event) {
     console.log('App: launch URL: ' + event.url);
   }
+  updatePhoneNum = () => {
+    const {phoneNumber} = this.state;
+    webengage.user.setPhone(phoneNumber);
+  };
+
+  phoneNumberHolder() {
+    const {phoneNumber} = this.state;
+    return (
+      <>
+        <TextInput
+          style={styles.textBox}
+          onChangeText={text => this.setState({phoneNumber: text})}
+          placeholder="Enter Your Phone Number"
+          value={phoneNumber}
+        />
+        <TouchableHighlight style={styles.button} onPress={this.updatePhoneNum}>
+          <Text>Update Phone Number</Text>
+        </TouchableHighlight>
+      </>
+    );
+  }
 
   render() {
     console.log('App: Render called');
@@ -186,13 +234,7 @@ export default class App extends Component<Props> {
         <ScrollView>
           <View style={styles.container}>
             <TextInput
-              style={{
-                width: 250,
-                height: 40,
-                borderColor: 'gray',
-                borderWidth: 1,
-                marginBottom: 10,
-              }}
+              style={styles.textBox}
               onChangeText={text => this.setState({userIdInput: text})}
               value={this.state.userIdInput}
             />
@@ -202,14 +244,7 @@ export default class App extends Component<Props> {
             </TouchableHighlight>
 
             <TextInput
-              style={{
-                width: 250,
-                height: 40,
-                borderColor: 'gray',
-                borderWidth: 1,
-                marginTop: 50,
-                marginBottom: 10,
-              }}
+              style={styles.textBox}
               onChangeText={text => this.setState({event: text})}
               value={this.state.event}
             />
@@ -222,6 +257,8 @@ export default class App extends Component<Props> {
               <Text>BUY NOW</Text>
             </TouchableHighlight>
 
+            {this.phoneNumberHolder()}
+
             <View style={styles.channel}>
               <Text style={styles.label}>Push</Text>
               <Switch
@@ -230,6 +267,30 @@ export default class App extends Component<Props> {
                 ios_backgroundColor="#3e3e3e"
                 onValueChange={this.togglePushSwitch}
                 value={this.state.isPushEnabled}
+              />
+            </View>
+
+            <View style={styles.channel}>
+              <Text style={styles.label}>Viber</Text>
+              <Switch
+                trackColor={{true: 'skyblue', false: '#c4c4c4'}}
+                thumbColor={this.state.isViberEnabled ? 'lightblue' : '#e1e1e1'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={this.toggleViberSwitch}
+                value={this.state.isViberEnabled}
+              />
+            </View>
+
+            <View style={styles.channel}>
+              <Text style={styles.label}>Whatsapp</Text>
+              <Switch
+                trackColor={{true: 'skyblue', false: '#c4c4c4'}}
+                thumbColor={
+                  this.state.isWhatsappEnabled ? 'lightblue' : '#e1e1e1'
+                }
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={this.toggleWhatsappSwitch}
+                value={this.state.isWhatsappEnabled}
               />
             </View>
 
@@ -348,6 +409,24 @@ export default class App extends Component<Props> {
     //webengage.user.setOptIn("sms", isEnabled);
     //webengage.user.setOptIn("whatsapp", isEnabled);
   }
+
+  toggleViberSwitch() {
+    var isEnabled = !this.state.isViberEnabled;
+    this.setState({
+      isViberEnabled: isEnabled,
+    });
+    webengage.user.setOptIn('viber', isEnabled);
+    AsyncStorage.setItem('viber_optin', JSON.stringify(isEnabled));
+  }
+
+  toggleWhatsappSwitch() {
+    var isEnabled = !this.state.isWhatsappEnabled;
+    this.setState({
+      isWhatsappEnabled: isEnabled,
+    });
+    webengage.user.setOptIn('whatsapp', isEnabled);
+    AsyncStorage.setItem('whatsapp_optin', JSON.stringify(isEnabled));
+  }
 }
 
 const styles = StyleSheet.create({
@@ -357,6 +436,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
     marginTop: 80,
+  },
+  textBox: {
+    width: 250,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: 50,
+    marginBottom: 10,
   },
   welcome: {
     fontSize: 20,

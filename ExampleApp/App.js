@@ -7,61 +7,22 @@
  */
 
 import React, {Component} from 'react';
-import type {Node} from 'react';
 import {
   Linking,
-  SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Switch,
   Text,
   TextInput,
   TouchableHighlight,
-  useColorScheme,
   View,
 } from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 import WebEngage from 'react-native-webengage';
-import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={{...styles.sectionContainer, backgroundColor: 'white'}}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.white,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
 
 const webengage = new WebEngage();
 
-type Props = {};
-export default class App extends Component<Props> {
+export default class App extends Component {
   constructor() {
     super();
     this.state = {
@@ -71,140 +32,113 @@ export default class App extends Component<Props> {
       event: '',
       phoneNumber: '',
       isPushEnabled: true,
-      isInappEnabled: true,
+      isInAppEnabled: true,
       isViberEnabled: true,
       isWhatsappEnabled: true,
+      channels: [
+        {name: 'whatsapp', isEnabled: false, optInChannel: 'whatsapp'},
+        {name: 'viber', isEnabled: false, optInChannel: 'viber'},
+        {name: 'push', isEnabled: false, optInChannel: 'push'},
+        {name: 'inApp', isEnabled: false, optInChannel: 'in_app'},
+      ],
     };
     this.login = this.login.bind(this);
     this.track = this.track.bind(this);
     this.buy = this.buy.bind(this);
-    this.togglePushSwitch = this.togglePushSwitch.bind(this);
-    this.toggleInappSwitch = this.toggleInappSwitch.bind(this);
-    this.toggleViberSwitch = this.toggleViberSwitch.bind(this);
-    this.toggleWhatsappSwitch = this.toggleWhatsappSwitch.bind(this);
-
-    console.log('MyLogs: In constructor');
   }
 
   componentDidMount() {
-    console.log('MyLogs: In componentDidMount');
-    Toast.show('This is a toast.');
-    Linking.addEventListener('url', this.handleOpenURL);
+    Linking.addEventListener('url', this.handleOpenURL); // TODO - Check how does this called
 
     try {
-      AsyncStorage.getItem('userid').then(user_id => {
-        console.log('user id: ' + user_id);
-        if (user_id && user_id !== null && user_id !== '') {
-          console.log('logged in user id: ' + user_id);
-          this.setState({
-            userId: user_id,
-            userIdInput: user_id,
-            loginButtonText: 'LOGOUT',
-          });
-        } else {
-          this.setState({
-            loginButtonText: 'LOGIN',
-          });
-        }
-      });
-
-      AsyncStorage.getItem('push_optin').then(value => {
-        var isEnabled = JSON.parse(value);
-        console.log('Initial push_optin: ' + isEnabled);
-        if (isEnabled === null) {
-          isEnabled = true;
-          AsyncStorage.setItem('push_optin', JSON.stringify(true));
-        }
-        this.setState({
-          isPushEnabled: isEnabled,
-        });
-      });
-
-      // isViberEnabled
-      AsyncStorage.getItem('viber_optin').then(value => {
-        var isEnabled = JSON.parse(value);
-        if (isEnabled === null) {
-          isEnabled = true;
-          AsyncStorage.setItem('viber_optin', JSON.stringify(true));
-        }
-        this.setState({
-          isPushEnabled: isEnabled,
-        });
-      });
-
-      // isWhatsappEnabled
-      AsyncStorage.getItem('whatsapp_optin').then(value => {
-        var isEnabled = JSON.parse(value);
-        if (isEnabled === null) {
-          isEnabled = true;
-          AsyncStorage.setItem('whatsapp_optin', JSON.stringify(true));
-        }
-        this.setState({
-          isPushEnabled: isEnabled,
-        });
-      });
-
-      AsyncStorage.getItem('inapp_optin').then(value => {
-        var isEnabled = JSON.parse(value);
-        console.log('Initial inapp_optin: ' + isEnabled);
-        if (isEnabled === null) {
-          isEnabled = true;
-          AsyncStorage.setItem('inapp_optin', JSON.stringify(true));
-        }
-        this.setState({
-          isInappEnabled: isEnabled,
-        });
-      });
+      this.checkIUserLoggedIn();
+      this.getChannels();
     } catch (error) {
       console.log(error);
     }
-
-    // In-app notification callbacks
-    webengage.notification.onPrepare(function (notificationData) {
-      Toast.show('InApp :  onPrepare');
-    });
-
-    webengage.notification.onShown(function (notificationData) {
-      var message;
-      if (notificationData.title && notificationData.title !== null) {
-        message = 'title: ' + notificationData.title;
-      } else if (
-        notificationData.description &&
-        notificationData.description !== null
-      ) {
-        message = 'description: ' + notificationData.description;
-      }
-      Toast.show('InApp :  onShown -->' + message);
-    });
-
-    webengage.notification.onClick(function (notificationData, clickId) {
-      //console.log("App: in-app notification clicked: click-id: " + clickId + ", deep-link: " + notificationData["deeplink"]);
-      Toast.show('InApp :  onClick -->' + clickId);
-      Toast.show(', deep-link: ' + notificationData.deeplink);
-    });
-
-    webengage.notification.onDismiss(function (notificationData) {
-      Toast.show('InApp :  onDismiss -->');
-    });
-
-    webengage.push.onClick(function (notificationData) {
-      // console.log("MyLogs App: push-notiifcation clicked with deeplink: " + notificationData["deeplink"]);
-      // console.log("MyLogs App: push-notiifcation clicked with payload: " + JSON.stringify(notificationData["userData"]));
-      Toast.show('Push :  onClick -->' + notificationData.deeplink);
-    });
-    webengage.universalLink.onClick(function (location) {
-      console.log('App: universal link clicked with location: ' + location);
-      notifyMessage(location);
-    });
+    this.inAppNotificationCallbacks();
+    this.pushCallback();
   }
 
   componentWillUnmount() {
     Linking.removeEventListener('url', this.handleOpenURL);
   }
 
+  checkIUserLoggedIn = () => {
+    AsyncStorage.getItem('userid').then(user_id => {
+      console.log('user id: ' + user_id);
+      if (user_id) {
+        this.setState({
+          userId: user_id,
+          userIdInput: user_id,
+          loginButtonText: 'LOGOUT',
+        });
+      } else {
+        this.setState({
+          loginButtonText: 'LOGIN',
+        });
+      }
+    });
+  };
+
+  // Checks if channels are enabled
+  getChannels = () => {
+    const {channels} = this.state;
+    channels.map((channel, channelIndex) => {
+      const {optInChannel} = channel;
+      AsyncStorage.getItem(optInChannel).then(value => {
+        var isPushOpted = JSON.parse(value);
+        if (isPushOpted === null) {
+          isPushOpted = false;
+          AsyncStorage.setItem(optInChannel, JSON.stringify(true));
+        }
+        channels[channelIndex].isEnabled = isPushOpted;
+        this.setState({
+          channels,
+        });
+      });
+    });
+  };
+
+  // In-app notification callbacks
+  inAppNotificationCallbacks = () => {
+    webengage.notification.onPrepare(function (notificationData) {
+      console.log('InApp :  onPrepare');
+    });
+
+    webengage.notification.onShown(function (notificationData) {
+      const {title = '', description = ''} = notificationData;
+      let message = {title: '', description: ''};
+      message.title = 'title: ' + title;
+      message.description = 'description: ' + description;
+      console.log('InApp :  onShown -->' + message.title);
+    });
+
+    webengage.notification.onClick(function (notificationData, clickId) {
+      //console.log("App: in-app notification clicked: click-id: " + clickId + ", deep-link: " + notificationData["deeplink"]);
+      console.log('InApp :  onClick -->' + clickId);
+      console.log(', deep-link: ' + notificationData.deeplink);
+    });
+
+    webengage.notification.onDismiss(function (notificationData) {
+      console.log('InApp :  onDismiss -->');
+    });
+  };
+
+  pushCallback = () => {
+    webengage.push.onClick(function (notificationData) {
+      console.log('Push :  onClick -->' + notificationData.deeplink);
+    });
+    webengage.universalLink.onClick(function (location) {
+      console.log('App: universal link clicked with location: ' + location);
+      // notifyMessage(location);
+    });
+  };
+
   handleOpenURL(event) {
     console.log('App: launch URL: ' + event.url);
   }
+
   updatePhoneNum = () => {
     const {phoneNumber} = this.state;
     webengage.user.setPhone(phoneNumber);
@@ -227,104 +161,90 @@ export default class App extends Component<Props> {
     );
   }
 
-  render() {
-    console.log('App: Render called');
+  loginUser = () => {
+    const {userIdInput, loginButtonText} = this.state;
+    return (
+      <>
+        <TextInput
+          style={styles.textBox}
+          onChangeText={text => this.setState({userIdInput: text})}
+          placeholder="Enter UserName"
+          value={userIdInput}
+        />
+        <TouchableHighlight style={styles.button} onPress={this.login}>
+          <Text>{loginButtonText}</Text>
+        </TouchableHighlight>
+      </>
+    );
+  };
+
+  trackCustomEvent = () => {
+    const {event} = this.state;
     return (
       <View>
-        <ScrollView>
-          <View style={styles.container}>
-            <TextInput
-              style={styles.textBox}
-              onChangeText={text => this.setState({userIdInput: text})}
-              value={this.state.userIdInput}
-            />
-
-            <TouchableHighlight style={styles.button} onPress={this.login}>
-              <Text>{this.state.loginButtonText}</Text>
-            </TouchableHighlight>
-
-            <TextInput
-              style={styles.textBox}
-              onChangeText={text => this.setState({event: text})}
-              value={this.state.event}
-            />
-
-            <TouchableHighlight style={styles.button} onPress={this.track}>
-              <Text>TRACK</Text>
-            </TouchableHighlight>
-
-            <TouchableHighlight style={styles.button} onPress={this.buy}>
-              <Text>BUY NOW</Text>
-            </TouchableHighlight>
-
-            {this.phoneNumberHolder()}
-
-            <View style={styles.channel}>
-              <Text style={styles.label}>Push</Text>
-              <Switch
-                trackColor={{true: 'skyblue', false: '#c4c4c4'}}
-                thumbColor={this.state.isPushEnabled ? 'lightblue' : '#e1e1e1'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={this.togglePushSwitch}
-                value={this.state.isPushEnabled}
-              />
-            </View>
-
-            <View style={styles.channel}>
-              <Text style={styles.label}>Viber</Text>
-              <Switch
-                trackColor={{true: 'skyblue', false: '#c4c4c4'}}
-                thumbColor={this.state.isViberEnabled ? 'lightblue' : '#e1e1e1'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={this.toggleViberSwitch}
-                value={this.state.isViberEnabled}
-              />
-            </View>
-
-            <View style={styles.channel}>
-              <Text style={styles.label}>Whatsapp</Text>
-              <Switch
-                trackColor={{true: 'skyblue', false: '#c4c4c4'}}
-                thumbColor={
-                  this.state.isWhatsappEnabled ? 'lightblue' : '#e1e1e1'
-                }
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={this.toggleWhatsappSwitch}
-                value={this.state.isWhatsappEnabled}
-              />
-            </View>
-
-            <View style={styles.channel}>
-              <Text style={styles.label}>In-app</Text>
-              <Switch
-                trackColor={{true: 'skyblue', false: '#f1f1f1'}}
-                thumbColor={this.state.isInappEnabled ? 'lightblue' : '#e4e4e4'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={this.toggleInappSwitch}
-                value={this.state.isInappEnabled}
-              />
-            </View>
-          </View>
-        </ScrollView>
+        <TextInput
+          style={styles.textBox}
+          onChangeText={text => this.setState({event: text})}
+          placeholder="Enter Event Name!"
+          value={event}
+        />
+        <TouchableHighlight style={styles.button} onPress={this.track}>
+          <Text>TRACK</Text>
+        </TouchableHighlight>
       </View>
     );
-  }
+  };
+
+  trackBuyNow = () => {
+    return (
+      <TouchableHighlight style={styles.button} onPress={this.buy}>
+        <Text>BUY NOW!!!</Text>
+      </TouchableHighlight>
+    );
+  };
+
+  displayChannels = () => {
+    const {channels} = this.state;
+    return channels.map((channel, channelIndex) => {
+      const {name, isEnabled} = channel;
+      return (
+        <View style={styles.channel}>
+          <Text style={styles.label}>{name}</Text>
+          <Switch
+            trackColor={{true: 'skyblue', false: '#c4c4c4'}}
+            thumbColor={isEnabled ? 'lightblue' : '#e1e1e1'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={() => this.handleChannel(channelIndex)}
+            value={isEnabled}
+          />
+        </View>
+      );
+    });
+  };
+
+  handleChannel = index => {
+    const {channels} = this.state;
+    const {isEnabled, optInChannel} = channels[index];
+    channels[index].isEnabled = !channels[index].isEnabled;
+    this.setState({channels});
+
+    // Update WebEngage
+    webengage.user.setOptIn(optInChannel, !isEnabled);
+    AsyncStorage.setItem(optInChannel, JSON.stringify(!isEnabled));
+  };
 
   login() {
-    // webengage.user.setDevicePushOptIn(true);
-    if (this.state.userId === undefined || this.state.userId === null) {
+    const {userId, userIdInput} = this.state;
+    if (!userId) {
       // Login
-      var newUserId = this.state.userIdInput;
-      if (newUserId && newUserId !== null && newUserId !== '') {
+      var newUserId = userIdInput;
+      if (newUserId) {
         webengage.user.login(newUserId);
-
         AsyncStorage.setItem('userid', newUserId);
-
         this.setState({
           userId: newUserId,
           loginButtonText: 'LOGOUT',
         });
-
         console.log('App: Login called');
       } else {
         console.log('App: Invalid user id');
@@ -346,12 +266,9 @@ export default class App extends Component<Props> {
   }
 
   track() {
-    if (
-      this.state.event &&
-      this.state.event !== null &&
-      this.state.event != ''
-    ) {
-      webengage.track(this.state.event);
+    const {event} = this.state;
+    if (event) {
+      webengage.track(event);
     }
   }
 
@@ -359,8 +276,6 @@ export default class App extends Component<Props> {
     var event = 'Product Purchased';
     var attributes = {
       Amount: 2300,
-      //"Delivery Date": new Date("2017-01-09T16:30:00.000Z"),
-      //"Delivery Date": new Date("Thu Jun 20 2019 09:30:00 GMT+0530 (India Standard Time)"),
       'Delivery Date': new Date(),
       Products: [
         {
@@ -389,43 +304,22 @@ export default class App extends Component<Props> {
     webengage.track(event, attributes);
   }
 
-  togglePushSwitch() {
-    var isEnabled = !this.state.isPushEnabled;
-    console.log('Push switch toggled: ' + isEnabled);
-    this.setState({
-      isPushEnabled: isEnabled,
-    });
-    webengage.user.setOptIn('push', isEnabled);
-  }
+  render() {
+    return (
+      <ScrollView>
+        <View style={styles.container}>
+          {this.loginUser()}
 
-  toggleInappSwitch() {
-    var isEnabled = !this.state.isInappEnabled;
-    console.log('In-app switch toggled: ' + isEnabled);
-    this.setState({
-      isInappEnabled: isEnabled,
-    });
-    webengage.user.setOptIn('in_app', isEnabled);
-    //webengage.user.setOptIn("email", isEnabled);
-    //webengage.user.setOptIn("sms", isEnabled);
-    //webengage.user.setOptIn("whatsapp", isEnabled);
-  }
+          {this.trackCustomEvent()}
 
-  toggleViberSwitch() {
-    var isEnabled = !this.state.isViberEnabled;
-    this.setState({
-      isViberEnabled: isEnabled,
-    });
-    webengage.user.setOptIn('viber', isEnabled);
-    AsyncStorage.setItem('viber_optin', JSON.stringify(isEnabled));
-  }
+          {this.trackBuyNow()}
 
-  toggleWhatsappSwitch() {
-    var isEnabled = !this.state.isWhatsappEnabled;
-    this.setState({
-      isWhatsappEnabled: isEnabled,
-    });
-    webengage.user.setOptIn('whatsapp', isEnabled);
-    AsyncStorage.setItem('whatsapp_optin', JSON.stringify(isEnabled));
+          {this.phoneNumberHolder()}
+
+          {this.displayChannels()}
+        </View>
+      </ScrollView>
+    );
   }
 }
 

@@ -1,8 +1,17 @@
-package com.exampleapp;
+package com.webengage.sample;
 
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.webengage.sample.BuildConfig;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
+import com.webengage.sdk.android.WebEngage;
 
 public class MainActivity extends ReactActivity {
 
@@ -14,6 +23,8 @@ public class MainActivity extends ReactActivity {
   protected String getMainComponentName() {
     return "ExampleApp";
   }
+
+
 
   /**
    * Returns the instance of the {@link ReactActivityDelegate}. There the RootView is created and

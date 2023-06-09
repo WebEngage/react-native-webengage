@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1089105702830",
+    "project_id": "prod-69bc0",
+    "storage_bucket": "prod-69bc0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089105702830:android:28bb8a10b63de28540e23f",
+        "android_client_info": {
+          "package_name": "com.webengage.sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1089105702830-6ehm2kt29k9nmf2ste6msd5ljgtf5ers.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4a0SBIKY6CzU-l8SgxHeu5SzQK14Y5iE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1089105702830-6ehm2kt29k9nmf2ste6msd5ljgtf5ers.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1089105702830-o4ah6f174v2cbkklu76ie42j5gl0od9a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.webEngage.prodSwift"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

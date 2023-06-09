@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "com.google.gms.google-services"
 
 import com.android.build.OutputFile
 
@@ -134,7 +135,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.exampleapp"
+        applicationId "com.webengage.sample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -255,14 +256,22 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
+//    implementation fileTree(dir: "libs", include: ["*.jar"])
     // TODO - Remove after viber released
-    implementation files('libs/android-sdk-debug.aar')
+//    implementation files('libs/android-sdk-debug.aar')
+    api 'net.sourceforge.htmlcleaner:htmlcleaner:2.26'
 
 
-//    implementation 'com.webengage:android-sdk:3.+'
+
+    implementation 'com.webengage:android-sdk:3.+'
+    implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.android.support:multidex:1.0.3'
-    implementation 'com.google.android.gms:play-services:12.0.1'
+//    implementation 'com.google.android.gms:play-services:12.0.1'
+    implementation platform('com.google.firebase:firebase-bom:32.1.0')
+
+    implementation 'com.google.firebase:firebase-messaging:22.0.0'
+    implementation 'com.google.android.gms:play-services-ads:22.1.0'
+
 
 
     //noinspection GradleDynamicVersion
@@ -325,3 +334,5 @@ def isNewArchitectureEnabled() {
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
+
+//apply plugin: 'com.google.gms.google-services'

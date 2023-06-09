@@ -1,4 +1,4 @@
-package com.exampleapp.newarchitecture.modules;
+package com.webengage.sample.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

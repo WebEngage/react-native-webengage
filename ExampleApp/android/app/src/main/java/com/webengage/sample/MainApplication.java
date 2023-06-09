@@ -1,7 +1,15 @@
-package com.exampleapp;
+package com.webengage.sample;
 
 import android.app.Application;
 import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.webengage.WebengageBridge;
+import com.webengage.sample.BuildConfig;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -9,7 +17,9 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
-import com.exampleapp.newarchitecture.MainApplicationReactNativeHost;
+import com.webengage.sample.newarchitecture.MainApplicationReactNativeHost;
+import com.webengage.sdk.android.Logger;
+import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
 import com.webengage.sdk.android.WebEngageConfig;
 
@@ -54,13 +64,27 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    WebengageBridge.getInstance();
       WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-              .setWebEngageKey("aa131d2c")
+              .setWebEngageKey("~47b66161")
+              .setAutoGCMRegistrationFlag(false)
               .setDebugMode(true) // only in development mode
               .build();
 
       registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
 
+    FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+      @Override
+      public void onComplete(@NonNull Task<String> task) {
+        try {
+          String token = task.getResult();
+          Logger.d("WebEngage", "addOnCompleteListener - getToken "+token);
+          WebEngage.get().setRegistrationID(token);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    });
       // If you opted-in for the New Architecture, we enable the TurboModule system
     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     SoLoader.init(this, /* native exopackage */ false);
@@ -82,7 +106,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.exampleapp.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("com.webengage.sample.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);

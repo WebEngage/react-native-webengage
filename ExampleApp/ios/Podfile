@@ -33,6 +33,19 @@ target 'ExampleApp' do
     pod 'WebEngageAppEx/ContentExtension'
   end
 
+  
+  # ServiceExtension Target
+  target 'NotificationService' do
+
+    pod 'WebEngageBannerPush'
+  end
+
+  # ContentExtension Target
+  target 'NotificationViewController' do
+
+  pod 'WebEngageAppEx/ContentExtension'
+  end
+
   # post_install do |installer|
   #   react_native_post_install(installer)
   #   __apply_Xcode_12_5_M1_post_install_workaround(installer)

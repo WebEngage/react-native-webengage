@@ -8,6 +8,7 @@
 
 import React, {Component} from 'react';
 import {
+  Button,
   Linking,
   ScrollView,
   StyleSheet,
@@ -19,6 +20,10 @@ import {
 } from 'react-native';
 import WebEngage from 'react-native-webengage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import ScreenA from './src/ScreenA';
+import ScreenB from './src/ScreenB';
 
 const webengage = new WebEngage();
 
@@ -39,7 +44,7 @@ export default class App extends Component {
         {name: 'whatsapp', isEnabled: false, optInChannel: 'whatsapp'},
         {name: 'viber', isEnabled: false, optInChannel: 'viber'},
         {name: 'push', isEnabled: false, optInChannel: 'push'},
-        {name: 'inApp', isEnabled: false, optInChannel: 'in_app'},
+        {name: 'inApp', isEnabled: true, optInChannel: 'in_app'},
       ],
     };
     this.login = this.login.bind(this);
@@ -61,12 +66,34 @@ export default class App extends Component {
   }
 
   componentWillUnmount() {
+    this.unsubscribeListeners();
     Linking.removeEventListener('url', this.handleOpenURL);
   }
 
+  unsubscribeListeners = () => {
+    if (this.inAppPreparedListener) {
+      this.inAppPreparedListener.remove();
+    }
+    if (this.inAppShownListener) {
+      this.inAppShownListener.remove();
+    }
+    if (this.inAppClickListener) {
+      this.inAppClickListener.remove();
+    }
+    if (this.inAppDismissListener) {
+      this.inAppDismissListener.remove();
+    }
+    if (this.pushClickListener) {
+      this.pushClickListener.remove();
+    }
+    if (this.universalClickListener) {
+      this.universalClickListener.remove();
+    }
+  };
+
   checkIUserLoggedIn = () => {
     AsyncStorage.getItem('userid').then(user_id => {
-      console.log('user id: ' + user_id);
+      console.log('App: user id: ' + user_id);
       if (user_id) {
         this.setState({
           userId: user_id,
@@ -102,41 +129,57 @@ export default class App extends Component {
 
   // In-app notification callbacks
   inAppNotificationCallbacks = () => {
-    webengage.notification.onPrepare(function (notificationData) {
-      console.log('InApp :  onPrepare');
+    this.inAppPreparedListener = webengage.notification.onPrepare(function (
+      notificationData,
+    ) {
+      console.log('App: InApp :  onPrepare');
     });
 
-    webengage.notification.onShown(function (notificationData) {
+    this.inAppShownListener = webengage.notification.onShown(function (
+      notificationData,
+    ) {
       const {title = '', description = ''} = notificationData;
       let message = {title: '', description: ''};
       message.title = 'title: ' + title;
       message.description = 'description: ' + description;
-      console.log('InApp :  onShown -->' + message.title);
+      console.log('App: InApp :  onShown -->' + message.title);
     });
 
-    webengage.notification.onClick(function (notificationData, clickId) {
+    this.inAppClickListener = webengage.notification.onClick(function (
+      notificationData,
+      clickId,
+    ) {
       //console.log("App: in-app notification clicked: click-id: " + clickId + ", deep-link: " + notificationData["deeplink"]);
-      console.log('InApp :  onClick -->' + clickId);
-      console.log(', deep-link: ' + notificationData.deeplink);
+      console.log('App: InApp :  onClick -->' + clickId);
+      console.log('App: , deep-link: ' + notificationData.deeplink);
     });
 
-    webengage.notification.onDismiss(function (notificationData) {
-      console.log('InApp :  onDismiss -->');
+    this.inAppDismissListener = webengage.notification.onDismiss(function (
+      notificationData,
+    ) {
+      console.log('App: InApp :  onDismiss -->');
     });
   };
 
   pushCallback = () => {
-    webengage.push.onClick(function (notificationData) {
-      console.log('Push :  onClick -->' + notificationData.deeplink);
+    this.pushClickListener = webengage.push.onClick(function (
+      notificationData,
+    ) {
+      console.log('App: Push :  onClick --> ' + notificationData);
     });
-    webengage.universalLink.onClick(function (location) {
-      console.log('App: universal link clicked with location: ' + location);
+
+    this.universalClickListener = webengage.universalLink.onClick(function (
+      location,
+    ) {
+      console.log(
+        'App: App: universal link clicked with location: ' + location,
+      );
       // notifyMessage(location);
     });
   };
 
   handleOpenURL(event) {
-    console.log('App: launch URL: ' + event.url);
+    console.log('App: App: launch URL: ' + event.url);
   }
 
   updatePhoneNum = () => {
@@ -245,9 +288,9 @@ export default class App extends Component {
           userId: newUserId,
           loginButtonText: 'LOGOUT',
         });
-        console.log('App: Login called');
+        console.log('App: App: Login called');
       } else {
-        console.log('App: Invalid user id');
+        console.log('App: App: Invalid user id');
       }
     } else {
       // Logout
@@ -261,7 +304,7 @@ export default class App extends Component {
         loginButtonText: 'LOGIN',
       });
 
-      console.log('App: Logout called');
+      console.log('App: App: Logout called');
     }
   }
 
@@ -270,6 +313,7 @@ export default class App extends Component {
     if (event) {
       webengage.track(event);
     }
+    console.log('App: Tracking Event - ' + event);
   }
 
   buy() {
@@ -304,11 +348,29 @@ export default class App extends Component {
     webengage.track(event, attributes);
   }
 
-  render() {
+  screenNavigation = navigation => {
+    return (
+      <View>
+        <Button
+          title="Go to ScreenA"
+          onPress={() => navigation.navigate('ScreenA')}
+        />
+
+        <Button
+          title="Go to ScreenB"
+          onPress={() => navigation.navigate('ScreenA')}
+        />
+      </View>
+    );
+  };
+
+  LandingScreen = ({navigation}) => {
     return (
       <ScrollView>
         <View style={styles.container}>
           {this.loginUser()}
+
+          {this.screenNavigation(navigation)}
 
           {this.trackCustomEvent()}
 
@@ -319,6 +381,20 @@ export default class App extends Component {
           {this.displayChannels()}
         </View>
       </ScrollView>
+    );
+  };
+
+  render() {
+    const Stack = createStackNavigator();
+
+    return (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="main">
+          <Stack.Screen name="main" component={this.LandingScreen} />
+          <Stack.Screen name="ScreenA" component={ScreenA} />
+          <Stack.Screen name="ScreenB" component={ScreenB} />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
 }

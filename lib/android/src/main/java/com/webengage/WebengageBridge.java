@@ -253,7 +253,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         } else if ("whatsapp".equalsIgnoreCase(channel)) {
             WebEngage.get().user().setOptIn(Channel.WHATSAPP, status);
         } else if ("viber".equalsIgnoreCase(channel)) {
-            WebEngage.get().user().setOptIn(Channel.VIBER, status);
+            // WebEngage.get().user().setOptIn(Channel.VIBER, status);
         } else {
             Logger.e(TAG, "Invalid channel: " + channel + ". Must be one of [push, sms, email, in_app, whatsapp, viber].");
         }

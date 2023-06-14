@@ -9,6 +9,7 @@
 import React, {Component} from 'react';
 import {
   Button,
+  Dimensions,
   Linking,
   ScrollView,
   StyleSheet,
@@ -53,8 +54,7 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    Linking.addEventListener('url', this.handleOpenURL); // TODO - Check how does this called
-
+    Linking.addEventListener('url', this.handleOpenURL);
     try {
       this.checkIUserLoggedIn();
       this.getChannels();
@@ -70,6 +70,7 @@ export default class App extends Component {
     Linking.removeEventListener('url', this.handleOpenURL);
   }
 
+  // Removes Listeners
   unsubscribeListeners = () => {
     if (this.inAppPreparedListener) {
       this.inAppPreparedListener.remove();
@@ -93,7 +94,7 @@ export default class App extends Component {
 
   checkIUserLoggedIn = () => {
     AsyncStorage.getItem('userid').then(user_id => {
-      console.log('App: user id: ' + user_id);
+      console.log('App: user- ' + user_id + ' is already LoggedIn!');
       if (user_id) {
         this.setState({
           userId: user_id,
@@ -132,7 +133,7 @@ export default class App extends Component {
     this.inAppPreparedListener = webengage.notification.onPrepare(function (
       notificationData,
     ) {
-      console.log('App: InApp :  onPrepare');
+      console.log('App: InApp :  onPrepare - ', notificationData);
     });
 
     this.inAppShownListener = webengage.notification.onShown(function (
@@ -150,14 +151,18 @@ export default class App extends Component {
       clickId,
     ) {
       //console.log("App: in-app notification clicked: click-id: " + clickId + ", deep-link: " + notificationData["deeplink"]);
-      console.log('App: InApp :  onClick -->' + clickId);
-      console.log('App: , deep-link: ' + notificationData.deeplink);
+      console.log(
+        'App: InApp :  onClick --> ClickId - ' +
+          clickId +
+          ' | data ' +
+          notificationData,
+      );
     });
 
     this.inAppDismissListener = webengage.notification.onDismiss(function (
       notificationData,
     ) {
-      console.log('App: InApp :  onDismiss -->');
+      console.log('App: InApp :  onDismiss');
     });
   };
 
@@ -165,7 +170,7 @@ export default class App extends Component {
     this.pushClickListener = webengage.push.onClick(function (
       notificationData,
     ) {
-      console.log('App: Push :  onClick --> ' + notificationData);
+      console.log('App: Push :  onClick --> data - ' + notificationData);
     });
 
     this.universalClickListener = webengage.universalLink.onClick(function (
@@ -174,12 +179,11 @@ export default class App extends Component {
       console.log(
         'App: App: universal link clicked with location: ' + location,
       );
-      // notifyMessage(location);
     });
   };
 
   handleOpenURL(event) {
-    console.log('App: App: launch URL: ' + event.url);
+    console.log('App: handleOpenUrl called - ' + event.url);
   }
 
   updatePhoneNum = () => {
@@ -190,7 +194,8 @@ export default class App extends Component {
   phoneNumberHolder() {
     const {phoneNumber} = this.state;
     return (
-      <>
+      <View style={styles.borders}>
+        <Text style={styles.titleStyle}> Update Phone Number </Text>
         <TextInput
           style={styles.textBox}
           onChangeText={text => this.setState({phoneNumber: text})}
@@ -200,14 +205,16 @@ export default class App extends Component {
         <TouchableHighlight style={styles.button} onPress={this.updatePhoneNum}>
           <Text>Update Phone Number</Text>
         </TouchableHighlight>
-      </>
+      </View>
     );
   }
 
   loginUser = () => {
     const {userIdInput, loginButtonText} = this.state;
+
     return (
-      <>
+      <View style={styles.borders}>
+        <Text style={styles.titleStyle}>Login Window</Text>
         <TextInput
           style={styles.textBox}
           onChangeText={text => this.setState({userIdInput: text})}
@@ -217,14 +224,15 @@ export default class App extends Component {
         <TouchableHighlight style={styles.button} onPress={this.login}>
           <Text>{loginButtonText}</Text>
         </TouchableHighlight>
-      </>
+      </View>
     );
   };
 
   trackCustomEvent = () => {
     const {event} = this.state;
     return (
-      <View>
+      <View style={styles.borders}>
+        <Text style={styles.titleStyle}> Track Custom Events </Text>
         <TextInput
           style={styles.textBox}
           onChangeText={text => this.setState({event: text})}
@@ -240,9 +248,12 @@ export default class App extends Component {
 
   trackBuyNow = () => {
     return (
-      <TouchableHighlight style={styles.button} onPress={this.buy}>
-        <Text>BUY NOW!!!</Text>
-      </TouchableHighlight>
+      <View style={styles.borders}>
+        <Text style={styles.titleStyle}> Track Buy Now Event </Text>
+        <TouchableHighlight style={styles.button} onPress={this.buy}>
+          <Text>BUY NOW!!!</Text>
+        </TouchableHighlight>
+      </View>
     );
   };
 
@@ -350,7 +361,8 @@ export default class App extends Component {
 
   screenNavigation = navigation => {
     return (
-      <View>
+      <View style={styles.borders}>
+        <Text style={styles.titleStyle}> Screen Navigation</Text>
         <Button
           title="Go to ScreenA"
           onPress={() => navigation.navigate('ScreenA')}
@@ -390,7 +402,11 @@ export default class App extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator initialRouteName="main">
-          <Stack.Screen name="main" component={this.LandingScreen} />
+          <Stack.Screen
+            name="main"
+            component={this.LandingScreen}
+            options={{headerTitle: 'WebEngage React Native Sample App'}}
+          />
           <Stack.Screen name="ScreenA" component={ScreenA} />
           <Stack.Screen name="ScreenB" component={ScreenB} />
         </Stack.Navigator>
@@ -405,7 +421,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-    marginTop: 80,
+    // marginTop: 80,
   },
   textBox: {
     width: 250,
@@ -441,5 +457,16 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
+  },
+  titleStyle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  borders: {
+    backgroundColor: '#cccccc',
+    flex: 1,
+    width: Dimensions.get('window').width,
+    alignItems: 'center',
+    margin: 20,
   },
 });

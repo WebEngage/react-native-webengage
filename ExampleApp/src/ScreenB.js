@@ -1,4 +1,4 @@
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {Button, View} from 'react-native';
 import React from 'react';
 
 const ScreenB = ({navigation}) => {
@@ -12,5 +12,3 @@ const ScreenB = ({navigation}) => {
   );
 };
 export default ScreenB;
-
-const styles = StyleSheet.create({});

@@ -64,6 +64,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    // WebEngage Initialization
     WebengageBridge.getInstance();
       WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
               .setWebEngageKey("~47b66161")
@@ -78,7 +79,6 @@ public class MainApplication extends Application implements ReactApplication {
       public void onComplete(@NonNull Task<String> task) {
         try {
           String token = task.getResult();
-          Logger.d("WebEngage", "addOnCompleteListener - getToken "+token);
           WebEngage.get().setRegistrationID(token);
         } catch (Exception e) {
           e.printStackTrace();

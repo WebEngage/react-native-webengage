@@ -94,7 +94,7 @@ export default class App extends Component {
 
   checkIUserLoggedIn = () => {
     AsyncStorage.getItem('userid').then(user_id => {
-      console.log('App: user- ' + user_id + ' is already LoggedIn!');
+      console.log('WebEngage: user- ' + user_id + ' is already LoggedIn!');
       if (user_id) {
         this.setState({
           userId: user_id,
@@ -133,7 +133,7 @@ export default class App extends Component {
     this.inAppPreparedListener = webengage.notification.onPrepare(function (
       notificationData,
     ) {
-      console.log('App: InApp :  onPrepare - ', notificationData);
+      console.log('WebEngage: InApp :  onPrepare - ', notificationData);
     });
 
     this.inAppShownListener = webengage.notification.onShown(function (
@@ -143,16 +143,15 @@ export default class App extends Component {
       let message = {title: '', description: ''};
       message.title = 'title: ' + title;
       message.description = 'description: ' + description;
-      console.log('App: InApp :  onShown -->' + message.title);
+      console.log('WebEngage: InApp :  onShown -->' + message.title);
     });
 
     this.inAppClickListener = webengage.notification.onClick(function (
       notificationData,
       clickId,
     ) {
-      //console.log("App: in-app notification clicked: click-id: " + clickId + ", deep-link: " + notificationData["deeplink"]);
       console.log(
-        'App: InApp :  onClick --> ClickId - ' +
+        'WebEngage: InApp :  onClick --> ClickId - ' +
           clickId +
           ' | data ' +
           notificationData,
@@ -162,7 +161,7 @@ export default class App extends Component {
     this.inAppDismissListener = webengage.notification.onDismiss(function (
       notificationData,
     ) {
-      console.log('App: InApp :  onDismiss');
+      console.log('WebEngage: InApp :  onDismiss');
     });
   };
 
@@ -170,20 +169,20 @@ export default class App extends Component {
     this.pushClickListener = webengage.push.onClick(function (
       notificationData,
     ) {
-      console.log('App: Push :  onClick --> data - ' + notificationData);
+      console.log('WebEngage: Push :  onClick --> data - ' + notificationData);
     });
 
     this.universalClickListener = webengage.universalLink.onClick(function (
       location,
     ) {
       console.log(
-        'App: App: universal link clicked with location: ' + location,
+        'WebEngage: universal link clicked with location: ' + location,
       );
     });
   };
 
   handleOpenURL(event) {
-    console.log('App: handleOpenUrl called - ' + event.url);
+    console.log('WebEngage: handleOpenUrl called - ' + event.url);
   }
 
   updatePhoneNum = () => {
@@ -299,9 +298,9 @@ export default class App extends Component {
           userId: newUserId,
           loginButtonText: 'LOGOUT',
         });
-        console.log('App: App: Login called');
+        console.log('WebEngage: Login called');
       } else {
-        console.log('App: App: Invalid user id');
+        console.log('WebEngage: Invalid user id');
       }
     } else {
       // Logout
@@ -315,7 +314,7 @@ export default class App extends Component {
         loginButtonText: 'LOGIN',
       });
 
-      console.log('App: App: Logout called');
+      console.log('WebEngage: Logout called');
     }
   }
 
@@ -324,7 +323,7 @@ export default class App extends Component {
     if (event) {
       webengage.track(event);
     }
-    console.log('App: Tracking Event - ' + event);
+    console.log('WebEngage: Tracking Event - ' + event);
   }
 
   buy() {

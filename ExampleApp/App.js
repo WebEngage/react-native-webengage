@@ -29,6 +29,7 @@ import ScreenB from './src/ScreenB';
 const webengage = new WebEngage();
 
 export default class App extends Component {
+
   constructor() {
     super();
     this.state = {

@@ -67,7 +67,7 @@ public class MainApplication extends Application implements ReactApplication {
     // WebEngage Initialization
     WebengageBridge.getInstance();
       WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-              .setWebEngageKey("~47b66161")
+              .setWebEngageKey("stg~11b56440c")
               .setAutoGCMRegistrationFlag(false)
               .setDebugMode(true) // only in development mode
               .build();

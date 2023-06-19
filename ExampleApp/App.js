@@ -36,6 +36,8 @@ export default class App extends Component {
       userIdInput: null,
       loginButtonText: 'LOGIN',
       event: '',
+      secureToken: '',
+      showInlineError: false,
       phoneNumber: '',
       isPushEnabled: true,
       isInAppEnabled: true,
@@ -63,6 +65,9 @@ export default class App extends Component {
     }
     this.inAppNotificationCallbacks();
     this.pushCallback();
+    this.secureTokenExpiryListener = webengage.user.invalidateTokenCallback(
+      this.invalidTokenCallback,
+    );
   }
 
   componentWillUnmount() {
@@ -90,6 +95,9 @@ export default class App extends Component {
     if (this.universalClickListener) {
       this.universalClickListener.remove();
     }
+    if (this.secureTokenExpiryListener) {
+      this.secureTokenExpiryListener.remove();
+    }
   };
 
   checkIUserLoggedIn = () => {
@@ -99,6 +107,7 @@ export default class App extends Component {
         this.setState({
           userId: user_id,
           userIdInput: user_id,
+          secureToken: '',
           loginButtonText: 'LOGOUT',
         });
       } else {
@@ -208,8 +217,17 @@ export default class App extends Component {
     );
   }
 
+  updateSecureToken = () => {
+    const {secureToken, userId} = this.state;
+    if (userId) {
+      this.setState({showInlineError: false});
+      webengage.user.setSecurityToken(userId, secureToken);
+    }
+  };
+
   loginUser = () => {
-    const {userIdInput, loginButtonText} = this.state;
+    const {userIdInput, loginButtonText, secureToken, showInlineError} =
+      this.state;
 
     return (
       <View style={styles.borders}>
@@ -218,8 +236,31 @@ export default class App extends Component {
           style={styles.textBox}
           onChangeText={text => this.setState({userIdInput: text})}
           placeholder="Enter UserName"
+          autoCapitalize="none"
+          autoCorrect={false}
           value={userIdInput}
         />
+
+        <TextInput
+          style={styles.secureToken}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={text => this.setState({secureToken: text})}
+          placeholder="Enter Secure Token"
+          value={secureToken}
+        />
+        {showInlineError && (
+          <View style={styles.row}>
+            <Text style={styles.inlineError}>
+              Invalid User Details please enter valid data
+            </Text>
+            <TouchableHighlight
+              style={[styles.button, styles.updateToken]}
+              onPress={this.updateSecureToken}>
+              <Text>Update-Token</Text>
+            </TouchableHighlight>
+          </View>
+        )}
         <TouchableHighlight style={styles.button} onPress={this.login}>
           <Text>{loginButtonText}</Text>
         </TouchableHighlight>
@@ -286,19 +327,29 @@ export default class App extends Component {
     AsyncStorage.setItem(optInChannel, JSON.stringify(!isEnabled));
   };
 
+  invalidTokenCallback = data => {
+    console.log(
+      'WebEngage: Invalid token! callback. Please update new Token using setToken Method()',
+      data,
+    );
+    this.setState({secureToken: null, showInlineError: true});
+  };
+
   login() {
-    const {userId, userIdInput} = this.state;
+    const {userId, userIdInput, secureToken} = this.state;
     if (!userId) {
       // Login
       var newUserId = userIdInput;
       if (newUserId) {
-        webengage.user.login(newUserId);
+        webengage.user.login(newUserId, secureToken);
         AsyncStorage.setItem('userid', newUserId);
         this.setState({
           userId: newUserId,
           loginButtonText: 'LOGOUT',
+          showInlineError: false,
+          secureToken: '',
         });
-        console.log('WebEngage: Login called');
+        console.log('WebEngage: Login called!');
       } else {
         console.log('WebEngage: Invalid user id');
       }
@@ -312,6 +363,7 @@ export default class App extends Component {
         userId: null,
         userIdInput: '',
         loginButtonText: 'LOGIN',
+        showInlineError: false,
       });
 
       console.log('WebEngage: Logout called');
@@ -358,30 +410,13 @@ export default class App extends Component {
     webengage.track(event, attributes);
   }
 
-  screenNavigation = navigation => {
-    return (
-      <View style={styles.borders}>
-        <Text style={styles.titleStyle}> Screen Navigation</Text>
-        <Button
-          title="Go to ScreenA"
-          onPress={() => navigation.navigate('ScreenA')}
-        />
+  render() {
+    const Stack = createStackNavigator();
 
-        <Button
-          title="Go to ScreenB"
-          onPress={() => navigation.navigate('ScreenA')}
-        />
-      </View>
-    );
-  };
-
-  LandingScreen = ({navigation}) => {
     return (
       <ScrollView>
         <View style={styles.container}>
           {this.loginUser()}
-
-          {this.screenNavigation(navigation)}
 
           {this.trackCustomEvent()}
 
@@ -392,24 +427,6 @@ export default class App extends Component {
           {this.displayChannels()}
         </View>
       </ScrollView>
-    );
-  };
-
-  render() {
-    const Stack = createStackNavigator();
-
-    return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="main">
-          <Stack.Screen
-            name="main"
-            component={this.LandingScreen}
-            options={{headerTitle: 'WebEngage React Native Sample App'}}
-          />
-          <Stack.Screen name="ScreenA" component={ScreenA} />
-          <Stack.Screen name="ScreenB" component={ScreenB} />
-        </Stack.Navigator>
-      </NavigationContainer>
     );
   }
 }
@@ -430,6 +447,12 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 10,
   },
+  secureToken: {
+    width: 250,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+  },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
@@ -447,12 +470,24 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 25,
   },
+  updateToken: {
+    justifyContent: 'center',
+  },
+  inlineError: {
+    color: 'red',
+    margin: 10,
+    justifyContent: 'center',
+  },
   channel: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     width: 144,
     marginTop: 16,
+  },
+  row: {
+    justifyContent: 'center',
+    marginVertical: 10,
   },
   label: {
     flex: 1,

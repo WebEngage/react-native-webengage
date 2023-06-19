@@ -70,10 +70,12 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>WEGEnvironment</key>
-	<string>DEFAULT</string>
+	<string>STAGING</string>
 	<key>WEGLicenseCode</key>
-	<string>311c5274</string>
+	<string>stg~11b56440c</string>
 	<key>WEGLogLevel</key>
 	<string>VERBOSE</string>
+	<key></key>
+	<string></string>
 </dict>
 </plist>

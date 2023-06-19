@@ -90,8 +90,13 @@ RCT_EXPORT_MODULE(webengageBridge);
     return mutableArr;
 }
 
-RCT_EXPORT_METHOD(init:(BOOL)autoRegister) {
-    [[WebEngage sharedInstance] application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:@{} notificationDelegate:self autoRegister:autoRegister];
+RCT_EXPORT_METHOD(initialize) {
+    [WEGJWTManager shared].tokenInvalidatedCallback = ^{
+        NSLog(@"webengageBridge: JWT Token is Invalid. Please send valid ");
+        NSDictionary *data = @{
+            @"errorResponse" : @"401"
+        };        [self sendEventWithName:@"tokenInvalidated" body:nil];
+    };
 }
 
 RCT_EXPORT_METHOD(trackEventWithName:(NSString *)name){
@@ -116,8 +121,19 @@ RCT_EXPORT_METHOD(screenNavigatedWithData:(NSString*) screenName andData: (NSDic
     }
 }
 
+
+// AKC
+RCT_EXPORT_METHOD(loginWithJwt:(NSString*)userIdentifier jwtToken:(NSString*)jwtToken){
+    [[WebEngage sharedInstance].user login:userIdentifier jwtToken:jwtToken];
+}
+
 RCT_EXPORT_METHOD(login:(NSString*)userIdentifier){
     [[WebEngage sharedInstance].user login:userIdentifier];
+}
+
+
+RCT_EXPORT_METHOD(setSecurityToken:(NSString*)userIdentifier jwtToken:(NSString*)jwtToken){
+    [[WebEngage sharedInstance].user login:userIdentifier jwtToken:jwtToken];
 }
 
 RCT_EXPORT_METHOD(setAttribute:(NSString*)attributeName value:(id)value){
@@ -219,7 +235,7 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked"];
+    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated"];
 }
 
 - (void)notification:(NSMutableDictionary *)inAppNotificationData clickedWithAction:(NSString *)actionId {

@@ -262,6 +262,16 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         WebEngage.get().user().logout();
     }
 
+    @ReactMethod
+    public void addListener(String eventName) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    public void removeListeners(Integer count) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
     private Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
         ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
         Map<String, Object> deconstructedMap = new HashMap<>();

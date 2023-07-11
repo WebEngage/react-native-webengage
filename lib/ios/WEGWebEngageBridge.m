@@ -216,6 +216,14 @@ RCT_EXPORT_METHOD(logout){
     [[WebEngage sharedInstance].user logout];
 }
 
+RCT_EXPORT_METHOD(addListener : (NSString *)eventName) {
+  // Keep: Required for RN built in Event Emitter Calls.
+}
+
+RCT_EXPORT_METHOD(removeListeners : (NSInteger)count) {
+  // Keep: Required for RN built in Event Emitter Calls.
+}
+
 - (NSArray<NSString *> *)supportedEvents {
     return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked"];
 }

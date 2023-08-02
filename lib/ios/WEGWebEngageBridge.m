@@ -23,7 +23,7 @@ RCT_EXPORT_MODULE(webengageBridge);
 // Below code is called as soon as initialization of WebEngage lib happens
 - (instancetype)init {
     if (self = [super init]) {
-        [self initialisewEGVersions];
+        [self initialiseWEGVersion];
     }
     return self;
 }
@@ -37,7 +37,7 @@ RCT_EXPORT_MODULE(webengageBridge);
     return sharedInstance;
 }
 
-- (void)initialisewEGVersions {
+- (void)initialiseWEGVersion {
     [[WebEngage sharedInstance].WEGVersions setObject:WEGPluginVersion forKey:@"rn"];
 }
 

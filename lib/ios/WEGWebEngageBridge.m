@@ -14,10 +14,19 @@
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
+NSString *WEGPluginVersion = @"1.3.0";
 
 @implementation WEGWebEngageBridge
 
 RCT_EXPORT_MODULE(webengageBridge);
+
+// Below code is called as soon as initialization of WebEngage lib happens
+- (instancetype)init {
+    if (self = [super init]) {
+        [self initialisewEGVersions];
+    }
+    return self;
+}
 
 + (id)allocWithZone:(NSZone *)zone {
     static WEGWebEngageBridge *sharedInstance = nil;
@@ -26,6 +35,10 @@ RCT_EXPORT_MODULE(webengageBridge);
         sharedInstance = [super allocWithZone:zone];
     });
     return sharedInstance;
+}
+
+- (void)initialisewEGVersions {
+    [[WebEngage sharedInstance].WEGVersions setObject:WEGPluginVersion forKey:@"rn"];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {

@@ -304,6 +304,12 @@ export default class App extends Component<Props> {
                 value={this.state.isInappEnabled}
               />
             </View>
+
+            <TouchableHighlight style={styles.button} onPress={this.toggleGAIDSwitch}>
+              <Text>Start GAID Tracking</Text>
+            </TouchableHighlight>
+
+
           </View>
         </ScrollView>
       </View>
@@ -405,9 +411,6 @@ export default class App extends Component<Props> {
       isInappEnabled: isEnabled,
     });
     webengage.user.setOptIn('in_app', isEnabled);
-    //webengage.user.setOptIn("email", isEnabled);
-    //webengage.user.setOptIn("sms", isEnabled);
-    //webengage.user.setOptIn("whatsapp", isEnabled);
   }
 
   toggleViberSwitch() {
@@ -426,6 +429,10 @@ export default class App extends Component<Props> {
     });
     webengage.user.setOptIn('whatsapp', isEnabled);
     AsyncStorage.setItem('whatsapp_optin', JSON.stringify(isEnabled));
+  }
+
+  toggleGAIDSwitch() {
+      webengage.startGAIDTracking();
   }
 }
 

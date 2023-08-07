@@ -264,6 +264,11 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         WebEngage.get().user().logout();
     }
 
+    @ReactMethod
+    public void startGAIDTracking() {
+        WebEngage.get().startGAIDTracking();
+    }
+
     private Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
         ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
         Map<String, Object> deconstructedMap = new HashMap<>();

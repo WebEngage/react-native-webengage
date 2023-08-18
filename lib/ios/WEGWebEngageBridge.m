@@ -20,10 +20,12 @@ NSString *WEGPluginVersion = @"1.3.0";
 
 RCT_EXPORT_MODULE(webengageBridge);
 
-// Below code is called as soon as initialization of WebEngage lib happens
 - (instancetype)init {
     if (self = [super init]) {
-        [self initialiseWEGVersion];
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            [self initialiseWEGVersion];
+        });
     }
     return self;
 }
@@ -38,7 +40,8 @@ RCT_EXPORT_MODULE(webengageBridge);
 }
 
 - (void)initialiseWEGVersion {
-    [[WebEngage sharedInstance].WEGVersions setObject:WEGPluginVersion forKey:@"rn"];
+    WegVersionKey key = WegVersionKeyRN;
+    [[WebEngage sharedInstance] setVersionForChildSDK:WEGPluginVersion forKey:key];;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {

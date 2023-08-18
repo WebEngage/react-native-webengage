@@ -122,18 +122,17 @@ RCT_EXPORT_METHOD(screenNavigatedWithData:(NSString*) screenName andData: (NSDic
 }
 
 
-// AKC
-RCT_EXPORT_METHOD(loginWithJwt:(NSString*)userIdentifier jwtToken:(NSString*)jwtToken){
-    [[WebEngage sharedInstance].user login:userIdentifier jwtToken:jwtToken];
+RCT_EXPORT_METHOD(loginWithSecureToken:(NSString*)userId secureToken:(NSString*)secureToken){
+    [[WebEngage sharedInstance].user login:userId jwtToken:secureToken];
 }
 
 RCT_EXPORT_METHOD(login:(NSString*)userIdentifier){
     [[WebEngage sharedInstance].user login:userIdentifier];
 }
 
-
-RCT_EXPORT_METHOD(setSecurityToken:(NSString*)userIdentifier jwtToken:(NSString*)jwtToken){
-    [[WebEngage sharedInstance].user login:userIdentifier jwtToken:jwtToken];
+// TODO - Release only after iOS core changes for setSecureToken is released
+RCT_EXPORT_METHOD(setSecureToken:(NSString*)userId secureToken:(NSString*)secureToken){
+    [[WebEngage sharedInstance].user setJWTToken:userId jwtToken:secureToken];
 }
 
 RCT_EXPORT_METHOD(setAttribute:(NSString*)attributeName value:(id)value){

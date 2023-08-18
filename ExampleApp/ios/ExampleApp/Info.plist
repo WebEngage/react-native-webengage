@@ -69,13 +69,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>WEGEnvironment</key>
-	<string>STAGING</string>
 	<key>WEGLicenseCode</key>
-	<string>stg~11b56440c</string>
+	<string>14507cbca</string>
 	<key>WEGLogLevel</key>
 	<string>VERBOSE</string>
-	<key></key>
-	<string></string>
 </dict>
 </plist>

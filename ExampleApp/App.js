@@ -221,7 +221,7 @@ export default class App extends Component {
     const {secureToken, userId} = this.state;
     if (userId) {
       this.setState({showInlineError: false});
-      webengage.user.setSecurityToken(userId, secureToken);
+      webengage.user.setSecureToken(userId, secureToken);
     }
   };
 

@@ -169,14 +169,14 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @ReactMethod
-    public void loginWithJwt(String userIdentifier, String jwtToken) {
+    public void loginWithSecureToken(String userIdentifier, String jwtToken) {
         Logger.d(TAG, "login with jwt: " + userIdentifier + "| JWT -  " + jwtToken);
         WebEngage.get().user().login(userIdentifier, jwtToken);
     }
 
     @ReactMethod
-    public void setSecurityToken(String cuid,String secureToken) {
-        Logger.d(TAG, "setSecurityToken updating token- " + secureToken + " | for id - "+cuid);
+    public void setSecureToken(String cuid,String secureToken) {
+        Logger.d(TAG, "setSecureToken updating token- " + secureToken + " | for id - "+cuid);
         WebEngage.get().setSecurityToken(cuid, secureToken);
     }
 

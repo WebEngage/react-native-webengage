@@ -21,12 +21,7 @@ NSString *WEGPluginVersion = @"1.3.0";
 RCT_EXPORT_MODULE(webengageBridge);
 
 - (instancetype)init {
-    if (self = [super init]) {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            [self initialiseWEGVersion];
-        });
-    }
+    [self initialiseWEGVersion];
     return self;
 }
 
@@ -45,11 +40,11 @@ RCT_EXPORT_MODULE(webengageBridge);
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
-    #if DEBUG
+#if DEBUG
     return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-    #else
-      return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-    #endif
+#else
+    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+#endif
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
@@ -271,7 +266,7 @@ RCT_EXPORT_METHOD(logout){
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
     RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-     if (weHasListeners) {
+    if (weHasListeners) {
         [self sendEventWithName:@"pushNotificationClicked" body:pushData];
     } else {
         if (self.pendingEventsDict == nil) {

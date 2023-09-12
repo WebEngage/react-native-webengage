@@ -3,7 +3,7 @@
  */
 
 import {AppRegistry} from 'react-native';
-import App from './src/App';
+import App from './App';
 // TODO change source to exact App
 import {name as appName} from './app.json';
 

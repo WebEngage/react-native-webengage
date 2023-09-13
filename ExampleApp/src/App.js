@@ -2,27 +2,21 @@ import React, {useEffect, useState} from 'react';
 import {View, Button, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-
+import WebEngage from 'react-native-webengage';
 import MainScreen from './screens/MainScreen';
 import WEModal from './WEModal';
-import AsyncStorageUtil from './utils/AsyncStorageUtils';
 
 const Stack = createStackNavigator();
 // TODO Actual App.js is in previous path use that
 const App = () => {
+  const webengage = new WebEngage();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [userName, setUserName] = React.useState("");
+  const [userName, setUserName] = React.useState('');
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const userValue = await AsyncStorageUtil.getString('userName');
-        console.log('Retrieved string:', userValue);
-        setUserName(userValue);
-
-      } catch (error) {
-        console.error(error);
-      }
+      // TODO - Add your name in the below screen for which you can create a push notification Test
+      webengage.user.login('akc88759');
     };
 
     fetchData();
@@ -35,21 +29,17 @@ const App = () => {
   const loginUser = userData => {
     const {userName: loggedInUser} = userData;
     // dispatch(login(userName));
-    AsyncStorageUtil.storeString('userName', loggedInUser);
     setUserName(loggedInUser);
   };
 
   const handleLogout = () => {
     // Clear user data from the userReducer
     // dispatch(logout());
-    AsyncStorageUtil.deleteString("userName");
-    setUserName("")
 
+    setUserName('');
   };
 
   const renderHeaderRight = () => {
-
-
     if (userName) {
       return (
         <View style={styles.headerRight}>

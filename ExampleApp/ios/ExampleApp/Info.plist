@@ -72,7 +72,7 @@
 	<key>WEGEnvironment</key>
 	<string>DEFAULT</string>
 	<key>WEGLicenseCode</key>
-	<string>aa131d2c</string>
+	<string>YOUR_LICENSE_CODE</string>
 	<key>WEGLogLevel</key>
 	<string>VERBOSE</string>
 </dict>

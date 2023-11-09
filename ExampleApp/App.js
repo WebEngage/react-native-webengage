@@ -65,7 +65,7 @@ export default class App extends Component {
     }
     this.inAppNotificationCallbacks();
     this.pushCallback();
-    this.secureTokenExpiryListener = webengage.user.invalidateTokenCallback(
+    this.secureTokenExpiryListener = webengage.user.tokenInvalidatedCallback(
       this.invalidTokenCallback,
     );
   }

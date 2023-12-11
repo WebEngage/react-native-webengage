@@ -55,7 +55,7 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
       WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-              .setWebEngageKey("aa131d2c")
+              .setWebEngageKey("YOUR_WEBENGAGE_LICENSE")
               .setDebugMode(true)// only in development mode
               .setAutoGAIDTracking(true) 
               .build();

@@ -57,10 +57,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>WEGLicenseCode</key>
-	<string>aa131d2c</string>
+	<string>YOUR_WEBENGAGE_LICENSE_CODE</string>
 	<key>WEGLogLevel</key>
 	<string>VERBOSE</string>
-	<key>WEGEnvironment</key>
-	<string>STAGING</string>
 </dict>
 </plist>

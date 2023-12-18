@@ -14,10 +14,20 @@
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
+NSString *WEGPluginVersion = @"1.3.0";
 
 @implementation WEGWebEngageBridge
 
 RCT_EXPORT_MODULE(webengageBridge);
+
+- (instancetype)init {
+    [self initialiseWEGVersion];
+    return self;
+}
+
++ (BOOL)requiresMainQueueSetup {
+    return NO;
+}
 
 + (id)allocWithZone:(NSZone *)zone {
     static WEGWebEngageBridge *sharedInstance = nil;
@@ -28,12 +38,17 @@ RCT_EXPORT_MODULE(webengageBridge);
     return sharedInstance;
 }
 
+- (void)initialiseWEGVersion {
+    WegVersionKey key = WegVersionKeyRN;
+    [[WebEngage sharedInstance] setVersionForChildSDK:WEGPluginVersion forKey:key];;
+}
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
-    #if DEBUG
+#if DEBUG
     return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-    #else
-      return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-    #endif
+#else
+    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+#endif
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
@@ -207,8 +222,10 @@ RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {
         [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelInApp status:status];
     } else if ([ch isEqualToString:@"whatsapp"]) {
         [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelWhatsapp status:status];
+    } else if ([ch isEqualToString:@"viber"]) {
+        [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelViber status:status];
     } else {
-        NSLog(@"WebEngage: Invalid channel: %@. Must be one of [push, sms, email, in_app, whatsapp].", ch);
+        NSLog(@"WebEngage: Invalid channel: %@. Must be one of [push, sms, email, in_app, whatsapp, viber].", ch);
     }
 }
 
@@ -255,7 +272,7 @@ RCT_EXPORT_METHOD(logout){
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
     RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-     if (weHasListeners) {
+    if (weHasListeners) {
         [self sendEventWithName:@"pushNotificationClicked" body:pushData];
     } else {
         if (self.pendingEventsDict == nil) {

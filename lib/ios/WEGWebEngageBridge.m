@@ -25,6 +25,10 @@ RCT_EXPORT_MODULE(webengageBridge);
     return self;
 }
 
++ (BOOL)requiresMainQueueSetup {
+    return NO;
+}
+
 + (id)allocWithZone:(NSZone *)zone {
     static WEGWebEngageBridge *sharedInstance = nil;
     static dispatch_once_t onceToken;

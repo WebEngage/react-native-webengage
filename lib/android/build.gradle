@@ -18,6 +18,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 33
+        manifestPlaceholders = [we_rn_version: readVersion()]
         versionCode 1
         versionName "1.0"
     }
@@ -32,7 +33,24 @@ repositories {
     jcenter()
 }
 
+String readVersion() {
+    def version = new Properties()
+    def stream
+    try {
+        stream = new FileInputStream(new File(projectDir, 'version.properties'))
+        version.load(stream)
+    } catch (FileNotFoundException ignore) {
+    } finally {
+        if (stream != null) stream.close()
+    }
+    // safety defaults in case file is missing
+    if(!version['major']) version['major'] = "1"
+    if(!version['minor']) version['minor'] = "0"
+    if(!version['patch']) version['patch'] = "0"
+    return "${version['major']}.${version['minor']}.${version['patch']}"
+}
+
 dependencies {
     compileOnly 'com.facebook.react:react-native:+'
-    api 'com.webengage:android-sdk:[3,)'
+    api 'com.webengage:android-sdk:4.+'
 }

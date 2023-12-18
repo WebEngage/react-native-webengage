@@ -10,11 +10,13 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
 import com.exampleapp.newarchitecture.MainApplicationReactNativeHost;
+import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
+import com.webengage.sdk.android.WebEngageConfig;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
-
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override
@@ -52,7 +54,15 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    // If you opted-in for the New Architecture, we enable the TurboModule system
+      WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
+              .setWebEngageKey("YOUR_WEBENGAGE_LICENSE")
+              .setDebugMode(true)// only in development mode
+              .setAutoGAIDTracking(true) 
+              .build();
+
+      registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));
+
+      // If you opted-in for the New Architecture, we enable the TurboModule system
     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());

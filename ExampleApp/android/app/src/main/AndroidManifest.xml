@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.exampleapp">
+    xmlns:tools="http://schemas.android.com/tools" package="com.exampleapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 
     <application
       android:name=".MainApplication"
@@ -10,6 +11,8 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
+      <!-- Add your application ID -->
+        <meta-data android:name="com.webengage.sdk.android.environment" android:value="us" />
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"

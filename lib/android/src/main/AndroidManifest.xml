@@ -2,5 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.webengage">
 
+    <application>
+        <meta-data
+            android:name="com.webengage.child.rn"
+            android:value="rn:${we_rn_version}" />
+    </application>
 </manifest>
   

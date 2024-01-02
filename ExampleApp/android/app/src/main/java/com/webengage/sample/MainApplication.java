@@ -20,6 +20,7 @@ import com.facebook.soloader.SoLoader;
 import com.webengage.sample.newarchitecture.MainApplicationReactNativeHost;
 import com.webengage.sdk.android.Logger;
 import com.webengage.sdk.android.WebEngage;
+import com.exampleapp.newarchitecture.MainApplicationReactNativeHost;
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
 import com.webengage.sdk.android.WebEngageConfig;
 
@@ -64,12 +65,10 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    // WebEngage Initialization
-    WebengageBridge.getInstance();
       WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-              .setWebEngageKey("311c5274")
-              .setAutoGCMRegistrationFlag(false)
-              .setDebugMode(true) // only in development mode
+              .setWebEngageKey("YOUR_WEBENGAGE_LICENSE")
+              .setDebugMode(true)// only in development mode
+              .setAutoGAIDTracking(true) 
               .build();
 
       registerActivityLifecycleCallbacks(new WebEngageActivityLifeCycleCallbacks(this, webEngageConfig));

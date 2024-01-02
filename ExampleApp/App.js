@@ -185,6 +185,27 @@ export default class App extends Component {
   handleOpenURL(event) {
     console.log('WebEngage: handleOpenUrl called - ' + event.url);
   }
+  updatePhoneNum = () => {
+    const {phoneNumber} = this.state;
+    webengage.user.setPhone(phoneNumber);
+  };
+
+  phoneNumberHolder() {
+    const {phoneNumber} = this.state;
+    return (
+      <>
+        <TextInput
+          style={styles.textBox}
+          onChangeText={text => this.setState({phoneNumber: text})}
+          placeholder="Enter Your Phone Number"
+          value={phoneNumber}
+        />
+        <TouchableHighlight style={styles.button} onPress={this.updatePhoneNum}>
+          <Text>Update Phone Number</Text>
+        </TouchableHighlight>
+      </>
+    );
+  }
 
   updatePhoneNum = () => {
     const {phoneNumber} = this.state;
@@ -422,6 +443,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
     // marginTop: 80,
+  },
+  textBox: {
+    width: 250,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: 50,
+    marginBottom: 10,
   },
   textBox: {
     width: 250,

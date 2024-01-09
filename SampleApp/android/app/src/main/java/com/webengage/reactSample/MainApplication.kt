@@ -11,6 +11,9 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
+import com.webengage.sdk.android.WebEngageConfig;
+import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
+import com.webengage.WebengageBridge;
 
 class MainApplication : Application(), ReactApplication {
 
@@ -35,11 +38,23 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    WebengageBridge.getInstance();
     SoLoader.init(this, false)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
+    val webEngageConfig = WebEngageConfig.Builder()
+      .setWebEngageKey("YOUR_LICENSE_CODE")
+      .setDebugMode(true) // only in development mode
+      .build()
+    registerActivityLifecycleCallbacks(
+      WebEngageActivityLifeCycleCallbacks(
+        this,
+        webEngageConfig
+      )
+    )
+
     ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
   }
 }

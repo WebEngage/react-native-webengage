@@ -1,7 +1,10 @@
 import React from 'react';
 import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import WebEngage from 'react-native-webengage';
 
 function App(): React.JSX.Element {
+  const webengage = new WebEngage();
+  webengage.user.login('12345');
   return (
     <SafeAreaView style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}> Welcome To WebEngage </Text>

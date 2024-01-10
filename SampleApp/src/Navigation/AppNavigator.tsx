@@ -1,90 +1,62 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {navigate, navigationRef} from './NavigationService';
+import {navigationRef} from './NavigationService';
 
 import ProfileScreen from '../screens/ProfileScreen';
 import EventsScreen from '../screens/EventsScreen';
 import HomeScreen from '../screens/HomeScreen';
 import InlineScreen from '../screens/InlineScreen';
-import {Button, StyleSheet, View} from 'react-native';
-// import AppInboxScreen from '../screens/AppInboxScreen';
+import {StyleSheet} from 'react-native';
+import COLORS from '../Styles/Colors';
+import CONSTANTS from '../Utils/Constants';
 
 const Stack = createStackNavigator();
-
-const renderHeaderRight = () => {
-  if (true) {
-    return (
-      <View style={styles.headerRight}>
-        <Button title="Logout" onPress={handleLogout} color="#800080" />
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.headerRight}>
-        {/* <Button title="Login" onPress={toggleModal} color="#800080" /> */}
-      </View>
-    );
-  }
-};
-
-const handleLogout = () => {
-  // Clear user data from the userReducer
-  // dispatch(logout());
-  // AsyncStorageUtil.deleteString('userName');
-  // setUserName('');
-  // navigate()
-};
 
 const AppNavigator = () => {
   return (
     <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName={CONSTANTS.SCREEN_NAMES.HOME}>
         <Stack.Screen
-          name="Home"
+          name={CONSTANTS.SCREEN_NAMES.HOME}
           component={HomeScreen}
           options={{
-            title: 'Main',
-            headerRight: renderHeaderRight,
-            headerStyle: {backgroundColor: '#800080'},
-            headerTintColor: '#fff',
-            headerTitleStyle: {fontWeight: 'bold'},
+            title: 'Home',
+            headerStyle: styles.headerStyle,
+            headerTintColor: COLORS.white,
+            headerTitleStyle: styles.headerTextStyle,
           }}
         />
         <Stack.Screen
-          name="Profile"
+          name={CONSTANTS.SCREEN_NAMES.PROFILE}
           component={ProfileScreen}
           options={{
-            title: 'Main',
-            headerRight: undefined,
-            headerStyle: {backgroundColor: '#800080'},
-            headerTintColor: '#fff',
-            headerTitleStyle: {fontWeight: 'bold'},
+            title: 'Profile',
+            headerStyle: styles.headerStyle,
+            headerTintColor: COLORS.white,
+            headerTitleStyle: styles.headerTextStyle,
           }}
         />
         <Stack.Screen
-          name="Events"
+          name={CONSTANTS.SCREEN_NAMES.EVENTS}
           component={EventsScreen}
           options={{
-            title: 'Main',
-            headerRight: undefined,
-            headerStyle: {backgroundColor: '#800080'},
-            headerTintColor: '#fff',
-            headerTitleStyle: {fontWeight: 'bold'},
+            title: 'Events',
+            headerStyle: styles.headerStyle,
+            headerTintColor: COLORS.white,
+            headerTitleStyle: styles.headerTextStyle,
           }}
         />
         <Stack.Screen
-          name="Inline"
+          name={CONSTANTS.SCREEN_NAMES.INLINE}
           component={InlineScreen}
           options={{
-            title: 'Main',
-            headerRight: undefined,
-            headerStyle: {backgroundColor: '#800080'},
-            headerTintColor: '#fff',
-            headerTitleStyle: {fontWeight: 'bold'},
+            title: 'Inline',
+            headerStyle: styles.headerStyle,
+            headerTintColor: COLORS.white,
+            headerTitleStyle: styles.headerTextStyle,
           }}
         />
-        {/* <Stack.Screen name="AppInbox" component={AppInboxScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -93,6 +65,18 @@ const AppNavigator = () => {
 const styles = StyleSheet.create({
   headerRight: {
     marginRight: 10,
+  },
+  buttonContainer: {
+    backgroundColor: COLORS.purple,
+  },
+  buttonText: {
+    fontSize: 18,
+  },
+  headerStyle: {
+    backgroundColor: COLORS.purple,
+  },
+  headerTextStyle: {
+    fontWeight: 'bold',
   },
 });
 

@@ -6,35 +6,47 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
-  Button,
 } from 'react-native';
+import WEButton from '../CommonComponents/WEButton';
 
-// const WEModal = ({visible, onClose, onLogin}) => {
 const WEModal = ({
   visible,
   onClose,
   onLogin,
+  isJwtModal = false,
+  onPasswordUpdate,
 }: {
   visible: boolean;
   onClose: () => void;
-  onLogin: (userData: any) => void;
+  onLogin?: (username: string, password?: string) => void;
+  onPasswordUpdate?: (password: string) => void;
+  isJwtModal?: boolean;
 }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const buttonLabel = isJwtModal ? 'Update JWT' : 'Login';
 
   const handleLogin = () => {
-    if (username === 'a') {
-      // Perform successful login action
-      const userData = {userName: username}; // Replace with actual user data
-      if (onLogin) {
-        onLogin(userData);
+    if (isJwtModal) {
+      // JWT Update Modal
+      console.log('WEModal:  update JWT', password);
+      if (password && onPasswordUpdate) {
+        onPasswordUpdate(password);
       }
-      setErrorMessage('');
-      onClose();
-      console.log('Login successful');
     } else {
-      setErrorMessage('Invalid username or password');
+      // Login Modal
+      if (username) {
+        console.log('WEModal:  onLogin', username);
+        if (onLogin) {
+          onLogin(username, password);
+        }
+        setErrorMessage('');
+        onClose();
+        console.log('Login successful');
+      } else {
+        setErrorMessage('Invalid username or password');
+      }
     }
   };
 
@@ -49,13 +61,15 @@ const WEModal = ({
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>Login</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            onChangeText={text => setUsername(text)}
-            value={username}
-          />
+          <Text style={styles.modalTitle}>{buttonLabel}</Text>
+          {!isJwtModal && (
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              onChangeText={text => setUsername(text)}
+              value={username}
+            />
+          )}
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -66,8 +80,7 @@ const WEModal = ({
           {errorMessage ? (
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : null}
-          <Button title="Login" onPress={handleLogin} color="#800080" />
-          <Button title="Close" onPress={onClose} color="#800080" />
+          <WEButton buttonText={buttonLabel} onPress={handleLogin} />
         </View>
       </View>
     </Modal>
@@ -89,16 +102,16 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 10,
+    width: 25,
+    top: 5,
     right: 10,
     padding: 5,
-    backgroundColor: '#800080',
-    borderRadius: 15,
   },
   closeButtonText: {
-    color: '#fff',
-    fontSize: 14,
+    color: '#0a0909',
+    fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   modalTitle: {
     fontSize: 18,

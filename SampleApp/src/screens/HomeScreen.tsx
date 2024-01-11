@@ -25,17 +25,18 @@ const HomeScreen = ({navigation}) => {
     console.log('Retrieved Data:', data);
   };
 
-  React.useEffect(() => {
-    webEngageManager.user.tokenInvalidatedCallback(invalidTokenCallback);
-  });
+  // TODO - Enable this when sdk security is added
+  // React.useEffect(() => {
+  //   webEngageManager.user.tokenInvalidatedCallback(invalidTokenCallback);
+  // });
 
-  const invalidTokenCallback = (data: any) => {
-    console.log('WEModal: Invalid token callback ', data.error);
-    const status = data?.error?.response?.status || '';
-    const errorMessage = data?.error?.response?.message || '';
-    const errorLabel = `Status - ${status} | Error Message - ${errorMessage}`;
-    setSecurityExceptionLabel(errorLabel);
-  };
+  // const invalidTokenCallback = (data: any) => {
+  //   console.log('WEModal: Invalid token callback ', data.error);
+  //   const status = data?.error?.response?.status || '';
+  //   const errorMessage = data?.error?.response?.message || '';
+  //   const errorLabel = `Status - ${status} | Error Message - ${errorMessage}`;
+  //   setSecurityExceptionLabel(errorLabel);
+  // };
 
   React.useEffect(() => {
     retrieveUserData();

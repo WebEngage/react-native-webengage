@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {ScrollView, View, Text, Button, StyleSheet} from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import {Picker} from '@react-native-picker/picker';
 import WETextInput from '../CommonComponents/WETextInput';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
 
@@ -13,6 +14,7 @@ const ProfileScreen: React.FC = () => {
   const [hashedPhone, setHashedPhone] = useState<string>('');
   const [company, setCompany] = useState<string>('');
   const [location, setLocation] = useState<string>('');
+  const [gender, setGender] = useState('Unknown');
 
   const [pushOptin, setPushOptin] = useState(false);
   const [inappOptin, setInappOptin] = useState(false);
@@ -56,26 +58,33 @@ const ProfileScreen: React.FC = () => {
   const onSave = () => {
     if (firstName) {
       webEngageManager.user.setFirstName(firstName);
-    } else if (lastName) {
+    }
+    if (lastName) {
       webEngageManager.user.setLastName(lastName);
-    } else if (email) {
+    }
+    if (email) {
       webEngageManager.user.setEmail(email);
-    } else if (hashedEmail) {
+    }
+    if (hashedEmail) {
       webEngageManager.user.setHashedEmail(hashedEmail);
-    } else if (phone) {
+    }
+    if (phone) {
       webEngageManager.user.setPhone(phone);
-    } else if (hashedPhone) {
+    }
+    if (hashedPhone) {
       webEngageManager.user.setHashedPhone(hashedPhone);
-    } else if (company) {
+    }
+    if (company) {
       webEngageManager.user.setCompany(company);
-    } else if (location) {
+    }
+    if (location) {
       const locationArray = location.split(',');
       if (locationArray.length === 2) {
         webEngageManager.user.setLocation(locationArray[0], locationArray[1]);
       }
-    } else {
-      console.log('WebEngage: User Profile Not updated');
-      // TODO
+    }
+    if (gender) {
+      webEngageManager.user.setGender(gender);
     }
     console.log('WebEngage: User Profile Updated');
   };
@@ -158,6 +167,16 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.row}>
           <Text style={styles.label}>Gender</Text>
           {/* TODO Add a Picker */}
+          <Picker
+            selectedValue={gender}
+            onValueChange={value => setGender(value)}
+            mode="dropdown"
+            style={styles.picker}>
+            <Picker.Item label="Select Gender" value="" />
+            <Picker.Item label="Male" value="Male" />
+            <Picker.Item label="Female" value="Female" />
+            <Picker.Item label="Other" value="" />
+          </Picker>
         </View>
       </View>
 
@@ -222,11 +241,13 @@ const styles = StyleSheet.create({
 
     padding: 10,
   },
-  genderPicker: {
-    width: 100,
-  },
-  dropDownPicker: {
-    width: 200,
+  picker: {
+    marginVertical: 30,
+    width: 300,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#fff',
+    color: '#000',
   },
 });
 

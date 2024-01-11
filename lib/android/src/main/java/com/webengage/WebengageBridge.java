@@ -224,6 +224,11 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     public void setFirstName(String name) {
         WebEngage.get().user().setFirstName(name);
     }
+    
+    @ReactMethod
+    public void setLocation(Double lat,Double lng) {
+        WebEngage.get().user().setLocation(lat,lng);
+    }
 
     @ReactMethod
     public void setLastName(String name) {

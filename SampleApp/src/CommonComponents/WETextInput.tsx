@@ -9,6 +9,7 @@ import {
 
 interface WETextInputProps extends TextInputProps {
   customStyle?: StyleProp<ViewStyle>;
+  placeholderText?: string;
   placeholderTextColor?: string;
   underlineColorAndroid?: string;
   selectionColor?: string;
@@ -21,6 +22,7 @@ interface WETextInputProps extends TextInputProps {
 const WETextInput: React.FC<WETextInputProps> = ({
   customStyle,
   placeholderTextColor,
+  placeholderText,
   underlineColorAndroid,
   selectionColor,
   secureTextEntry,
@@ -34,6 +36,7 @@ const WETextInput: React.FC<WETextInputProps> = ({
       value={value}
       onChangeText={onChangeText}
       placeholderTextColor={placeholderTextColor || '#999'}
+      placeholder={placeholderText}
       underlineColorAndroid={underlineColorAndroid || 'transparent'}
       selectionColor={selectionColor || '#4285f4'} // Example color, you can change it
       secureTextEntry={secureTextEntry || false}

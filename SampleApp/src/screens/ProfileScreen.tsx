@@ -4,6 +4,9 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {Picker} from '@react-native-picker/picker';
 import WETextInput from '../CommonComponents/WETextInput';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
+import WEButton from '../CommonComponents/WEButton';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import WEUserModal from '../CommonComponents/WEUserModal';
 
 const ProfileScreen: React.FC = () => {
   const [firstName, setFirstName] = useState<string>('');
@@ -15,6 +18,9 @@ const ProfileScreen: React.FC = () => {
   const [company, setCompany] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [gender, setGender] = useState('Unknown');
+  const [birthDate, setBirthDate] = useState<string>('');
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [pushOptin, setPushOptin] = useState(false);
   const [inappOptin, setInappOptin] = useState(false);
@@ -22,6 +28,10 @@ const ProfileScreen: React.FC = () => {
   const [emailOptin, setEmailOptin] = useState(false);
   const [whatsappOptin, setWhatsappOptin] = useState(false);
   const [viberOptin, setViberOptin] = useState(false);
+  const [keyAttribute, setKeyAttribute] = useState('');
+  const [valAttribute, setValAttribute] = useState('');
+  const [customAttributeList, setCustomAttributeList] = useState([]);
+  const [attributeToDelete, setAttributeToDelete] = useState('');
 
   const handleFirstNameChange = (text: string) => {
     setFirstName(text);
@@ -55,6 +65,10 @@ const ProfileScreen: React.FC = () => {
     setLocation(text);
   };
 
+  const handleBirthDateChange = (text: string) => {
+    setBirthDate(text);
+  };
+
   const onSave = () => {
     if (firstName) {
       webEngageManager.user.setFirstName(firstName);
@@ -86,7 +100,116 @@ const ProfileScreen: React.FC = () => {
     if (gender) {
       webEngageManager.user.setGender(gender);
     }
+    if (birthDate) {
+      webEngageManager.user.setBirthDateString(birthDate);
+    }
+    if (customAttributeList?.length) {
+      customAttributeList.forEach((item, index) => {
+        const key = Object.keys(item)[0];
+        const value = item[key];
+        console.log('WebEngage: Add custom attribute key - value ', key, value);
+        webEngageManager.user.setAttribute(key, value);
+      });
+    }
+    if (attributeToDelete) {
+      console.log('WebEngage: Delete custom attribute - ' + attributeToDelete);
+      webEngageManager.user.deleteAttribute(attributeToDelete);
+      setAttributeToDelete('');
+    }
     console.log('WebEngage: User Profile Updated');
+  };
+
+  const onKeyChange = (text: string) => {
+    setKeyAttribute(text);
+  };
+
+  const onValueAttrChange = (text: string) => {
+    setValAttribute(text);
+  };
+
+  const onSaveAttribute = () => {
+    if (keyAttribute && valAttribute) {
+      const updatedAttributeList: any = [
+        ...customAttributeList,
+        {[keyAttribute]: valAttribute},
+      ];
+      setCustomAttributeList(updatedAttributeList);
+    }
+    toggleModal();
+    console.log('WebEngage: Custom Attribute Updated', customAttributeList);
+  };
+
+  const onDeleteAttribute = () => {
+    console.log('WebEngage: Custom Attribute Updated', customAttributeList);
+    toggleDeleteModal();
+  };
+
+  const onChangeToDeleteAttr = (text: string) => {
+    setAttributeToDelete(text);
+  };
+
+  const customAttributeUI = () => {
+    return (
+      <View style={styles.modalContainer}>
+        <View style={styles.modalRow}>
+          <Text>Key</Text>
+          <WETextInput
+            customStyle={styles.attributeTextbox}
+            value={keyAttribute}
+            onChangeText={onKeyChange}
+          />
+        </View>
+        <View style={styles.modalRow}>
+          <Text>Value</Text>
+          <WETextInput
+            customStyle={styles.attributeTextbox}
+            value={valAttribute}
+            onChangeText={onValueAttrChange}
+          />
+        </View>
+        <WEButton onPress={onSaveAttribute} buttonText="Save" />
+      </View>
+    );
+  };
+
+  const deleteAttributeUI = () => {
+    return (
+      <View style={styles.modalContainer}>
+        <Text> Enter the key to delete attribute </Text>
+        <View style={styles.modalRow}>
+          <Text>Key</Text>
+          <WETextInput
+            customStyle={styles.attributeTextbox}
+            value={attributeToDelete}
+            onChangeText={onChangeToDeleteAttr}
+          />
+        </View>
+        <WEButton onPress={onDeleteAttribute} buttonText="Save" />
+      </View>
+    );
+  };
+
+  const renderCustomAttrList = () => {
+    if (customAttributeList.length === 0) {
+      return null;
+    }
+    return customAttributeList.map((item, index) => {
+      const key = Object.keys(item)[0];
+      const value = item[key];
+      return (
+        <View style={styles.rowList} key={index}>
+          <Text style={styles.keyText}>{key}: </Text>
+          <Text style={styles.valueText}>{value}</Text>
+        </View>
+      );
+    });
+  };
+
+  const toggleModal = () => {
+    setShowUserModal(!showUserModal);
+  };
+  const toggleDeleteModal = () => {
+    setShowDeleteModal(!showDeleteModal);
   };
 
   return (
@@ -155,13 +278,14 @@ const ProfileScreen: React.FC = () => {
             onChangeText={handleCompanyChange}
           />
         </View>
-
+        {/* TODO - Add this for library in iOS */}
         <View style={styles.row}>
           <Text style={styles.label}>Location</Text>
           <WETextInput
             customStyle={styles.textbox}
             value={location}
             onChangeText={handleLocationChange}
+            placeholderText="Latitude,Longitude"
           />
         </View>
         <View style={styles.row}>
@@ -178,6 +302,33 @@ const ProfileScreen: React.FC = () => {
             <Picker.Item label="Other" value="" />
           </Picker>
         </View>
+
+        <View style={styles.row}>
+          <Text style={styles.label}>Birth Date</Text>
+          <WETextInput
+            customStyle={styles.textbox}
+            value={birthDate}
+            onChangeText={handleBirthDateChange}
+            placeholderText="YYYY-MM-DD"
+          />
+        </View>
+
+        <View style={styles.customListBox}>{renderCustomAttrList()}</View>
+
+        <View style={styles.box}>
+          <TouchableOpacity onPress={toggleModal}>
+            <Text style={styles.linkText}> Add Custom Attribute </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleDeleteModal}>
+            <Text style={styles.linkText}> Delete Custom Attribute </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* TODO Remove this button */}
+        <WEButton
+          buttonText={'Test Events'}
+          onPress={() => webEngageManager.track('Test Event')}
+        />
       </View>
 
       {/* Opt-in options */}
@@ -200,15 +351,30 @@ const ProfileScreen: React.FC = () => {
         <BouncyCheckbox isChecked={viberOptin} onPress={setViberOptin} />
         <Text>Viber</Text>
       </View>
-      <Button title="Save" onPress={onSave} />
+      <WEButton buttonText="Save" onPress={onSave} />
+      <WEUserModal
+        modalUI={customAttributeUI}
+        visible={showUserModal}
+        onClose={toggleModal}
+      />
+      <WEUserModal
+        modalUI={deleteAttributeUI}
+        visible={showDeleteModal}
+        onClose={toggleDeleteModal}
+      />
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
+    height: '100%',
+  },
+  modalContainer: {},
+  linkText: {
+    color: '#007AFF',
+    textDecorationLine: 'underline',
+    marginBottom: 10,
   },
   scrollView: {
     flex: 1,
@@ -231,6 +397,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
   },
+  modalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  attributeTextbox: {
+    // flex: 2,
+    width: 200,
+
+    padding: 10,
+  },
+  box: {
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  customListBox: {
+    // alignItems: 'center',
+    // marginBottom: 15,
+  },
   label: {
     flex: 1,
     marginRight: 10,
@@ -248,6 +434,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fff',
     color: '#000',
+  },
+  keyText: {
+    fontWeight: 'bold',
+    marginRight: 4,
+  },
+  valueText: {
+    marginLeft: 4,
+  },
+  rowList: {
+    flexDirection: 'row',
+    // justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+    borderBottomWidth: 1,
+
+    // alignSelf: 'auto',
   },
 });
 

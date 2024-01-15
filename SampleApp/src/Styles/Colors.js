@@ -3,6 +3,7 @@ const COLORS = {
   white: '#fff',
   error_red: '#ff0000',
   blue: '#007AFF',
+  grey: '#D3D3D3',
 }
 
 export default COLORS;

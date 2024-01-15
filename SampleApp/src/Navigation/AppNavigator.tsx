@@ -10,6 +10,7 @@ import InlineScreen from '../screens/InlineScreen';
 import {StyleSheet} from 'react-native';
 import COLORS from '../Styles/Colors';
 import CONSTANTS from '../Utils/Constants';
+import ScreenComponent from '../screens/ScreenComponent';
 
 const Stack = createStackNavigator();
 
@@ -52,6 +53,16 @@ const AppNavigator = () => {
           component={InlineScreen}
           options={{
             title: 'Inline',
+            headerStyle: styles.headerStyle,
+            headerTintColor: COLORS.white,
+            headerTitleStyle: styles.headerTextStyle,
+          }}
+        />
+        <Stack.Screen
+          name={CONSTANTS.SCREEN_NAMES.SCREENS}
+          component={ScreenComponent}
+          options={{
+            title: 'Screen Navigation',
             headerStyle: styles.headerStyle,
             headerTintColor: COLORS.white,
             headerTitleStyle: styles.headerTextStyle,

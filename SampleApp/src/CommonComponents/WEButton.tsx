@@ -24,7 +24,6 @@ const WEButton = (props: {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: COLORS.purple,
-    padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',

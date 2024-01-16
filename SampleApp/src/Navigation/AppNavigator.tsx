@@ -11,6 +11,9 @@ import {StyleSheet} from 'react-native';
 import COLORS from '../Styles/Colors';
 import CONSTANTS from '../Utils/Constants';
 import ScreenComponent from '../screens/ScreenComponent';
+import CustomScreens from '../Custom/CustomScreens';
+import ScreenDetails from '../Custom/ScreenDetails';
+import DynamicScreen from '../Custom/DynamicScreen';
 
 const Stack = createStackNavigator();
 
@@ -67,6 +70,13 @@ const AppNavigator = () => {
             headerTintColor: COLORS.white,
             headerTitleStyle: styles.headerTextStyle,
           }}
+        />
+        <Stack.Screen name="customScreens" component={CustomScreens} />
+        <Stack.Screen name="screenDetails" component={ScreenDetails} />
+        <Stack.Screen
+          name="dynamicScreen"
+          component={DynamicScreen}
+          options={({route}) => ({title: route.params.item.screenName})}
         />
       </Stack.Navigator>
     </NavigationContainer>

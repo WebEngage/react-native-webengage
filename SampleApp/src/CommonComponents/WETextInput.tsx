@@ -14,9 +14,11 @@ interface WETextInputProps extends TextInputProps {
   underlineColorAndroid?: string;
   selectionColor?: string;
   secureTextEntry?: boolean;
-  value: string;
+  value: string | undefined;
+  keyboardType?: 'numeric' | 'default' | 'email-address' | 'phone-pad';
   onChangeText: (text: string) => void;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  autoCorrect?: boolean;
 }
 
 const WETextInput: React.FC<WETextInputProps> = ({
@@ -28,7 +30,9 @@ const WETextInput: React.FC<WETextInputProps> = ({
   secureTextEntry,
   autoCapitalize,
   value,
+  keyboardType,
   onChangeText,
+  autoCorrect,
 }) => {
   return (
     <TextInput
@@ -38,9 +42,11 @@ const WETextInput: React.FC<WETextInputProps> = ({
       placeholderTextColor={placeholderTextColor || '#999'}
       placeholder={placeholderText}
       underlineColorAndroid={underlineColorAndroid || 'transparent'}
-      selectionColor={selectionColor || '#4285f4'} // Example color, you can change it
+      selectionColor={selectionColor || '#4285f4'}
       secureTextEntry={secureTextEntry || false}
-      autoCapitalize={autoCapitalize || 'sentences'}
+      autoCapitalize={autoCapitalize || 'none'}
+      keyboardType={keyboardType || 'default'}
+      autoCorrect={autoCorrect || false}
     />
   );
 };

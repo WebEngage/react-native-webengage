@@ -150,7 +150,7 @@ const HomeScreen = ({navigation}) => {
           buttonStyle={styles.buttonContainer}
           buttonTextStyle={styles.buttonText}
           buttonText={'Inline'}
-          onPress={() => navigate('Inline')}
+          onPress={() => navigate('customScreens')}
         />
         <WEButton
           buttonText={'App Inbox'}

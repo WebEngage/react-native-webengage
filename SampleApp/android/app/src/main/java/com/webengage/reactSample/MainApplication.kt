@@ -14,6 +14,10 @@ import com.facebook.soloader.SoLoader
 import com.webengage.sdk.android.WebEngageConfig;
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
 import com.webengage.WebengageBridge;
+import com.webengage.sdk.android.WebEngage;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 class MainApplication : Application(), ReactApplication {
 
@@ -44,8 +48,15 @@ class MainApplication : Application(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
+    initWebEngage()
+    initWEPush()
+    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
+  }
+
+  // WebEngage Initialization
+  public fun initWebEngage() {
     val webEngageConfig = WebEngageConfig.Builder()
-      .setWebEngageKey("YOUR_LICENSE_CODE")
+      .setWebEngageKey("~134105693")
       .setDebugMode(true) // only in development mode
       .build()
     registerActivityLifecycleCallbacks(
@@ -54,7 +65,17 @@ class MainApplication : Application(), ReactApplication {
         webEngageConfig
       )
     )
+  }
 
-    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
+  // WebEngage Push Integration
+  public fun initWEPush() {
+    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+      try {
+        val token: String? = task.result
+        WebEngage.get().setRegistrationID(token)
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
+    }
   }
 }

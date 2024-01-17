@@ -1,56 +1,138 @@
-import React from 'react';
-import {View, StyleSheet, ScrollView, Alert, Text} from 'react-native';
-
-// import WEModal from '../WEModal';
+import React, {useRef} from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Text,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import {navigate} from '../Navigation/NavigationService';
 import WEButton from '../CommonComponents/WEButton';
 import WEModal from '../Utils/WEModal';
 import COLORS from '../Styles/Colors';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
 import AsyncStorageUtil from '../Utils/AsyncStorageUtils';
+import {useIsFocused} from '@react-navigation/native';
+import {
+  getNotificationCount,
+  resetNotificationCount,
+} from 'react-native-webengage-inbox';
 
 // TODO Add Navigation Type
 const HomeScreen = ({navigation}) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [isJwtModalVisible, setIsJwtModalVisible] = React.useState(false);
   const [userName, setUserName] = React.useState<string>('');
+  const [notificationCount, setNotificationCount] = React.useState(0);
+  const secureTokenExpiryListenerRef = useRef();
+
   const [securityExceptionLabel, setSecurityExceptionLabel] =
     React.useState<string>('');
+  const isFocused = useIsFocused();
 
   const retrieveUserData = async () => {
     const data = await AsyncStorageUtil.getItem<string>('userName');
+    console.log('Retrieved Data:', data);
+
     if (data) {
       setUserName(data);
+      return data;
     }
-    console.log('Retrieved Data:', data);
+    return null;
   };
 
-  // TODO - Enable this when sdk security is added
-  // React.useEffect(() => {
-  //   webEngageManager.user.tokenInvalidatedCallback(invalidTokenCallback);
-  // });
+  const invalidTokenCallback = (data: any) => {
+    console.log('WebEngage: Inbox: Invalid token callback ', data.error);
+    const status = data?.error?.response?.status || '';
+    const errorMessage = data?.error?.response?.message || '';
+    const errorLabel = `Status - ${status} | Error Message - ${errorMessage}`;
+    setSecurityExceptionLabel(errorLabel);
+  };
 
-  // const invalidTokenCallback = (data: any) => {
-  //   console.log('WEModal: Invalid token callback ', data.error);
-  //   const status = data?.error?.response?.status || '';
-  //   const errorMessage = data?.error?.response?.message || '';
-  //   const errorLabel = `Status - ${status} | Error Message - ${errorMessage}`;
-  //   setSecurityExceptionLabel(errorLabel);
-  // };
+  // Get user name When screen is focused
+  React.useEffect(() => {
+    if (isFocused) {
+      (async () => {
+        let name = null;
+        if (!userName) {
+          name = await retrieveUserData();
+        } else {
+          name = userName;
+        }
+        console.log('WebEngage: Inbox: userName - ' + name);
+
+        if (name) {
+          fetchNotificationCount();
+          secureTokenExpiryListenerRef.current =
+            webEngageManager.user.tokenInvalidatedCallback(
+              invalidTokenCallback,
+            );
+        }
+      })();
+      console.log('WebEngage: Inbox: updating render header -------->');
+    }
+    return () => {
+      if (secureTokenExpiryListenerRef.current) {
+        secureTokenExpiryListenerRef.current.remove();
+      }
+    };
+  }, [isFocused]);
 
   React.useEffect(() => {
-    retrieveUserData();
     navigation.setOptions({
       headerRight: renderHeaderRight,
     });
-  }, [navigation, userName]);
+  }, [navigation, notificationCount, userName]);
+
+  const navigateToInbox = () => {
+    // TODO - enable this later
+    // resetNotificationCount(); // Resets Notification Counter
+    navigation.navigate('NotificationInbox');
+  };
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
+  const fetchNotificationCount = async () => {
+    try {
+      console.log('WebEngage: Inbox: Fetching notification Count - ');
+
+      const result = await getNotificationCount();
+      console.log('WebEngage: Inbox: Count result - ' + result);
+      setNotificationCount(result);
+    } catch (error) {
+      console.error('Error while fetching notification count', error);
+    }
+  };
+
   const toggleJwtModal = () => {
     setIsJwtModalVisible(!isJwtModalVisible);
+  };
+
+  const renderNotificationIcon = () => {
+    const notificationImageSource = require('../Assets/images/notification.png');
+    const shouldRenderNotificationCounter = notificationCount > 0;
+
+    return (
+      <TouchableOpacity
+        style={styles.notificationContainer}
+        onPress={navigateToInbox}>
+        <Image
+          source={notificationImageSource}
+          style={styles.notificationIcon}
+        />
+        {shouldRenderNotificationCounter && (
+          <View style={styles.notificationCounter}>
+            <Text style={styles.notificationCounterText}>
+              {notificationCount}
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    );
   };
 
   const renderHeaderRight = () => {
@@ -76,6 +158,7 @@ const HomeScreen = ({navigation}) => {
           buttonText={'JWT'}
           onPress={toggleJwtModal}
         />
+        <View>{renderNotificationIcon()}</View>
       </View>
     );
   };
@@ -92,26 +175,26 @@ const HomeScreen = ({navigation}) => {
   };
 
   const loginUser = (username: string, password?: string) => {
-    console.log('WEModal: Login User ', username);
+    console.log('WebEngage: Inbox: Login User ', username);
     if (username) {
       if (password) {
         webEngageManager.user.login(username, password);
-        console.log('WEModal: Login With jwt ', username);
+        console.log('WebEngage: Inbox: Login With jwt ', username);
       } else {
         webEngageManager.user.login(username);
-        console.log('WEModal: Login withoutttt jwt ', username);
+        console.log('WebEngage: Inbox: Login withoutttt jwt ', username);
       }
       AsyncStorageUtil.setItem('userName', username);
       setUserName(username);
       setSecurityExceptionLabel('');
-      console.log('WEModal: Login success ', username);
+      console.log('WebEngage: Inbox: Login success ', username);
     } else {
-      console.log('WEModal: Login Fails ');
+      console.log('WebEngage: Inbox: Login Fails ');
     }
   };
 
   const updateJWTToken = (jwt: String) => {
-    console.log('WEModal: Update jwt token ' + jwt);
+    console.log('WebEngage: Inbox: Update jwt token ' + jwt);
     if (userName) {
       webEngageManager.user.setSecureToken(userName, jwt);
     }
@@ -207,6 +290,7 @@ const styles = StyleSheet.create({
   loginText: {
     backgroundColor: COLORS.purple,
     fontSize: 18,
+    marginLeft: 10,
     fontStyle: 'italic',
   },
   headerTextStyle: {
@@ -266,6 +350,31 @@ const styles = StyleSheet.create({
   headerRight: {
     marginRight: 10,
     flexDirection: 'row',
+  },
+  notificationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  notificationCounter: {
+    backgroundColor: 'red',
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginLeft: 5,
+    position: 'absolute',
+    top: 5,
+    right: 2,
+  },
+  notificationCounterText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  notificationIcon: {
+    borderColor: '#000',
+    height: 50,
+    width: 50,
   },
 });
 

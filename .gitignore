@@ -76,3 +76,4 @@ package-lock.json
 
 /coverage
 /third-party
+webengage-inbox/*

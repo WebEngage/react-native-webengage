@@ -80,7 +80,11 @@ const WEModal = ({
           {errorMessage ? (
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : null}
-          <WEButton buttonText={buttonLabel} onPress={handleLogin} />
+          <WEButton
+            buttonText={buttonLabel}
+            buttonStyle={styles.loginButton}
+            onPress={handleLogin}
+          />
         </View>
       </View>
     </Modal>
@@ -99,6 +103,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: '80%',
+  },
+  loginButton: {
+    padding: 10,
+    width: 120,
+    alignSelf: 'center',
   },
   closeButton: {
     position: 'absolute',

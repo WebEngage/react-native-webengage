@@ -33,6 +33,10 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -50,7 +54,7 @@
 	<key>WEGEnvironment</key>
 	<string>DEFAULT</string>
 	<key>WEGLicenseCode</key>
-	<string>YOUR_LICENSE_CODE</string>
+	<string>aa131d2c</string>
 	<key>WEGLogLevel</key>
 	<string>VERBOSE</string>
 </dict>

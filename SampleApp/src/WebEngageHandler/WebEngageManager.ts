@@ -1,5 +1,6 @@
 import {Alert} from 'react-native';
 import WebEngage from 'react-native-webengage';
+import CONSTANTS from '../Utils/Constants';
 
 const webEngageManager = new WebEngage();
 
@@ -8,7 +9,9 @@ export default webEngageManager;
 export const initWebEngage = () => {
   // In-app notification callbacks
   webEngageManager.notification.onPrepare(function (notificationData) {
-    console.log('App: in-app notification prepared');
+    console.log(
+      CONSTANTS.WEBENGAGE_INAPP + 'App: in-app notification prepared',
+    );
   });
 
   webEngageManager.notification.onShown(function (notificationData) {
@@ -21,12 +24,15 @@ export const initWebEngage = () => {
     ) {
       message = 'description: ' + notificationData.description;
     }
-    console.log('App: in-app notification shown with ' + message);
+    console.log(
+      CONSTANTS.WEBENGAGE_INAPP + ' in-app notification shown with ' + message,
+    );
   });
 
   webEngageManager.notification.onClick(function (notificationData, clickId) {
     console.log(
-      'App: in-app notification clicked: click-id: ' +
+      CONSTANTS.WEBENGAGE_INAPP +
+        ' in-app notification clicked: click-id: ' +
         clickId +
         ', deep-link: ' +
         notificationData.deeplink,
@@ -34,21 +40,15 @@ export const initWebEngage = () => {
   });
 
   webEngageManager.notification.onDismiss(function (notificationData) {
-    console.log('App: in-app notification dismissed');
+    console.log(CONSTANTS.WEBENGAGE_INAPP + ' in-app notification dismissed');
   });
 
   webEngageManager.push.onClick(function (notificationData) {
     console.log(
-      'MyLogs App: push-notiifcation clicked with deeplink: ' +
-        notificationData.deeplink,
-    );
-    console.log(
-      'MyLogs App: push-notiifcation clicked with payload: ' +
+      CONSTANTS.WEBENGAGE_INAPP +
+        ' push-notification clicked with payload: ' +
         JSON.stringify(notificationData.userData),
     );
-    Alert.alert('It is a Simple Alert ' + notificationData.deeplink);
-  });
-  webEngageManager.universalLink.onClick(function (location) {
-    console.log('App: universal link clicked with location: ' + location);
+    Alert.alert('It is a Simple Alert ' + JSON.stringify(notificationData));
   });
 };

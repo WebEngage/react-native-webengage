@@ -6,8 +6,9 @@ import WETextInput from '../CommonComponents/WETextInput';
 import {Picker} from '@react-native-picker/picker';
 import WEUserModal from '../CommonComponents/WEUserModal';
 import WEButton from '../CommonComponents/WEButton';
-import ShoppingEventsScreen from './ShoppingEventScreen';
+import ShoppingEventsScreen from './ScreenComponent/ShoppingEventScreen';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
+import CONSTANTS from '../Utils/Constants';
 
 const EventsScreen = () => {
   const [eventName, setEventName] = useState<string>('');
@@ -21,7 +22,8 @@ const EventsScreen = () => {
 
   const handleTrackButtonPress = () => {
     console.log(
-      'WebEngage: Event Name' +
+      CONSTANTS.WEBENGAGE +
+        ' Event Name' +
         eventName +
         ' is triggered with custom attributes' +
         JSON.stringify(customAttributeList) +
@@ -51,7 +53,10 @@ const EventsScreen = () => {
       setCustomAttributeList(updatedAttributeList);
     }
     toggleModal();
-    console.log('WebEngage: Custom Attribute Updated', updatedAttributeList);
+    console.log(
+      CONSTANTS.WEBENGAGE + 'Custom Attribute Updated',
+      updatedAttributeList,
+    );
   };
 
   const onEventNameChange = (text: string) => {
@@ -208,7 +213,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   trackButton: {
-    // backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -222,7 +226,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 20,
-    // borderWidth: 1,
     marginBottom: 2,
   },
   keyText: {

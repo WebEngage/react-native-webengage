@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  Alert,
   Text,
   TouchableOpacity,
   Image,
@@ -19,6 +18,7 @@ import {
   getNotificationCount,
   resetNotificationCount,
 } from 'react-native-webengage-inbox';
+import CONSTANTS from '../Utils/Constants';
 
 // TODO Add Navigation Type
 const HomeScreen = ({navigation}) => {
@@ -34,7 +34,6 @@ const HomeScreen = ({navigation}) => {
 
   const retrieveUserData = async () => {
     const data = await AsyncStorageUtil.getItem<string>('userName');
-    console.log('Retrieved Data:', data);
 
     if (data) {
       setUserName(data);
@@ -44,7 +43,10 @@ const HomeScreen = ({navigation}) => {
   };
 
   const invalidTokenCallback = (data: any) => {
-    console.log('WebEngage: Inbox: Invalid token callback ', data.error);
+    console.log(
+      CONSTANTS.WEBENGAGE_INBOX + 'Invalid token callback ',
+      data.error,
+    );
     const status = data?.error?.response?.status || '';
     const errorMessage = data?.error?.response?.message || '';
     const errorLabel = `Status - ${status} | Error Message - ${errorMessage}`;
@@ -58,10 +60,13 @@ const HomeScreen = ({navigation}) => {
         let name = null;
         if (!userName) {
           name = await retrieveUserData();
+          console.log(
+            CONSTANTS.WEBENGAGE + 'User Name fetched from local storage:',
+            name,
+          );
         } else {
           name = userName;
         }
-        console.log('WebEngage: Inbox: userName - ' + name);
 
         if (name) {
           fetchNotificationCount();
@@ -71,10 +76,12 @@ const HomeScreen = ({navigation}) => {
             );
         }
       })();
-      console.log('WebEngage: Inbox: updating render header -------->');
     }
     return () => {
       if (secureTokenExpiryListenerRef.current) {
+        console.log(
+          CONSTANTS.WEBENGAGE + 'Removing secure token expiry listener:',
+        );
         secureTokenExpiryListenerRef.current.remove();
       }
     };
@@ -98,13 +105,14 @@ const HomeScreen = ({navigation}) => {
 
   const fetchNotificationCount = async () => {
     try {
-      console.log('WebEngage: Inbox: Fetching notification Count - ');
-
       const result = await getNotificationCount();
-      console.log('WebEngage: Inbox: Count result - ' + result);
+      console.log(CONSTANTS.WEBENGAGE_INBOX + ' Count result - ' + result);
       setNotificationCount(result);
     } catch (error) {
-      console.error('Error while fetching notification count', error);
+      console.error(
+        CONSTANTS.WEBENGAGE_INBOX + 'Error while fetching notification count',
+        error,
+      );
     }
   };
 
@@ -136,7 +144,6 @@ const HomeScreen = ({navigation}) => {
   };
 
   const renderHeaderRight = () => {
-    console.log('renderHeaderRight is called!! ' + userName);
     const label = userName ? 'Logout' : 'Login';
     return (
       <View style={styles.headerRight}>
@@ -167,7 +174,7 @@ const HomeScreen = ({navigation}) => {
     if (!userName) {
       toggleModal();
     } else {
-      console.log('Logout Success ' + userName);
+      console.log(CONSTANTS.WEBENGAGE + 'Logout Success ' + userName);
       webEngageManager.user.logout();
       AsyncStorageUtil.removeItem('userName');
       setUserName('');
@@ -175,26 +182,25 @@ const HomeScreen = ({navigation}) => {
   };
 
   const loginUser = (username: string, password?: string) => {
-    console.log('WebEngage: Inbox: Login User ', username);
     if (username) {
       if (password) {
         webEngageManager.user.login(username, password);
-        console.log('WebEngage: Inbox: Login With jwt ', username);
+        console.log(CONSTANTS.WEBENGAGE_INBOX + 'Login With jwt ', username);
       } else {
         webEngageManager.user.login(username);
-        console.log('WebEngage: Inbox: Login withoutttt jwt ', username);
+        console.log(CONSTANTS.WEBENGAGE_INBOX + 'Login without jwt ', username);
       }
       AsyncStorageUtil.setItem('userName', username);
       setUserName(username);
       setSecurityExceptionLabel('');
-      console.log('WebEngage: Inbox: Login success ', username);
+      console.log(CONSTANTS.WEBENGAGE_INBOX + ' Login success ', username);
     } else {
-      console.log('WebEngage: Inbox: Login Fails ');
+      console.log(CONSTANTS.WEBENGAGE_INBOX + ' Login Fails ');
     }
   };
 
   const updateJWTToken = (jwt: String) => {
-    console.log('WebEngage: Inbox: Update jwt token ' + jwt);
+    console.log(CONSTANTS.WEBENGAGE_INBOX + ' Update jwt token ' + jwt);
     if (userName) {
       webEngageManager.user.setSecureToken(userName, jwt);
     }
@@ -233,13 +239,7 @@ const HomeScreen = ({navigation}) => {
           buttonStyle={styles.buttonContainer}
           buttonTextStyle={styles.buttonText}
           buttonText={'Inline'}
-          onPress={() => navigate('customScreens')}
-        />
-        <WEButton
-          buttonText={'App Inbox'}
-          buttonStyle={styles.buttonContainer}
-          buttonTextStyle={styles.buttonText}
-          onPress={() => navigate('AppInbox')}
+          onPress={() => navigate('screenList')}
         />
 
         <WEButton

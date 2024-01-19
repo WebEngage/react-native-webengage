@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CONSTANTS from './Constants';
 
 interface AsyncStorageUtil {
   setItem: (key: string, value: any) => Promise<void>;
@@ -13,7 +14,7 @@ const AsyncStorageUtil: AsyncStorageUtil = {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error('AsyncStorage setItem error:', error);
+      console.error(CONSTANTS.WEBENGAGE + 'AsyncStorage setItem error:', error);
     }
   },
 
@@ -23,7 +24,10 @@ const AsyncStorageUtil: AsyncStorageUtil = {
       const value = await AsyncStorage.getItem(key);
       return value !== null ? JSON.parse(value) : null;
     } catch (error) {
-      console.error('AsyncStorage getItem error:', error);
+      console.error(
+        CONSTANTS.WEBENGAGE + ' AsyncStorage getItem error:',
+        error,
+      );
       return null;
     }
   },
@@ -33,7 +37,10 @@ const AsyncStorageUtil: AsyncStorageUtil = {
     try {
       await AsyncStorage.removeItem(key);
     } catch (error) {
-      console.error('AsyncStorage removeItem error:', error);
+      console.error(
+        CONSTANTS.WEBENGAGE + ' AsyncStorage removeItem error:',
+        error,
+      );
     }
   },
 
@@ -42,7 +49,10 @@ const AsyncStorageUtil: AsyncStorageUtil = {
     try {
       await AsyncStorage.clear();
     } catch (error) {
-      console.error('AsyncStorage clearAll error:', error);
+      console.error(
+        CONSTANTS.WEBENGAGE + ' AsyncStorage clearAll error:',
+        error,
+      );
     }
   },
 };

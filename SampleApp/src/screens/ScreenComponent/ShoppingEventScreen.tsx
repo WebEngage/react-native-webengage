@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {View, ScrollView, Text, Button, StyleSheet} from 'react-native';
+import {View, ScrollView, Text, StyleSheet} from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import WEButton from '../CommonComponents/WEButton';
-import webEngageManager from '../WebEngageHandler/WebEngageManager';
+import WEButton from '../../CommonComponents/WEButton';
+import webEngageManager from '../../WebEngageHandler/WebEngageManager';
+import CONSTANTS from '../../Utils/Constants';
 
 const ShoppingEventsScreen: React.FC = () => {
   const [tvCheckbox, setTvCheckbox] = useState(true);
@@ -66,10 +67,13 @@ const ShoppingEventsScreen: React.FC = () => {
     }
 
     if (Object.keys(selectedProducts).length > 0) {
-      console.log('WebEngage: Order Placed with products:', selectedProducts);
+      console.log(
+        CONSTANTS.WEBENGAGE_SCREEN + 'Order Placed with products:',
+        selectedProducts,
+      );
       webEngageManager.track('Order Placed', selectedProducts);
     } else {
-      console.log('WebEngage: order placed without products');
+      console.log(CONSTANTS.WEBENGAGE_SCREEN + 'order placed without products');
       webEngageManager.track('Order Placed');
     }
   };

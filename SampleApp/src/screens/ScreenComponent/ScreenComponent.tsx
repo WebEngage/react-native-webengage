@@ -1,11 +1,12 @@
 // EventsScreen.js
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import COLORS from '../Styles/Colors';
-import WETextInput from '../CommonComponents/WETextInput';
-import WEUserModal from '../CommonComponents/WEUserModal';
-import WEButton from '../CommonComponents/WEButton';
-import webEngageManager from '../WebEngageHandler/WebEngageManager';
+import COLORS from '../../Styles/Colors';
+import WETextInput from '../../CommonComponents/WETextInput';
+import WEUserModal from '../../CommonComponents/WEUserModal';
+import WEButton from '../../CommonComponents/WEButton';
+import webEngageManager from '../../WebEngageHandler/WebEngageManager';
+import CONSTANTS from '../../Utils/Constants';
 
 const ScreenComponent = () => {
   const [screenName, setScreenName] = useState<string>('');
@@ -32,7 +33,10 @@ const ScreenComponent = () => {
       setCustomAttributeList(updatedAttributeList);
     }
     toggleModal();
-    console.log('WebEngage: Custom Attribute Updated', updatedAttributeList);
+    console.log(
+      CONSTANTS.WEBENGAGE_SCREEN + ' Custom Attribute Updated',
+      updatedAttributeList,
+    );
   };
 
   const onscreenNameChange = (text: string) => {
@@ -47,7 +51,8 @@ const ScreenComponent = () => {
     if (screenName) {
       if (Object.keys(customAttributeList).length > 0) {
         console.log(
-          'WebEngage: Screen Name' +
+          CONSTANTS.WEBENGAGE_SCREEN +
+            ' Screen Name' +
             screenName +
             ' navigated with ' +
             JSON.stringify(customAttributeList),
@@ -55,7 +60,10 @@ const ScreenComponent = () => {
         webEngageManager.screen(screenName, customAttributeList);
       } else {
         console.log(
-          'WebEngage: Screen Name' + screenName + ' navigated wihtout Data',
+          CONSTANTS.WEBENGAGE_SCREEN +
+            ' Screen Name' +
+            screenName +
+            ' navigated wihtout Data',
         );
         webEngageManager.screen(screenName);
       }

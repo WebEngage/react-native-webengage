@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ScrollView, View, Text, Button, StyleSheet} from 'react-native';
+import {ScrollView, View, Text, StyleSheet} from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import {Picker} from '@react-native-picker/picker';
 import WETextInput from '../CommonComponents/WETextInput';
@@ -7,6 +7,7 @@ import webEngageManager from '../WebEngageHandler/WebEngageManager';
 import WEButton from '../CommonComponents/WEButton';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import WEUserModal from '../CommonComponents/WEUserModal';
+import CONSTANTS from '../Utils/Constants';
 
 const ProfileScreen: React.FC = () => {
   const [firstName, setFirstName] = useState<string>('');
@@ -108,16 +109,24 @@ const ProfileScreen: React.FC = () => {
       customAttributeList.forEach(item => {
         const key = Object.keys(item)[0];
         const value = item[key];
-        console.log('WebEngage: Add custom attribute key - value ', key, value);
+        console.log(
+          CONSTANTS.WEBENGAGE + 'Adding custom attribute key - value ',
+          key,
+          value,
+        );
         webEngageManager.user.setAttribute(key, value);
       });
     }
     if (attributeToDelete) {
-      console.log('WebEngage: Delete custom attribute - ' + attributeToDelete);
+      console.log(
+        CONSTANTS.WEBENGAGE +
+          ' Deleting custom attribute - ' +
+          attributeToDelete,
+      );
       webEngageManager.user.deleteAttribute(attributeToDelete);
       setAttributeToDelete('');
     }
-    console.log('WebEngage: User Profile Updated');
+    console.log(CONSTANTS.WEBENGAGE + ' User Profile Updated successfylly ');
   };
 
   const onKeyChange = (text: string) => {
@@ -137,11 +146,9 @@ const ProfileScreen: React.FC = () => {
       setCustomAttributeList(updatedAttributeList);
     }
     toggleModal();
-    console.log('WebEngage: Custom Attribute Updated', customAttributeList);
   };
 
   const onDeleteAttribute = () => {
-    console.log('WebEngage: Custom Attribute Updated', customAttributeList);
     toggleDeleteModal();
   };
 

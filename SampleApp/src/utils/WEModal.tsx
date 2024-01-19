@@ -8,6 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import WEButton from '../CommonComponents/WEButton';
+import CONSTANTS from './Constants';
 
 const WEModal = ({
   visible,
@@ -30,22 +31,19 @@ const WEModal = ({
   const handleLogin = () => {
     if (isJwtModal) {
       // JWT Update Modal
-      console.log('WEModal:  update JWT', password);
       if (password && onPasswordUpdate) {
         onPasswordUpdate(password);
       }
     } else {
       // Login Modal
       if (username) {
-        console.log('WEModal:  onLogin', username);
         if (onLogin) {
           onLogin(username, password);
         }
         setErrorMessage('');
         onClose();
-        console.log('Login successful');
       } else {
-        setErrorMessage('Invalid username or password');
+        setErrorMessage(CONSTANTS.WEBENGAGE + 'Invalid username or password');
       }
     }
   };

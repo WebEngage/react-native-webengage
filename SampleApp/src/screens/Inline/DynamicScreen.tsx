@@ -19,12 +19,12 @@ import {
   deregisterWECampaignCallback,
 } from 'react-native-we-personalization';
 
-import {useFocusEffect} from '@react-navigation/native';
-import webEngageManager from '../WebEngageHandler/WebEngageManager';
-import NavigationModal from '../Navigation/NavigationModal';
-import WETextInput from '../CommonComponents/WETextInput';
-import WEButton from '../CommonComponents/WEButton';
-import AsyncStorageUtil from '../Utils/AsyncStorageUtils';
+import webEngageManager from '../../WebEngageHandler/WebEngageManager';
+import NavigationModal from '../../Navigation/NavigationModal';
+import WETextInput from '../../CommonComponents/WETextInput';
+import WEButton from '../../CommonComponents/WEButton';
+import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
+import CONSTANTS from '../../Utils/Constants';
 
 interface DynamicScreenProps {
   navigation: any;
@@ -42,6 +42,13 @@ interface DynamicScreenProps {
     };
   };
 }
+interface InlineViewProps {
+  position: number;
+  height?: number;
+  width?: number;
+  isCustomView: boolean;
+  propertyId: string;
+}
 
 interface WECampaignContent {
   layoutType?: string | null;
@@ -49,8 +56,6 @@ interface WECampaignContent {
   properties: Record<string, any>;
   children: WECampaignContent[];
   customData: Record<string, any>;
-
-  // Add other properties as needed
 }
 
 interface WECampaignDataProps {
@@ -72,7 +77,8 @@ interface WECampaignDataProps {
 }
 
 const DynamicScreen: React.FC<DynamicScreenProps> = props => {
-  const {navigation = {}, route: {params: {item = {}} = {}} = {}} = props;
+  const {navigation = {}, route: {params: {item = {} as any} = {}} = {}} =
+    props;
 
   const {
     screenName = '',
@@ -101,18 +107,14 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
   const [exceptionLable, setExceptionLable] = React.useState('No Exception');
   const [eventNameToTrigger, setEventNameToTrigger] = React.useState('');
 
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log('WebEngage: Inline: useFocusEffect: ', screenName);
-      return () => {};
-    }, []),
-  );
-
   useEffect(() => {
     if (screenName) {
       if (screenProperty && screenValue) {
         console.log(
-          'Example: dynamic navigating to ' + screenName + ' with data',
+          CONSTANTS.WEBENGAGE_INLINE +
+            '  navigating to ' +
+            screenName +
+            ' with data',
           {[screenProperty]: screenValue},
         );
         webEngageManager.screen(screenName, {
@@ -120,7 +122,10 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
         });
       } else {
         console.log(
-          'Example: dynamic navigating to ' + screenName + ' without data',
+          CONSTANTS.WEBENGAGE_INLINE +
+            '  navigating to ' +
+            screenName +
+            ' without data',
         );
         webEngageManager.screen(screenName);
       }
@@ -132,9 +137,9 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
 
     return () => {
       console.log(
-        `Screen ${screenName} is unmounted. You can clean up here if needed.`,
+        CONSTANTS.WEBENGAGE_INLINE +
+          ` Screen ${screenName} is unmounted. You can clean up here if needed.`,
       );
-      // Add any cleanup actions if needed
     };
   }, [screenName]);
 
@@ -220,22 +225,30 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
     }
   };
 
-  // data should weCampaignData
   const onCampaignPrepared = (weCampaignData: WECampaignDataProps) => {
-    console.log('Example: dynamic: onCampaignPrepared ', weCampaignData);
+    console.log(
+      CONSTANTS.WEBENGAGE_INLINE + '  dynamic: onCampaignPrepared ',
+      weCampaignData,
+    );
   };
 
   const onCampaignShown = (weCampaignData: WECampaignDataProps) => {
-    console.log('Example: dynamic: onCampaignShown ', weCampaignData);
+    console.log(
+      CONSTANTS.WEBENGAGE_INLINE + '  dynamic: onCampaignShown ',
+      weCampaignData,
+    );
   };
 
   const onCampaignException = (weCampaignData: WECampaignDataProps) => {
-    console.log('Example: dynamic: onCampaignException ', weCampaignData);
+    console.log(
+      CONSTANTS.WEBENGAGE_INLINE + '  dynamic: onCampaignException ',
+      weCampaignData,
+    );
   };
 
   const onRendered1 = (weCampaignData: WECampaignDataProps) => {
     console.log(
-      'Example: Dynamic onRendered triggered for -',
+      CONSTANTS.WEBENGAGE_INLINE + '  Dynamic onRendered triggered for -',
       weCampaignData?.targetViewId,
       weCampaignData,
     );
@@ -243,7 +256,7 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
 
   const onDataReceived1 = (weCampaignData: WECampaignDataProps) => {
     console.log(
-      'Example: Dynamic onDataReceived triggered for ',
+      CONSTANTS.WEBENGAGE_INLINE + '  Dynamic onDataReceived triggered for ',
       weCampaignData?.targetViewId,
       weCampaignData,
     );
@@ -251,7 +264,8 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
 
   const onPlaceholderException1 = (weCampaignData: WECampaignDataProps) => {
     console.log(
-      'Example: Dynamic onPlaceholderException triggered for ',
+      CONSTANTS.WEBENGAGE_INLINE +
+        '  Dynamic onPlaceholderException triggered for ',
       weCampaignData?.targetViewId,
       weCampaignData,
     );
@@ -270,7 +284,7 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
       [targetViewId]: JSON.stringify(weCampaignData),
     }));
     console.log(
-      'Example: custom onDataReceived!!! triggered for ',
+      CONSTANTS.WEBENGAGE_INLINE + '  custom onDataReceived!!! triggered for ',
       weCampaignData?.targetViewId,
       weCampaignData,
       customViewLabel,
@@ -281,7 +295,8 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
     weCampaignData: WECampaignDataProps,
   ) => {
     console.log(
-      'Example: custom onPlaceholderException triggered for ',
+      CONSTANTS.WEBENGAGE_INLINE +
+        '  custom onPlaceholderException triggered for ',
       weCampaignData?.targetViewId,
       weCampaignData,
     );
@@ -302,7 +317,7 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
   };
 
   const renderRecycler = ({item, index}) => {
-    let inlineView = null;
+    let inlineView: InlineViewProps | null = null;
     let isCustomView = false;
     viewData?.forEach(viewItem => {
       const {position} = viewItem;
@@ -313,8 +328,8 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
     });
     const styleList = isRecyclerView ? styles.flatColor : [];
     if (inlineView) {
-      const inlineHeight = inlineView?.height || 250;
-      const inlineWidth = inlineView?.width || Dimensions.get('window').width;
+      const inlineHeight = inlineView.height || 250;
+      const inlineWidth = inlineView.width || Dimensions.get('window').width;
       if (isCustomView) {
         return (
           <View>
@@ -365,8 +380,6 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
   };
 
   const renderRegularScreen = () => {
-    console.log('customViewLabel in regular - ', customViewLabel);
-
     return arr.map((item, index) => {
       return renderRecycler({item, index});
     });
@@ -413,9 +426,6 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
           value={eventNameToTrigger}
           onChangeText={text => setEventNameToTrigger(text)}
         />
-        {/* <TouchableOpacity onPress={trackEvent} style={styles.trackButton}>
-          <Text style={styles.trackText}> Track </Text>
-        </TouchableOpacity> */}
         <WEButton
           buttonText="Track"
           onPress={trackEvent}

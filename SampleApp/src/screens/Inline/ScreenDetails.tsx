@@ -2,10 +2,10 @@ import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import PropTypes from 'prop-types';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import InlineViewModal from '../CommonComponents/InlineViewModal';
-import WEButton from '../CommonComponents/WEButton';
-import WETextInput from '../CommonComponents/WETextInput';
-import AsyncStorageUtil from '../Utils/AsyncStorageUtils';
+import InlineViewModal from '../../CommonComponents/InlineViewModal';
+import WEButton from '../../CommonComponents/WEButton';
+import WETextInput from '../../CommonComponents/WETextInput';
+import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
 
 interface ScreenDetailsProps {
   navigation: any;

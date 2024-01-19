@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 // import {ScreenNamesContext} from '../Navigation';
-import {navigate} from '../Navigation/NavigationService';
-import webEngageManager from '../WebEngageHandler/WebEngageManager';
-import WEButton from '../CommonComponents/WEButton';
-import COLORS from '../Styles/Colors';
-import AsyncStorageUtil from '../Utils/AsyncStorageUtils';
+import {navigate} from '../../Navigation/NavigationService';
+import webEngageManager from '../../WebEngageHandler/WebEngageManager';
+import WEButton from '../../CommonComponents/WEButton';
+import COLORS from '../../Styles/Colors';
+import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
 
 interface ScreenItem {
   id: string;
@@ -14,11 +14,11 @@ interface ScreenItem {
   isRecyclerView: boolean;
 }
 
-interface CustomScreensProps {
+interface ScreenListProps {
   navigation: any;
 }
 
-const CustomScreens: React.FC<CustomScreensProps> = ({navigation}) => {
+const ScreenList: React.FC<ScreenListProps> = ({navigation}) => {
   const [screenList, setScreenList] = useState<ScreenItem[]>([]);
 
   const addScreen = () => {
@@ -217,4 +217,4 @@ const styles = StyleSheet.create({
     color: COLORS.grey,
   },
 });
-export default CustomScreens;
+export default ScreenList;

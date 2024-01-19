@@ -12,7 +12,7 @@ import {
 import PropTypes from 'prop-types';
 import Spinner from 'react-native-loading-spinner-overlay';
 import HeaderMoreButton from './HeaderMoreButton';
-import WEButton from '../CommonComponents/WEButton';
+import WEButton from '../../CommonComponents/WEButton';
 import {
   getNotificationList,
   readAll,
@@ -24,6 +24,7 @@ import {
   trackClick,
   trackView,
 } from 'react-native-webengage-inbox';
+import CONSTANTS from '../../Utils/Constants';
 
 interface Notification {
   status: string;
@@ -80,6 +81,7 @@ const NotificationInbox: FC<NotificationInboxProps> = ({navigation}) => {
   };
 
   const fetchNextList = async () => {
+    console.log(CONSTANTS.WEBENGAGE_INBOX + ' Fetching Next List');
     setIsLoading(true);
     if (notificationList.length) {
       const offset = notificationList[notificationList.length - 1];
@@ -90,7 +92,7 @@ const NotificationInbox: FC<NotificationInboxProps> = ({navigation}) => {
         notificationListFailure(error);
       }
     } else {
-      console.log('WebEngage: Inbox: NotificationList is empty');
+      console.log(CONSTANTS.WEBENGAGE_INBOX + ' NotificationList is empty');
     }
   };
 
@@ -224,6 +226,9 @@ const NotificationInbox: FC<NotificationInboxProps> = ({navigation}) => {
 
   // Success and Error callbacks for List
   const notificationListSuccess = (data: any) => {
+    console.log(
+      CONSTANTS.WEBENGAGE_INBOX + ' notificationListSuccess  -  ' + data,
+    );
     setIsLoading(false);
     const {messageList = [], hasNext = true} = data;
     setNotificationList([...notificationList, ...messageList]);
@@ -231,8 +236,15 @@ const NotificationInbox: FC<NotificationInboxProps> = ({navigation}) => {
   };
 
   const notificationListFailure = (err: any) => {
-    setIsLoading(false);
-    console.error(' Error while fetching notification list', err);
+    CONSTANTS.WEBENGAGE_INBOX +
+      ' notificationListFailure  -  ' +
+      JSON.stringify(err),
+      setIsLoading(false);
+
+    console.error(
+      CONSTANTS.WEBENGAGE_INBOX + ' Error while fetching notification list',
+      err,
+    );
   };
 
   const showHasNext = () => {

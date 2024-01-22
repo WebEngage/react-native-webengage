@@ -1,12 +1,12 @@
 // EventsScreen.js
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import COLORS from '../../Styles/Colors';
-import WETextInput from '../../CommonComponents/WETextInput';
-import WEUserModal from '../../CommonComponents/WEUserModal';
-import WEButton from '../../CommonComponents/WEButton';
-import webEngageManager from '../../WebEngageHandler/WebEngageManager';
-import CONSTANTS from '../../Utils/Constants';
+import COLORS from '../Styles/Colors';
+import WETextInput from '../CommonComponents/WETextInput';
+import WEUserModal from '../CommonComponents/WEUserModal';
+import WEButton from '../CommonComponents/WEButton';
+import webEngageManager from '../WebEngageHandler/WebEngageManager';
+import CONSTANTS from '../Utils/Constants';
 
 const ScreenComponent = () => {
   const [screenName, setScreenName] = useState<string>('');
@@ -52,7 +52,7 @@ const ScreenComponent = () => {
       if (Object.keys(customAttributeList).length > 0) {
         console.log(
           CONSTANTS.WEBENGAGE_SCREEN +
-            ' Screen Name' +
+            ' Screen Name ' +
             screenName +
             ' navigated with ' +
             JSON.stringify(customAttributeList),
@@ -61,9 +61,9 @@ const ScreenComponent = () => {
       } else {
         console.log(
           CONSTANTS.WEBENGAGE_SCREEN +
-            ' Screen Name' +
+            ' Screen Name ' +
             screenName +
-            ' navigated wihtout Data',
+            ' navigated without Data',
         );
         webEngageManager.screen(screenName);
       }
@@ -114,7 +114,11 @@ const ScreenComponent = () => {
             onChangeText={onValueAttrChange}
           />
         </View>
-        <WEButton onPress={onSaveAttribute} buttonText="Save" />
+        <WEButton
+          onPress={onSaveAttribute}
+          buttonText="Save"
+          buttonStyle={styles.modalButton}
+        />
       </View>
     );
   };
@@ -208,6 +212,17 @@ const styles = StyleSheet.create({
   },
   trackButtonText: {
     color: 'white',
+  },
+  modalButton: {
+    backgroundColor: COLORS.blue,
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 10,
+    width: 100,
   },
   rowList: {
     flexDirection: 'row',

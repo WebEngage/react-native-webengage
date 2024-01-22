@@ -6,23 +6,53 @@ import webEngageManager from '../../WebEngageHandler/WebEngageManager';
 import WEButton from '../../CommonComponents/WEButton';
 import COLORS from '../../Styles/Colors';
 import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
+import CONSTANTS from '../../Utils/Constants';
 
 interface ScreenItem {
-  id: string;
+  size: number;
   screenName: string;
-  size: string;
+  eventName: string;
   isRecyclerView: boolean;
+  viewData: Array<{
+    position: number;
+    height?: number;
+    width?: number;
+    propertyId: string;
+    isCustomView: boolean;
+  }>;
+  screenProperty: string;
+  screenValue: string;
+  id: number;
 }
 
 interface ScreenListProps {
   navigation: any;
 }
 
+const defaultScreenData: ScreenItem = {
+  size: 10,
+  screenName: 'screen1',
+  eventName: '',
+  isRecyclerView: false,
+  viewData: [
+    {
+      position: 1,
+      height: 100,
+      width: 300,
+      propertyId: 'S1P1',
+      isCustomView: false,
+    },
+  ],
+  screenProperty: '',
+  screenValue: '',
+  id: 24,
+};
+
 const ScreenList: React.FC<ScreenListProps> = ({navigation}) => {
   const [screenList, setScreenList] = useState<ScreenItem[]>([]);
 
   const addScreen = () => {
-    navigation.navigate('screenDetails');
+    navigation.navigate(CONSTANTS.SCREEN_NAMES.SCREEN_DETAILS);
   };
 
   useEffect(() => {
@@ -30,6 +60,8 @@ const ScreenList: React.FC<ScreenListProps> = ({navigation}) => {
     const unsubscribe = navigation.addListener('focus', async () => {
       const screenData = await AsyncStorageUtil.getItem('screenData');
       const screenLists: ScreenItem[] = JSON.parse(screenData);
+      // screenLists.unshift(defaultScreenData);
+      console.log('WebEngage: screenData - ', screenData);
       setScreenList(screenLists);
     });
     return unsubscribe;
@@ -43,11 +75,14 @@ const ScreenList: React.FC<ScreenListProps> = ({navigation}) => {
   };
 
   const openScreen = (item: ScreenItem) => {
-    navigate('dynamicScreen', {item, screenId: item.screenName});
+    navigate(CONSTANTS.SCREEN_NAMES.DYNAMIC_SCREEN, {
+      item,
+      screenId: item.screenName,
+    });
   };
 
   const editScreen = (item: ScreenItem, index: number) => {
-    navigation.navigate('screenDetails', {
+    navigation.navigate(CONSTANTS.SCREEN_NAMES.SCREEN_DETAILS, {
       screenData: item,
       isEdit: true,
       itemIndex: index,
@@ -128,7 +163,9 @@ const ScreenList: React.FC<ScreenListProps> = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+  },
   flatlistStyle: {
     height: '100%',
   },

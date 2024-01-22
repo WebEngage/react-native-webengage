@@ -1,13 +1,6 @@
-import React, {useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Modal,
-  Text,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
-import WEButton from './WEButton';
+import React from 'react';
+import {View, StyleSheet, Modal, Text, TouchableOpacity} from 'react-native';
+import COLORS from '../Styles/Colors';
 
 const WEUserModal = ({
   visible,
@@ -26,7 +19,10 @@ const WEUserModal = ({
       transparent>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={onClose}
+            style={styles.closeButton}>
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
           {modalUI()}
@@ -44,7 +40,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderRadius: 10,
     padding: 20,
     width: '80%',
@@ -54,10 +50,10 @@ const styles = StyleSheet.create({
     width: 25,
     top: 5,
     right: 10,
-    padding: 5,
+    padding: 2,
   },
   closeButtonText: {
-    color: '#0a0909',
+    color: COLORS.jetBlack,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -69,13 +65,13 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: COLORS.grey,
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
   },
   errorText: {
-    color: 'red',
+    color: COLORS.error_red,
     marginBottom: 10,
   },
 });

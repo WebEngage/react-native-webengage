@@ -175,7 +175,11 @@ const ProfileScreen: React.FC = () => {
             onChangeText={onValueAttrChange}
           />
         </View>
-        <WEButton onPress={onSaveAttribute} buttonText="Save" />
+        <WEButton
+          onPress={onSaveAttribute}
+          buttonText="Add"
+          buttonStyle={styles.modalButton}
+        />
       </View>
     );
   };
@@ -192,7 +196,11 @@ const ProfileScreen: React.FC = () => {
             onChangeText={onChangeToDeleteAttr}
           />
         </View>
-        <WEButton onPress={onDeleteAttribute} buttonText="Save" />
+        <WEButton
+          onPress={onDeleteAttribute}
+          buttonText="Delete"
+          buttonStyle={styles.modalButton}
+        />
       </View>
     );
   };
@@ -396,7 +404,11 @@ const ProfileScreen: React.FC = () => {
           <Text>Viber</Text>
         </View>
       </View>
-      <WEButton buttonText="Save" onPress={onSave} />
+      <WEButton
+        buttonText="Save"
+        onPress={onSave}
+        buttonStyle={styles.button}
+      />
       <WEUserModal
         modalUI={customAttributeUI}
         visible={showUserModal}
@@ -451,6 +463,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     marginBottom: 15,
+  },
+  button: {
+    backgroundColor: '#A782E4',
+    padding: 10,
+    width: 300,
+    margin: 10,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 20,
+    marginBottom: 50,
+  },
+  modalButton: {
+    backgroundColor: '#A782E4',
+    padding: 10,
+    width: 200,
+    margin: 10,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 20,
   },
   attributeTextbox: {
     width: 200,

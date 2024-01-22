@@ -8,7 +8,7 @@ const CONSTANTS = {
     SCREENS: 'Screens',
     INLINE: 'Inline',
     APP_INBOX: 'AppInbox',
-    SCREEN_LIST: 'ScreenList',
+    SCREEN_LIST: 'screenList',
     SCREEN_DETAILS: 'ScreenDetails',
     DYNAMIC_SCREEN: 'DynamicScreen',
     NOTIFICATION_INBOX: 'NotificationInbox',

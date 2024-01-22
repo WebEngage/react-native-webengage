@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import WEButton from '../CommonComponents/WEButton';
 import CONSTANTS from './Constants';
+import WETextInput from '../CommonComponents/WETextInput';
 
 const WEModal = ({
   visible,
@@ -61,15 +62,15 @@ const WEModal = ({
           </TouchableOpacity>
           <Text style={styles.modalTitle}>{buttonLabel}</Text>
           {!isJwtModal && (
-            <TextInput
-              style={styles.input}
+            <WETextInput
+              customStyle={styles.input}
               placeholder="Username"
               onChangeText={text => setUsername(text)}
               value={username}
             />
           )}
-          <TextInput
-            style={styles.input}
+          <WETextInput
+            customStyle={styles.input}
             placeholder="Password"
             secureTextEntry
             onChangeText={text => setPassword(text)}
@@ -127,6 +128,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
+    width: '100%',
     borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 10,

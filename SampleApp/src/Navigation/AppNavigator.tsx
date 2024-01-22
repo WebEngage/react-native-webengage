@@ -4,13 +4,13 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {navigationRef} from './NavigationService';
 
 import ProfileScreen from '../screens/ProfileScreen';
-import EventsScreen from '../screens/EventsScreen';
+import EventsScreen from '../screens/EventComponent/EventsScreen';
 import HomeScreen from '../screens/HomeScreen';
 import InlineScreen from '../screens/InlineScreen';
 import {StyleSheet} from 'react-native';
 import COLORS from '../Styles/Colors';
 import CONSTANTS from '../Utils/Constants';
-import ScreenComponent from '../screens/ScreenComponent/ScreenComponent';
+import ScreenComponent from '../screens/ScreenComponent';
 import ScreenList from '../screens/Inline/ScreenList';
 import ScreenDetails from '../screens/Inline/ScreenDetails';
 import DynamicScreen from '../screens/Inline/DynamicScreen';
@@ -54,9 +54,8 @@ const AppNavigator = () => {
         />
         <Stack.Screen
           name={CONSTANTS.SCREEN_NAMES.INLINE}
-          component={InlineScreen}
+          component={ScreenList}
           options={{
-            title: CONSTANTS.SCREEN_TITLE.INLINE,
             headerStyle: styles.headerStyle,
             headerTintColor: COLORS.white,
             headerTitleStyle: styles.headerTextStyle,

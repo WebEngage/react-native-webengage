@@ -297,7 +297,7 @@ const NotificationInbox: FC<NotificationInboxProps> = ({navigation}) => {
         </View>
       )}
       <ImageBackground
-        source={require('../Assets/images/NI_background.jpg')}
+        source={require('../../Assets/images/NI_background.jpg')}
         style={styles.imageBackground}>
         <ScrollView>
           <View style={styles.adjustContainer}>

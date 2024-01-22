@@ -120,7 +120,7 @@ const ShoppingEventsScreen: React.FC = () => {
           <Text style={styles.checkboxText}>Laptop (Rs. 75000.00)</Text>
         </View>
       </ScrollView>
-      <WEButton buttonText="Buy" onPress={buy} />
+      <WEButton buttonText="Buy" onPress={buy} buttonStyle={styles.button} />
     </View>
   );
 };
@@ -144,6 +144,14 @@ const styles = StyleSheet.create({
   },
   checkboxText: {
     marginLeft: 8,
+  },
+  button: {
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+    marginBottom: 50,
+    height: 40,
+    width: 250,
   },
 });
 

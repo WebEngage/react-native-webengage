@@ -1,14 +1,14 @@
 // EventsScreen.js
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import COLORS from '../Styles/Colors';
-import WETextInput from '../CommonComponents/WETextInput';
+import COLORS from '../../Styles/Colors';
+import WETextInput from '../../CommonComponents/WETextInput';
 import {Picker} from '@react-native-picker/picker';
-import WEUserModal from '../CommonComponents/WEUserModal';
-import WEButton from '../CommonComponents/WEButton';
-import ShoppingEventsScreen from './ScreenComponent/ShoppingEventScreen';
-import webEngageManager from '../WebEngageHandler/WebEngageManager';
-import CONSTANTS from '../Utils/Constants';
+import WEUserModal from '../../CommonComponents/WEUserModal';
+import WEButton from '../../CommonComponents/WEButton';
+import ShoppingEventsScreen from './ShoppingEventScreen';
+import webEngageManager from '../../WebEngageHandler/WebEngageManager';
+import CONSTANTS from '../../Utils/Constants';
 
 const EventsScreen = () => {
   const [eventName, setEventName] = useState<string>('');
@@ -111,7 +111,11 @@ const EventsScreen = () => {
             onChangeText={onValueAttrChange}
           />
         </View>
-        <WEButton onPress={onSaveAttribute} buttonText="Save" />
+        <WEButton
+          onPress={onSaveAttribute}
+          buttonText="Save"
+          buttonStyle={styles.modalButton}
+        />
       </View>
     );
   };
@@ -247,6 +251,13 @@ const styles = StyleSheet.create({
   attributeTextbox: {
     width: 200,
     padding: 10,
+  },
+  modalButton: {
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 20,
   },
 });
 

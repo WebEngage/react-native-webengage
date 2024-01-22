@@ -25,6 +25,7 @@ import WETextInput from '../../CommonComponents/WETextInput';
 import WEButton from '../../CommonComponents/WEButton';
 import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
 import CONSTANTS from '../../Utils/Constants';
+import COLORS from '../../Styles/Colors';
 
 interface DynamicScreenProps {
   navigation: any;
@@ -403,7 +404,7 @@ const DynamicScreen: React.FC<DynamicScreenProps> = props => {
 
   const sendNavigation = navItem => {
     const {screenName: navigateScreen} = navItem;
-    navigation.navigate('dynamicScreen', {
+    navigation.navigate(CONSTANTS.SCREEN_NAMES.DYNAMIC_SCREEN, {
       item: navItem,
       screenId: navigateScreen,
     });
@@ -451,17 +452,17 @@ const styles = StyleSheet.create({
   },
   card: {
     height: 100,
-    backgroundColor: '#e3e1de',
+    backgroundColor: COLORS.lightGray,
     borderRadius: 25,
     margin: 20,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
     marginTop: 25,
-    backgroundColor: '#06522b',
+    backgroundColor: COLORS.darkGreen,
     borderWidth: 1,
     width: 100,
     height: 50,
@@ -474,7 +475,7 @@ const styles = StyleSheet.create({
   },
   customButton: {
     marginTop: 25,
-    backgroundColor: '#eb5e67',
+    backgroundColor: COLORS.error_red,
     borderWidth: 1,
     width: 100,
     height: 50,
@@ -491,10 +492,10 @@ const styles = StyleSheet.create({
   },
   border: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: COLORS.white,
   },
   flatColor: {
-    backgroundColor: '#e8b77b',
+    backgroundColor: COLORS.peach,
   },
   textStyle: {
     fontSize: 20,
@@ -510,18 +511,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     marginBottom: 2,
     marginHorizontal: 20,
-    borderBottomColor: '#ccc',
+    borderBottomColor: COLORS.white,
   },
   trackButton: {
     height: 30,
     width: 100,
-    backgroundColor: '#fcc111',
+    backgroundColor: COLORS.goldenRod,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
   },
   trackText: {
-    color: '#000',
+    color: COLORS.black,
     fontSize: 20,
     fontWeight: 'bold',
   },

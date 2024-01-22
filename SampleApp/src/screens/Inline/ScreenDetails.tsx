@@ -6,6 +6,7 @@ import InlineViewModal from '../../CommonComponents/InlineViewModal';
 import WEButton from '../../CommonComponents/WEButton';
 import WETextInput from '../../CommonComponents/WETextInput';
 import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
+import COLORS from '../../Styles/Colors';
 
 interface ScreenDetailsProps {
   navigation: any;
@@ -27,7 +28,7 @@ export default function ScreenDetails(props: ScreenDetailsProps) {
   const {navigation, route = {}} = props;
   const {params = {}} = route;
   const {screenData = {}, isEdit = false, itemIndex = 0} = params;
-  const [size, setSize] = useState<number>(screenData?.size || 0);
+  const [size, setSize] = useState<string>(screenData?.size || '10');
   const [screenName, setScreenName] = useState<string>(
     screenData?.screenName || '',
   );
@@ -59,7 +60,7 @@ export default function ScreenDetails(props: ScreenDetailsProps) {
   }, []);
 
   const onSizeChange = (value: string) => {
-    setSize(Number(value));
+    setSize(value);
   };
 
   const onScreenChange = (value: string) => {
@@ -79,10 +80,11 @@ export default function ScreenDetails(props: ScreenDetailsProps) {
   };
 
   const addScreenDetails = () => {
-    if (size > 0 && screenName) {
+    const listSize = Number(size);
+    if (!isNaN(listSize) && listSize > 0 && screenName) {
       const randomNumber = Math.floor(Math.random() * 1000 + 1);
       const updatedScreenData: ScreenData = {
-        size,
+        size: listSize,
         screenName,
         eventName,
         isRecyclerView,
@@ -204,7 +206,7 @@ export default function ScreenDetails(props: ScreenDetailsProps) {
           <WETextInput
             customStyle={styles.textViewStyle}
             onChangeText={onSizeChange}
-            value={size.toString()}
+            value={size}
             keyboardType="numeric"
             autoCapitalize="none"
           />
@@ -301,7 +303,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   deletebtn: {
-    backgroundColor: '#e0a375',
+    backgroundColor: COLORS.peach,
     width: 100,
     height: 40,
     borderRadius: 25,

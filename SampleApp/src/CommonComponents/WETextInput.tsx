@@ -6,6 +6,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
+import COLORS from '../Styles/Colors';
 
 interface WETextInputProps extends TextInputProps {
   customStyle?: StyleProp<ViewStyle>;
@@ -54,14 +55,14 @@ const WETextInput: React.FC<WETextInputProps> = ({
 const styles = StyleSheet.create({
   defaultInput: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: COLORS.white,
     borderBottomWidth: 1,
     borderRadius: 5,
     paddingLeft: 10,
     marginBottom: 10,
     fontSize: 16,
     width: 100,
-    color: '#333',
+    color: COLORS.darkGray,
   },
 });
 

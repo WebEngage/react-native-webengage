@@ -4,6 +4,7 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import PropTypes from 'prop-types';
 import WETextInput from './WETextInput';
 import WEButton from './WEButton';
+import COLORS from '../Styles/Colors';
 
 interface InlineViewModalProps {
   isModalVisible?: boolean;
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
   },
   formView: {flex: 1, justifyContent: 'center', alignItems: 'center'},
   button: {
-    backgroundColor: '#5e74e0',
+    backgroundColor: COLORS.mediumBlue,
     width: 100,
     height: 25,
     borderRadius: 25,
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   btnTxt: {
-    color: '#FFFFFF',
+    color: COLORS.white,
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -198,7 +199,10 @@ const styles = StyleSheet.create({
     height: 20,
     marginTop: 30,
   },
-  modalCard: {backgroundColor: '#fff', padding: 20},
+  modalCard: {
+    backgroundColor: COLORS.white,
+    padding: 20,
+  },
 });
 
 export default InlineViewModal;

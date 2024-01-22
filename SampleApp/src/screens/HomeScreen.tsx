@@ -90,6 +90,8 @@ const HomeScreen = ({navigation}) => {
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: renderHeaderRight,
+      title: 'RN-Sample App',
+      headerTitleAlign: CONSTANTS.SCREEN_NAMES.HOME,
     });
   }, [navigation, notificationCount, userName]);
 
@@ -156,12 +158,6 @@ const HomeScreen = ({navigation}) => {
         <WEButton
           buttonStyle={styles.loginContainer}
           buttonTextStyle={styles.loginText}
-          buttonText={'Info'}
-          onPress={() => console.log('TODO - Display info')}
-        />
-        <WEButton
-          buttonStyle={styles.loginContainer}
-          buttonTextStyle={styles.loginText}
           buttonText={'JWT'}
           onPress={toggleJwtModal}
         />
@@ -221,32 +217,25 @@ const HomeScreen = ({navigation}) => {
           buttonText={'Profile'}
           buttonStyle={styles.buttonContainer}
           buttonTextStyle={styles.buttonText}
-          onPress={() => navigate('Profile')}
+          onPress={() => navigate(CONSTANTS.SCREEN_NAMES.PROFILE)}
         />
         <WEButton
           buttonStyle={styles.buttonContainer}
           buttonTextStyle={styles.buttonText}
           buttonText={'Events'}
-          onPress={() => navigate('Events')}
+          onPress={() => navigate(CONSTANTS.SCREEN_NAMES.EVENTS)}
         />
         <WEButton
           buttonStyle={styles.buttonContainer}
           buttonTextStyle={styles.buttonText}
           buttonText={'Screens'}
-          onPress={() => navigate('Screens')}
+          onPress={() => navigate(CONSTANTS.SCREEN_NAMES.SCREENS)}
         />
         <WEButton
           buttonStyle={styles.buttonContainer}
           buttonTextStyle={styles.buttonText}
           buttonText={'Inline'}
-          onPress={() => navigate('screenList')}
-        />
-
-        <WEButton
-          buttonText={'Test Events'}
-          buttonStyle={styles.buttonContainer}
-          buttonTextStyle={styles.buttonText}
-          onPress={() => webEngageManager.track('Test Event')}
+          onPress={() => navigate(CONSTANTS.SCREEN_NAMES.INLINE)}
         />
       </View>
       <WEModal
@@ -297,11 +286,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonContainer: {
-    width: 150,
-    height: 50,
+    width: 200,
+    height: 70,
     justifyContent: 'center',
-    margin: 20,
+    margin: 30,
     borderWidth: 1,
+    borderRadius: 50,
   },
   modalContainer: {
     backgroundColor: '#fff',
@@ -310,7 +300,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 20,
+    fontSize: 25,
   },
   errorMessage: {
     color: COLORS.error_red,
@@ -350,6 +340,7 @@ const styles = StyleSheet.create({
   headerRight: {
     marginRight: 10,
     flexDirection: 'row',
+    marginBottom: 8,
   },
   notificationContainer: {
     flexDirection: 'row',

@@ -12,7 +12,7 @@ const HeaderMoreButton: FC<HeaderMoreButtonProps> = ({
     <View>
       <TouchableOpacity style={styles.menuIcon} onPress={toggleMenu}>
         <Image
-          source={require('../Assets/images/more.png')}
+          source={require('../../Assets/images/more.png')}
           style={styles.moreIcon}
         />
       </TouchableOpacity>

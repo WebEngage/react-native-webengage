@@ -1,9 +1,13 @@
-// NotificationViewController.h file
-#import <UIKit/UIKit.h>
-#import <UserNotifications/UserNotifications.h>
-#import <UserNotificationsUI/UserNotificationsUI.h>
-#import <WebEngageAppEx/WEXRichPushNotificationViewController.h>
+//
+//  NotificationViewController.h
+//  NotificationViewController
+//
+//  Created by Akshaykumar Chilad on 12/06/23.
+//
 
-@interface NotificationViewController : WEXRichPushNotificationViewController
+#import <UIKit/UIKit.h>
+
+@interface NotificationViewController : UIViewController
 
 @end
+

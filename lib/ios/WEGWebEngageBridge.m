@@ -14,7 +14,7 @@
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
-NSString *WEGPluginVersion = @"1.4.1";
+NSString *WEGPluginVersion = @"1.5.0";
 
 @implementation WEGWebEngageBridge
 
@@ -105,8 +105,19 @@ RCT_EXPORT_MODULE(webengageBridge);
     return mutableArr;
 }
 
-RCT_EXPORT_METHOD(init:(BOOL)autoRegister) {
-    [[WebEngage sharedInstance] application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:@{} notificationDelegate:self autoRegister:autoRegister];
+RCT_EXPORT_METHOD(initialize) {
+    [WEGJWTManager shared].tokenInvalidatedCallback = ^{
+        NSLog(@"webengageBridge: JWT Token is Invalid. Please send valid ");
+        NSDictionary *data = @{
+            @"error": @{
+                @"response": @{
+                    @"status": @"UID_MISMATCH",
+                    @"message": @"Invalid JWT token passed"
+                }
+            }
+        };
+        [self sendEventWithName:@"tokenInvalidated" body:data];
+    };
 }
 
 RCT_EXPORT_METHOD(trackEventWithName:(NSString *)name){
@@ -131,8 +142,20 @@ RCT_EXPORT_METHOD(screenNavigatedWithData:(NSString*) screenName andData: (NSDic
     }
 }
 
+RCT_EXPORT_METHOD(setLocation:(NSNumber *)latitude andLongitude:(NSNumber *)longitude ){
+    [[WebEngage sharedInstance].user setUserLocationWithLatitude:latitude andLongitude:longitude];
+}
+
+RCT_EXPORT_METHOD(loginWithSecureToken:(NSString*)userId secureToken:(NSString*)secureToken){
+    [[WebEngage sharedInstance].user login:userId jwtToken:secureToken];
+}
+
 RCT_EXPORT_METHOD(login:(NSString*)userIdentifier){
     [[WebEngage sharedInstance].user login:userIdentifier];
+}
+
+RCT_EXPORT_METHOD(setSecureToken:(NSString*)userId secureToken:(NSString*)secureToken){
+    [[WebEngage sharedInstance].user setSecureToken:userId jwtToken:secureToken];
 }
 
 RCT_EXPORT_METHOD(setAttribute:(NSString*)attributeName value:(id)value){
@@ -234,7 +257,7 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked"];
+    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated"];
 }
 
 - (void)notification:(NSMutableDictionary *)inAppNotificationData clickedWithAction:(NSString *)actionId {

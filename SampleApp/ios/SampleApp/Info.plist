@@ -20,6 +20,19 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>account1.weurl</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>account1.weurl</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -54,7 +67,7 @@
 	<key>WEGEnvironment</key>
 	<string>DEFAULT</string>
 	<key>WEGLicenseCode</key>
-	<string>aa131d2c</string>
+	<string>YOU_LICENSE_CODE</string>
 	<key>WEGLogLevel</key>
 	<string>VERBOSE</string>
 	<key>WEGManualIntegration</key>

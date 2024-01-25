@@ -45,7 +45,7 @@ const HomeScreen = ({navigation}) => {
   const invalidTokenCallback = (data: any) => {
     console.log(
       CONSTANTS.WEBENGAGE_INBOX + 'Invalid token callback ',
-      data.error,
+      data?.error,
     );
     const status = data?.error?.response?.status || '';
     const errorMessage = data?.error?.response?.message || '';

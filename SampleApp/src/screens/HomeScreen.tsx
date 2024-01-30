@@ -186,7 +186,7 @@ const HomeScreen = ({navigation}) => {
         webEngageManager.user.login(username);
         console.log(CONSTANTS.WEBENGAGE_INBOX + 'Login without jwt ', username);
       }
-      AsyncStorageUtil.setItem('userName', username);
+      AsyncStorageUtil.setItem('userName', JSON.stringify(username));
       setUserName(username);
       setSecurityExceptionLabel('');
       console.log(CONSTANTS.WEBENGAGE_INBOX + ' Login success ', username);

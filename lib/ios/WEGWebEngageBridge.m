@@ -116,7 +116,16 @@ RCT_EXPORT_METHOD(initialize) {
                 }
             }
         };
-        [self sendEventWithName:@"tokenInvalidated" body:data];
+        if(weHasListeners) {
+            [self sendEventWithName:@"tokenInvalidated" body:data];  
+        } else {
+            if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"tokenInvalidated"] = data;
+        } else {
+            self.pendingEventsDict[@"tokenInvalidated"] = data;
+        }
+        }
     };
 }
 
@@ -274,22 +283,57 @@ RCT_EXPORT_METHOD(logout){
             }
         }
     }
-    [self sendEventWithName:@"notificationClicked" body:inAppNotificationData];
+    if(weHasListeners) {
+        [self sendEventWithName:@"notificationClicked" body:inAppNotificationData];
+    } else {
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"notificationClicked"] = inAppNotificationData;
+        } else {
+            self.pendingEventsDict[@"notificationClicked"] = inAppNotificationData;
+        }
+    }
 }
 
 - (void)notificationDismissed:(NSMutableDictionary *)inAppNotificationData {
-    RCTLogInfo(@"webengageBridge: in-app notification dismissed");
-    [self sendEventWithName:@"notificationDismissed" body:inAppNotificationData];
+    if(weHasListeners) {
+        RCTLogInfo(@"webengageBridge: in-app notification dismissed");
+        [self sendEventWithName:@"notificationDismissed" body:inAppNotificationData];
+    } else {
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"notificationDismissed"] = inAppNotificationData;
+        } else {
+            self.pendingEventsDict[@"notificationDismissed"] = inAppNotificationData;
+        }
+    }
 }
 
 - (NSMutableDictionary *)notificationPrepared:(NSMutableDictionary *)inAppNotificationData shouldStop:(BOOL *)stopRendering {
-    [self sendEventWithName:@"notificationPrepared" body:inAppNotificationData];
+    if (weHasListeners) {
+        [self sendEventWithName:@"notificationPrepared" body:inAppNotificationData];
+    } else {
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"notificationPrepared"] = inAppNotificationData;
+        } else {
+            self.pendingEventsDict[@"notificationPrepared"] = inAppNotificationData;
+        }
+    }
     return inAppNotificationData;
 }
 
 - (void)notificationShown:(NSMutableDictionary *)inAppNotificationData {
-    RCTLogInfo(@"webengageBridge: in-app notification shown");
-    [self sendEventWithName:@"notificationShown" body:inAppNotificationData];
+    if (weHasListeners) {
+        [self sendEventWithName:@"notificationShown" body:inAppNotificationData];
+    } else {
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"notificationShown"] = inAppNotificationData;
+        } else {
+            self.pendingEventsDict[@"notificationShown"] = inAppNotificationData;
+        }
+    }
 }
 
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{

@@ -10,6 +10,7 @@
     "url": "git+https://github.com/WebEngage/react-native-webengage.git"
   },
   "main": "index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

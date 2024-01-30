@@ -76,6 +76,6 @@ package-lock.json
 
 /coverage
 /third-party
-webengage-inbox/*
+webengage-inbox-lib/*
 webengage-sdk-security/*
 framework for NI- sdk security/*

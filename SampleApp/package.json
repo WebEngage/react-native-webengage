@@ -18,12 +18,13 @@
     "react": "18.2.0",
     "react-native": "0.73.2",
     "react-native-bouncy-checkbox": "^3.0.7",
+    "react-native-gesture-handler": "^2.14.1",
     "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-modal": "^13.0.1",
     "react-native-safe-area-context": "^4.8.2",
     "react-native-we-personalization": "^1.0.0",
     "react-native-webengage": "file:../lib",
-    "react-native-webengage-inbox": "^1.0.0"
+    "react-native-webengage-inbox": "file:../webengage-inbox-lib"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -25,11 +25,14 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.webengage.sdk.android.Analytics;
 import com.webengage.sdk.android.UserProfile;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.actions.render.InAppNotificationData;
 import com.webengage.sdk.android.actions.render.PushNotificationData;
 import com.webengage.sdk.android.callbacks.InAppNotificationCallbacks;
 import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
+import com.webengage.sdk.android.callbacks.WESecurityCallback;
 import com.webengage.sdk.android.utils.Gender;
 import com.webengage.sdk.android.Channel;
 
@@ -52,7 +55,7 @@ import javax.annotation.Nullable;
 //WebEngageBridge singelton
 
 public class WebengageBridge extends ReactContextBaseJavaModule implements PushNotificationCallbacks,
-        InAppNotificationCallbacks {
+        InAppNotificationCallbacks, WESecurityCallback {
     private static final String TAG = "webengageBridge";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final int DATE_FORMAT_LENGTH = DATE_FORMAT.replaceAll("'", "").length();
@@ -94,6 +97,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         Log.d(TAG, "MyLogs Constructor called");
         WebEngage.registerPushNotificationCallback(this);
         WebEngage.registerInAppNotificationCallback(this);
+        WebEngage.registerWESecurityCallback(this);
         listenerCount = 0;
     }
 
@@ -123,6 +127,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     public void init(boolean autoRegister) {
         WebEngage.registerPushNotificationCallback(this);
         WebEngage.registerInAppNotificationCallback(this);
+        WebEngage.registerWESecurityCallback(this);
     }
 
     private static Date getDate(String value) {
@@ -159,7 +164,20 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
 
     @ReactMethod
     public void login(String userIdentifier) {
+        Logger.d(TAG, "login without jwt: " + userIdentifier);
         WebEngage.get().user().login(userIdentifier);
+    }
+
+    @ReactMethod
+    public void loginWithSecureToken(String userIdentifier, String jwtToken) {
+        Logger.d(TAG, "login with jwt: " + userIdentifier + "| JWT -  " + jwtToken);
+        WebEngage.get().user().login(userIdentifier, jwtToken);
+    }
+
+    @ReactMethod
+    public void setSecureToken(String cuid,String secureToken) {
+        Logger.d(TAG, "setSecureToken updating token- " + secureToken + " | for id - "+cuid);
+        WebEngage.get().setSecurityToken(cuid, secureToken);
     }
 
     @ReactMethod
@@ -223,6 +241,11 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     @ReactMethod
     public void setFirstName(String name) {
         WebEngage.get().user().setFirstName(name);
+    }
+    
+    @ReactMethod
+    public void setLocation(Double lat,Double lng) {
+        WebEngage.get().user().setLocation(lat,lng);
     }
 
     @ReactMethod
@@ -408,6 +431,57 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         return map;
     }
 
+    public static WritableMap convertMapToWritableMap(Map<String, Object> map) {
+        WritableMap writableMap = new WritableNativeMap();
+
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (value == null) {
+                writableMap.putNull(key);
+            } else if (value instanceof Boolean) {
+                writableMap.putBoolean(key, (Boolean) value);
+            } else if (value instanceof Integer) {
+                writableMap.putInt(key, (Integer) value);
+            } else if (value instanceof Double) {
+                writableMap.putDouble(key, (Double) value);
+            } else if (value instanceof String) {
+                writableMap.putString(key, (String) value);
+            } else if (value instanceof Map) {
+                writableMap.putMap(key, convertMapToWritableMap((Map<String, Object>) value));
+            } else if (value instanceof List) {
+                writableMap.putArray(key, convertListToWritableArray((List<Object>) value));
+            }
+        }
+
+        return writableMap;
+    }
+
+    public static WritableArray convertListToWritableArray(List<Object> list) {
+        WritableArray writableArray = new WritableNativeArray();
+
+        for (Object item : list) {
+            if (item == null) {
+                writableArray.pushNull();
+            } else if (item instanceof Boolean) {
+                writableArray.pushBoolean((Boolean) item);
+            } else if (item instanceof Integer) {
+                writableArray.pushInt((Integer) item);
+            } else if (item instanceof Double) {
+                writableArray.pushDouble((Double) item);
+            } else if (item instanceof String) {
+                writableArray.pushString((String) item);
+            } else if (item instanceof Map) {
+                writableArray.pushMap(convertMapToWritableMap((Map<String, Object>) item));
+            } else if (item instanceof List) {
+                writableArray.pushArray(convertListToWritableArray((List<Object>) item));
+            }
+        }
+
+        return writableArray;
+    }
+
     public static WritableArray convertJsonArrayToWriteable(JSONArray jsonArr) {
         WritableArray arr = Arguments.createArray();
         for (int i = 0; i < jsonArr.length(); i++) {
@@ -542,5 +616,10 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         sendEvent(reactApplicationContext, "notificationDismissed", convertJsonObjectToWriteable(inAppNotificationData.getData()));
     }
 
+    @Override
+    public void onSecurityException(Map<String, Object> map) {
+        Logger.d("WebEngage", "onSecurity Exception!!!");
+        sendEvent(reactApplicationContext, "tokenInvalidated", convertMapToWritableMap(map));
+    }
 
 }

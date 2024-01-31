@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.21.0",
-    "react-native-webengage": "file:../lib",
-    "react-native-webengage-inbox": "file:../webengage-inbox-lib",
+    "react-native-webengage": "^1.5.0",
+    "react-native-webengage-inbox": "1.0.0",
     "@react-native-picker/picker": "^2.6.1",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",

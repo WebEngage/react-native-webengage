@@ -21,6 +21,7 @@ NSString *WEGPluginVersion = @"1.5.0";
 RCT_EXPORT_MODULE(webengageBridge);
 
 - (instancetype)init {
+    self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
     [self initialiseWEGVersion];
     return self;
 }
@@ -117,7 +118,7 @@ RCT_EXPORT_METHOD(initialize) {
             }
         };
         if(weHasListeners) {
-            [self sendEventWithName:@"tokenInvalidated" body:data];  
+            [self sendEventWithName:@"tokenInvalidated" body:data];
         } else {
             if (self.pendingEventsDict == nil) {
             self.pendingEventsDict = [NSMutableDictionary dictionary];
@@ -371,7 +372,7 @@ RCT_EXPORT_METHOD(logout){
 - (void) startObserving {
     weHasListeners = YES;
     if (self.pendingEventsDict != nil) {
-        for (id key in self.pendingEventsDict) {
+        for (id key in [self getObserversNonMutable]) {
             [self sendEventWithName:key body:self.pendingEventsDict[key]];
             [self.pendingEventsDict removeObjectForKey: key];
         }
@@ -380,5 +381,15 @@ RCT_EXPORT_METHOD(logout){
 
 - (void)stopObserving {
     weHasListeners = NO;
+}
+
+#pragma mark: - Helper for serialization access for observers
+
+- (NSDictionary *)getObserversNonMutable {
+    __block NSDictionary *object;
+    dispatch_sync(self.serialQueue, ^{
+        object = [self.pendingEventsDict copy];
+    });
+    return object;
 }
 @end

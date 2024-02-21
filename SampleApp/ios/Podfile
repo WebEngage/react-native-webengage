@@ -1,4 +1,6 @@
 # Resolve react_native_pods.rb with node to allow for hoisting
+
+ENV['SWIFT_VERSION'] = '5'
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
     "react-native/scripts/react_native_pods.rb",
@@ -8,7 +10,7 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.disabled
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -18,10 +20,13 @@ end
 
 target 'SampleApp' do
   config = use_native_modules!
+  use_frameworks! :linkage => :static
+  $RNFirebaseAsStaticFramework = true
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :flipper_configuration => flipper_config,
+    :hermes_enabled => false,
+    # :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -41,12 +46,12 @@ end
 
 
 # ServiceExtension Target
-target 'NotificationService' do
-  pod 'WebEngageBannerPush'
-end
+# target 'NotificationService' do
+#   pod 'WebEngageBannerPush'
+# end
 
-# ContentExtension Target
-target 'NotificationViewController' do
-  pod 'WebEngageAppEx/ContentExtension'
-end
+# # ContentExtension Target
+# target 'NotificationViewController' do
+#   pod 'WebEngageAppEx/ContentExtension'
+# end
 

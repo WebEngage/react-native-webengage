@@ -5,6 +5,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  
+  
+  
+  // Add me --- \/
+    [FIRApp configure];
+    // Add me --- /\
+  
   self.moduleName = @"SampleApp";
   self.weBridge = [WEGWebEngageBridge new];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.weBridge launchOptions:launchOptions];
@@ -14,10 +21,12 @@
   [WebEngage sharedInstance].pushNotificationDelegate = self.weBridge;
       [[WebEngage sharedInstance] application:application
               didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.weBridge];
+  
+ 
   if (@available(iOS 10.0, *)) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
   }
-    
+  
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }

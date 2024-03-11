@@ -9,7 +9,7 @@ import {
   enableWebEngagePush,
   initWebEngage,
 } from './src/WebEngageHandler/WebEngageManager';
-import {PermissionsAndroid} from 'react-native';
+import {PermissionsAndroid, Platform} from 'react-native';
 
 function App(): React.JSX.Element {
   enableDevMode();
@@ -32,7 +32,9 @@ function App(): React.JSX.Element {
       console.warn(err);
     }
   };
-  requestAndroidPermissions();
+  if (Platform.OS === 'android') {
+    requestAndroidPermissions();
+  }
 
   return <AppNavigator />;
 }

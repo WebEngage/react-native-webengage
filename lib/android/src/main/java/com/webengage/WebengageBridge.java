@@ -4,11 +4,11 @@ package com.webengage;
  * Created by uzma on 10/25/17.
  */
 
-import android.app.ActivityManager;
-import android.content.Intent;
-import android.net.Uri;
-import android.content.Context;
-import android.os.Bundle;
+ import android.app.ActivityManager;
+ import android.content.Intent;
+ import android.net.Uri;
+ import android.content.Context;
+ import android.os.Bundle;
 import android.util.Log;
 
 import com.webengage.sdk.android.Logger;
@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.annotation.Nullable;
+import com.google.firebase.messaging.RemoteMessage;
 
 //WebEngageBridge singelton
 
@@ -264,6 +265,23 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     @ReactMethod
     public void setDevicePushOptIn(Boolean state) {
         WebEngage.get().user().setDevicePushOptIn(state);
+    }
+
+    @ReactMethod
+    public void sendFcmToken(String fcmToken) {
+        WebEngage.get().setRegistrationID(fcmToken);
+    }
+
+    @ReactMethod
+    public void onMessageReceived(ReadableMap readableMap) {
+        Map<String, Object> hashMap = recursivelyDeconstructReadableMap(readableMap);
+        Logger.d(TAG, "onMessageReceived " + hashMap);
+        Map<String, String> data = (Map<String, String>) hashMap.get("data");
+         if(data != null) {
+             if(data.containsKey("source") && "webengage".equals(data.get("source"))) {
+                WebEngage.get().receive(data);
+             }
+         }
     }
 
     @ReactMethod
@@ -654,8 +672,4 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         }
         return false;
     }
-
-
-
-
 }

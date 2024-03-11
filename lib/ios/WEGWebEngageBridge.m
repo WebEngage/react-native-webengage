@@ -238,6 +238,14 @@ RCT_EXPORT_METHOD(setCompany:(NSString*)company){
     [[WebEngage sharedInstance].user setCompany:company];
 }
 
+RCT_EXPORT_METHOD(sendFcmToken:(NSString*)fcmToken){
+    // This is only available for Android
+}
+
+RCT_EXPORT_METHOD(onMessageReceived:(NSDictionary *)readableMap){
+    // This is only available for Android
+}
+
 RCT_EXPORT_METHOD(updateListenerCount){
 }
 
@@ -266,7 +274,7 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated"];
+    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated", @"pushNotificationReceived"];
 }
 
 - (void)notification:(NSMutableDictionary *)inAppNotificationData clickedWithAction:(NSString *)actionId {

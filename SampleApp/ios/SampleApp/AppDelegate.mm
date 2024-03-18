@@ -1,13 +1,19 @@
 #import "AppDelegate.h"
 #import <React/RCTBundleURLProvider.h>
 
+#import "RNSplashScreen.h"  // here
+#import "React/RCTRootView.h"
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.moduleName = @"SampleApp";
   self.weBridge = [WEGWebEngageBridge new];
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.weBridge launchOptions:launchOptions];
+ RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.weBridge launchOptions:launchOptions];
+ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"SampleApp" initialProperties:nil];
+      
+//  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.weBridge launchOptions:launchOptions];
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
@@ -18,7 +24,7 @@
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
   }
     
-
+  [RNSplashScreen show];
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 

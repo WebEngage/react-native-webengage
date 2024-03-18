@@ -9,12 +9,14 @@
 #import <WebEngage/WebEngage.h>
 #import <WebEngage/WEGAnalytics.h>
 #import <React/RCTBundleURLProvider.h>
+#import <objc/runtime.h>
 @import UserNotifications;
 
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
 NSString *WEGPluginVersion = @"1.5.0";
+int clickListerCount = 0;
 
 @implementation WEGWebEngageBridge
 
@@ -22,7 +24,69 @@ RCT_EXPORT_MODULE(webengageBridge);
 
 - (instancetype)init {
     [self initialiseWEGVersion];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self swizzled_method:(@selector(addListener:)) swizzled:(@selector(swizzled_addListener:))];
+       [self swizzled_method:(@selector(removeListeners:)) swizzled:(@selector(swizzled_removeListener:))];
+    });
+    
+    
     return self;
+}
+
+- (void)swizzled_addListener:(NSString*)eventName {
+//    [super ]
+    // Call the original method first
+    
+    [self swizzled_addListener:eventName];
+
+    if([eventName isEqualToString:@"pushNotificationClicked"]) {
+        clickListerCount++;
+    }
+    // Add your custom implementation here
+    NSLog(@"swizzled_addListener swizzled! %@",eventName);
+}
+
+- (void)swizzled_removeListener:(NSString*)eventName {
+//    [super ]
+    // Call the original method first
+    
+    [self swizzled_removeListener:eventName];
+
+    if([eventName isEqualToString:@"pushNotificationClicked"]) {
+        clickListerCount--;
+    }
+    // Add your custom implementation here
+    NSLog(@"swizzled_removeListener swizzled! %@",eventName);
+}
+
+- (void)swizzled_method:(SEL)original swizzled:(SEL) swizzleMethod{
+    Class class = [self class];
+    
+    SEL originalSelector = original;
+    SEL swizzledSelector = swizzleMethod;
+    
+    
+    Method originalMethod = class_getInstanceMethod(class, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+    
+    // If original method doesn't exist, add it first
+    BOOL didAddMethod = class_addMethod(class,
+                                        originalSelector,
+                                        method_getImplementation(swizzledMethod),
+                                        method_getTypeEncoding(swizzledMethod));
+    
+    if (didAddMethod) {
+        // Replace the original method's implementation with our swizzled method
+        class_replaceMethod(class,
+                            swizzledSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod));
+    } else {
+        // Exchange the implementations of original and swizzled methods
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
+    
 }
 
 + (BOOL)requiresMainQueueSetup {
@@ -117,14 +181,14 @@ RCT_EXPORT_METHOD(initialize) {
             }
         };
         if(weHasListeners) {
-            [self sendEventWithName:@"tokenInvalidated" body:data];  
+            [self sendEventWithName:@"tokenInvalidated" body:data];
         } else {
             if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"tokenInvalidated"] = data;
-        } else {
-            self.pendingEventsDict[@"tokenInvalidated"] = data;
-        }
+                self.pendingEventsDict = [NSMutableDictionary dictionary];
+                self.pendingEventsDict[@"tokenInvalidated"] = data;
+            } else {
+                self.pendingEventsDict[@"tokenInvalidated"] = data;
+            }
         }
     };
 }
@@ -337,11 +401,16 @@ RCT_EXPORT_METHOD(logout){
 }
 
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
-    RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
+    RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@ %d", deeplink, clickListerCount);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-    if (weHasListeners) {
+    if (clickListerCount > 0) {
+        
+        RCTLogInfo(@"webengageBridge: clickListerCount > 0 swizzled: %@", deeplink);
         [self sendEventWithName:@"pushNotificationClicked" body:pushData];
     } else {
+        
+        RCTLogInfo(@"webengageBridge: clickListerCount != 0 swizzled: %@", deeplink);
+        RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
         if (self.pendingEventsDict == nil) {
             self.pendingEventsDict = [NSMutableDictionary dictionary];
             self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
@@ -370,6 +439,8 @@ RCT_EXPORT_METHOD(logout){
 // Will be called when this module's first listener is added.
 - (void) startObserving {
     weHasListeners = YES;
+    
+    NSLog(@"startObserving from WEGWebBridge  swizzled!");
     if (self.pendingEventsDict != nil) {
         for (id key in self.pendingEventsDict) {
             [self sendEventWithName:key body:self.pendingEventsDict[key]];
@@ -380,5 +451,6 @@ RCT_EXPORT_METHOD(logout){
 
 - (void)stopObserving {
     weHasListeners = NO;
+//    [self removeListeners:1];
 }
 @end

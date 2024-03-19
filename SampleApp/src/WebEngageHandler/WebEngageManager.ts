@@ -52,3 +52,11 @@ export const initWebEngage = () => {
     Alert.alert('It is a Simple Alert ' + JSON.stringify(notificationData));
   });
 };
+
+export const enableWebEngagePush = () => {
+  webEngageManager.user.setDevicePushOptIn(true);
+};
+
+export const disableWebEngagePush = () => {
+  webEngageManager.user.setDevicePushOptIn(false);
+};

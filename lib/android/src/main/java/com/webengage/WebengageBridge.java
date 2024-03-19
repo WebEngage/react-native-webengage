@@ -4,8 +4,11 @@ package com.webengage;
  * Created by uzma on 10/25/17.
  */
 
+import android.app.ActivityManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.webengage.sdk.android.Logger;
@@ -518,7 +521,19 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
         map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
         map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
-        sendEvent(reactApplicationContext, "pushNotificationReceived", map);
+        // headlessJs crashes in foreground
+        if(!isAppOnForeground(context)) {
+            Logger.d(TAG," push-received triggered from headlessJS");
+;            Intent service = new Intent(context, WebEngageHeadlessService.class);
+            Bundle userDataBundle = new Bundle();
+            userDataBundle.putBundle("userData", Arguments.toBundle(map.getMap("userData")));
+            userDataBundle.putString("deeplink", map.getString("deeplink"));
+            service.putExtras(userDataBundle);
+            context.startService(service);
+        } else {
+            Logger.d(TAG," push-received in foreground from  listener");
+            sendEvent(reactApplicationContext, "pushNotificationReceived", map);
+        }
         return pushNotificationData;
     }
 
@@ -621,5 +636,26 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         Logger.d("WebEngage", "onSecurity Exception!!!");
         sendEvent(reactApplicationContext, "tokenInvalidated", convertMapToWritableMap(map));
     }
+
+    private boolean isAppOnForeground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses =
+                activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance ==
+                    ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
+                    appProcess.processName.equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
 
 }

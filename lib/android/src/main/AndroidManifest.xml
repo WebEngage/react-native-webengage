@@ -6,6 +6,7 @@
         <meta-data
             android:name="com.webengage.child.rn"
             android:value="rn:${we_rn_version}" />
+        <service android:name="com.webengage.WebEngageHeadlessService" />
     </application>
 </manifest>
   

@@ -248,6 +248,7 @@ RCT_EXPORT_METHOD(onMessageReceived:(NSDictionary *)readableMap){
 }
 
 RCT_EXPORT_METHOD(updateListenerCount){
+    // This is only available for Android
 }
 
 RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {

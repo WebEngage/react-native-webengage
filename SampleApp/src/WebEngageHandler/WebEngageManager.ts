@@ -1,6 +1,6 @@
 import {Alert} from 'react-native';
 import WebEngage from 'react-native-webengage';
-import CONSTANTS from '../Utils/Constants';
+import CONSTANTS from '../utils/Constants';
 
 const webEngageManager = new WebEngage();
 

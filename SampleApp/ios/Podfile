@@ -18,10 +18,12 @@ end
 
 target 'SampleApp' do
   config = use_native_modules!
+  use_frameworks! :linkage => :static
+  RNFirebaseAsStaticFramework = true
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :flipper_configuration => flipper_config,
+    # :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -42,11 +44,14 @@ end
 
 # ServiceExtension Target
 target 'NotificationService' do
-  pod 'WebEngageBannerPush'
+  use_frameworks! :linkage => :static
+#  pod 'WebEngageBannerPush'
+  pod 'WEServiceExtension'
 end
 
 # ContentExtension Target
 target 'NotificationViewController' do
-  pod 'WebEngageAppEx/ContentExtension'
+  use_frameworks! :linkage => :static
+  pod 'WEContentExtension'
 end
 

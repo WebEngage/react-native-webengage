@@ -1,5 +1,6 @@
 #import "AppDelegate.h"
 #import <React/RCTBundleURLProvider.h>
+#import <Firebase.h>
 
 @implementation AppDelegate
 
@@ -7,7 +8,7 @@
 {
   self.moduleName = @"SampleApp";
   self.weBridge = [WEGWebEngageBridge new];
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.weBridge launchOptions:launchOptions];
+//  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.weBridge launchOptions:launchOptions];
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
@@ -17,7 +18,7 @@
   if (@available(iOS 10.0, *)) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
   }
-    
+    [FIRApp configure];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }

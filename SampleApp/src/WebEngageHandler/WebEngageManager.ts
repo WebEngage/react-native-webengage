@@ -8,13 +8,14 @@ export default webEngageManager;
 
 export const initWebEngage = () => {
   // In-app notification callbacks
-  webEngageManager.notification.onPrepare(function (notificationData) {
+  webEngageManager.notification.onPrepare(function (notificationData: any) {
     console.log(
       CONSTANTS.WEBENGAGE_INAPP + 'App: in-app notification prepared',
+      notificationData,
     );
   });
 
-  webEngageManager.notification.onShown(function (notificationData) {
+  webEngageManager.notification.onShown(function (notificationData: any) {
     var message;
     if (notificationData.title && notificationData.title !== null) {
       message = 'title: ' + notificationData.title;
@@ -29,7 +30,10 @@ export const initWebEngage = () => {
     );
   });
 
-  webEngageManager.notification.onClick(function (notificationData, clickId) {
+  webEngageManager.notification.onClick(function (
+    notificationData: any,
+    clickId: any,
+  ) {
     console.log(
       CONSTANTS.WEBENGAGE_INAPP +
         ' in-app notification clicked: click-id: ' +
@@ -39,15 +43,18 @@ export const initWebEngage = () => {
     );
   });
 
-  webEngageManager.notification.onDismiss(function (notificationData) {
-    console.log(CONSTANTS.WEBENGAGE_INAPP + ' in-app notification dismissed');
+  webEngageManager.notification.onDismiss(function (notificationData: any) {
+    console.log(
+      CONSTANTS.WEBENGAGE_INAPP + ' in-app notification dismissed',
+      notificationData,
+    );
   });
 
-  webEngageManager.push.onClick(function (notificationData) {
+  webEngageManager.push.onClick(function (notificationData: any) {
     console.log(
       CONSTANTS.WEBENGAGE_INAPP +
         ' push-notification clicked with payload: ' +
-        JSON.stringify(notificationData.userData),
+        JSON.stringify(notificationData),
     );
     Alert.alert('It is a Simple Alert ' + JSON.stringify(notificationData));
   });

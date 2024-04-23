@@ -11,6 +11,7 @@ export const initWebEngage = () => {
   webEngageManager.notification.onPrepare(function (notificationData) {
     console.log(
       CONSTANTS.WEBENGAGE_INAPP + 'App: in-app notification prepared',
+      +JSON.stringify(notificationData),
     );
   });
 
@@ -45,7 +46,7 @@ export const initWebEngage = () => {
 
   webEngageManager.push.onClick(function (notificationData) {
     console.log(
-      CONSTANTS.WEBENGAGE_INAPP +
+      CONSTANTS.WEBENGAGE_PUSH +
         ' push-notification clicked with payload: ' +
         JSON.stringify(notificationData.userData),
     );

@@ -38,9 +38,7 @@ declare module "react-native" {
 }
 
 declare class WebEngagePushChannel {
-  options(key: string, value: any): void;
-  onClick(callback: (uri: string, customData: any) => void): any;
-  onCallbackReceived(type: string, uri: string, customData: any): void;
+  onClick(callback: (notificationData: any) => void): any;
   sendFcmToken(fcmToken: string): void;
   onMessageReceived(remoteMessage: any): void;
 }

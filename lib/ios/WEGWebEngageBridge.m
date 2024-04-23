@@ -276,7 +276,7 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated", @"pushNotificationReceived"];
+    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated"];
 }
 
 - (void)notification:(NSMutableDictionary *)inAppNotificationData clickedWithAction:(NSString *)actionId {

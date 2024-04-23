@@ -32,7 +32,7 @@ function App(): React.JSX.Element {
       console.warn(err);
     }
   };
-  if (Platform.OS === 'android') {
+  if (Platform.OS === 'android' && Platform.Version >= 31) {
     requestAndroidPermissions();
   }
 

@@ -5,7 +5,7 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import InlineViewModal from '../../CommonComponents/InlineViewModal';
 import WEButton from '../../CommonComponents/WEButton';
 import WETextInput from '../../CommonComponents/WETextInput';
-import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
+import AsyncStorageUtil from '../../utils/AsyncStorageUtils';
 import COLORS from '../../Styles/Colors';
 
 interface ScreenDetailsProps {

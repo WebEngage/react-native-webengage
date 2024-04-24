@@ -23,8 +23,8 @@ import webEngageManager from '../../WebEngageHandler/WebEngageManager';
 import NavigationModal from '../../Navigation/NavigationModal';
 import WETextInput from '../../CommonComponents/WETextInput';
 import WEButton from '../../CommonComponents/WEButton';
-import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
-import CONSTANTS from '../../Utils/Constants';
+import AsyncStorageUtil from '../../utils/AsyncStorageUtils';
+import CONSTANTS from '../../utils/Constants';
 import COLORS from '../../Styles/Colors';
 
 interface DynamicScreenProps {

@@ -6,7 +6,7 @@ import WETextInput from '../CommonComponents/WETextInput';
 import WEUserModal from '../CommonComponents/WEUserModal';
 import WEButton from '../CommonComponents/WEButton';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
-import CONSTANTS from '../Utils/Constants';
+import CONSTANTS from '../utils/Constants';
 
 const ScreenComponent = () => {
   const [screenName, setScreenName] = useState<string>('');

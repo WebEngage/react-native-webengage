@@ -24,7 +24,7 @@ import {
   trackClick,
   trackView,
 } from 'react-native-webengage-inbox';
-import CONSTANTS from '../../Utils/Constants';
+import CONSTANTS from '../../utils/Constants';
 
 interface Notification {
   status: string;

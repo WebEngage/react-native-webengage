@@ -9,7 +9,7 @@ import HomeScreen from '../screens/HomeScreen';
 import InlineScreen from '../screens/InlineScreen';
 import {StyleSheet} from 'react-native';
 import COLORS from '../Styles/Colors';
-import CONSTANTS from '../Utils/Constants';
+import CONSTANTS from '../utils/Constants';
 import ScreenComponent from '../screens/ScreenComponent';
 import ScreenList from '../screens/Inline/ScreenList';
 import ScreenDetails from '../screens/Inline/ScreenDetails';

@@ -9,16 +9,16 @@ import {
 } from 'react-native';
 import {navigate} from '../Navigation/NavigationService';
 import WEButton from '../CommonComponents/WEButton';
-import WEModal from '../Utils/WEModal';
+import WEModal from '../utils/WEModal';
 import COLORS from '../Styles/Colors';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
-import AsyncStorageUtil from '../Utils/AsyncStorageUtils';
+import AsyncStorageUtil from '../utils/AsyncStorageUtils';
 import {useIsFocused} from '@react-navigation/native';
 import {
   getNotificationCount,
   resetNotificationCount,
 } from 'react-native-webengage-inbox';
-import CONSTANTS from '../Utils/Constants';
+import CONSTANTS from '../utils/Constants';
 
 // TODO Add Navigation Type
 const HomeScreen = ({navigation}) => {

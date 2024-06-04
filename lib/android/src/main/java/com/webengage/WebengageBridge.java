@@ -4,8 +4,11 @@ package com.webengage;
  * Created by uzma on 10/25/17.
  */
 
-import android.net.Uri;
-import android.content.Context;
+ import android.app.ActivityManager;
+ import android.content.Intent;
+ import android.net.Uri;
+ import android.content.Context;
+ import android.os.Bundle;
 import android.util.Log;
 
 import com.webengage.sdk.android.Logger;
@@ -264,6 +267,23 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     }
 
     @ReactMethod
+    public void sendFcmToken(String fcmToken) {
+        WebEngage.get().setRegistrationID(fcmToken);
+    }
+
+    @ReactMethod
+    public void onMessageReceived(ReadableMap readableMap) {
+        Map<String, Object> hashMap = recursivelyDeconstructReadableMap(readableMap);
+        Logger.d(TAG, "onMessageReceived " + hashMap);
+        Map<String, String> data = (Map<String, String>) hashMap.get("data");
+         if(data != null) {
+             if(data.containsKey("source") && "webengage".equals(data.get("source"))) {
+                WebEngage.get().receive(data);
+             }
+         }
+    }
+
+    @ReactMethod
     public void setOptIn(String channel, boolean status) {
         if ("push".equalsIgnoreCase(channel)) {
             WebEngage.get().user().setOptIn(Channel.PUSH, status);
@@ -518,7 +538,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
         map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
         map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
-        sendEvent(reactApplicationContext, "pushNotificationReceived", map);
         return pushNotificationData;
     }
 
@@ -621,5 +640,4 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         Logger.d("WebEngage", "onSecurity Exception!!!");
         sendEvent(reactApplicationContext, "tokenInvalidated", convertMapToWritableMap(map));
     }
-
 }

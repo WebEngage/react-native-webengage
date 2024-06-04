@@ -1,6 +1,6 @@
 import {Alert} from 'react-native';
 import WebEngage from 'react-native-webengage';
-import CONSTANTS from '../Utils/Constants';
+import CONSTANTS from '../utils/Constants';
 
 const webEngageManager = new WebEngage();
 
@@ -11,7 +11,7 @@ export const initWebEngage = () => {
   webEngageManager.notification.onPrepare(function (notificationData: any) {
     console.log(
       CONSTANTS.WEBENGAGE_INAPP + 'App: in-app notification prepared',
-      notificationData,
+      +JSON.stringify(notificationData),
     );
   });
 
@@ -52,10 +52,18 @@ export const initWebEngage = () => {
 
   webEngageManager.push.onClick(function (notificationData: any) {
     console.log(
-      CONSTANTS.WEBENGAGE_INAPP +
+      CONSTANTS.WEBENGAGE_PUSH +
         ' push-notification clicked with payload: ' +
         JSON.stringify(notificationData),
     );
     Alert.alert('It is a Simple Alert ' + JSON.stringify(notificationData));
   });
+};
+
+export const enableWebEngagePush = () => {
+  webEngageManager.user.setDevicePushOptIn(true);
+};
+
+export const disableWebEngagePush = () => {
+  webEngageManager.user.setDevicePushOptIn(false);
 };

@@ -3,7 +3,7 @@ import {View, ScrollView, Text, StyleSheet} from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import WEButton from '../../CommonComponents/WEButton';
 import webEngageManager from '../../WebEngageHandler/WebEngageManager';
-import CONSTANTS from '../../Utils/Constants';
+import CONSTANTS from '../../utils/Constants';
 
 const ShoppingEventsScreen: React.FC = () => {
   const [tvCheckbox, setTvCheckbox] = useState(true);

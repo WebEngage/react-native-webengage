@@ -16,5 +16,7 @@
 
 @property WEGWebEngageBridge* wegBridge;
 @property NSMutableDictionary *pendingEventsDict;
+@property dispatch_queue_t serialQueue;
+
 - (void) sendUniversalLinkLocation:(NSString *)location;
 @end

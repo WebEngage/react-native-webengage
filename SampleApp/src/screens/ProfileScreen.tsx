@@ -12,7 +12,7 @@ import WETextInput from '../CommonComponents/WETextInput';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
 import WEButton from '../CommonComponents/WEButton';
 import WEUserModal from '../CommonComponents/WEUserModal';
-import CONSTANTS from '../Utils/Constants';
+import CONSTANTS from '../utils/Constants';
 
 const ProfileScreen: React.FC = () => {
   const [firstName, setFirstName] = useState<string>('');

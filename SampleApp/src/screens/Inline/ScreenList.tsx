@@ -5,8 +5,8 @@ import {navigate} from '../../Navigation/NavigationService';
 import webEngageManager from '../../WebEngageHandler/WebEngageManager';
 import WEButton from '../../CommonComponents/WEButton';
 import COLORS from '../../Styles/Colors';
-import AsyncStorageUtil from '../../Utils/AsyncStorageUtils';
-import CONSTANTS from '../../Utils/Constants';
+import AsyncStorageUtil from '../../utils/AsyncStorageUtils';
+import CONSTANTS from '../../utils/Constants';
 
 interface ScreenItem {
   size: number;

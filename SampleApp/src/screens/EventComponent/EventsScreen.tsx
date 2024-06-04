@@ -8,7 +8,7 @@ import WEUserModal from '../../CommonComponents/WEUserModal';
 import WEButton from '../../CommonComponents/WEButton';
 import ShoppingEventsScreen from './ShoppingEventScreen';
 import webEngageManager from '../../WebEngageHandler/WebEngageManager';
-import CONSTANTS from '../../Utils/Constants';
+import CONSTANTS from '../../utils/Constants';
 
 const EventsScreen = () => {
   const [eventName, setEventName] = useState<string>('');

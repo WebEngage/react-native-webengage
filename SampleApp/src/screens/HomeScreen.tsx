@@ -19,6 +19,9 @@ import {
   resetNotificationCount,
 } from 'react-native-webengage-inbox';
 import CONSTANTS from '../utils/Constants';
+import {NativeModules} from 'react-native';
+
+const {WebEngageModule} = NativeModules;
 
 // TODO Add Navigation Type
 const HomeScreen = ({navigation}) => {
@@ -177,6 +180,18 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
+  function initializeWebEngage(username: string, password?: string) {
+    WebEngageModule.initWebEngage()
+      .then((result: any) => {
+        loginUser(username, password); // login after successful Integration of WebEngage
+        webEngageManager.screen('Home_Screen');
+        AsyncStorageUtil.setItem('isUserLoggedIn', true);
+      })
+      .catch((error: any) => {
+        console.error('WebEngage Initialization Error:', error);
+      });
+  }
+
   const loginUser = (username: string, password?: string) => {
     if (username) {
       if (password) {
@@ -241,7 +256,7 @@ const HomeScreen = ({navigation}) => {
       <WEModal
         visible={isModalVisible}
         onClose={toggleModal}
-        onLogin={loginUser}
+        onLogin={initializeWebEngage}
       />
 
       <WEModal

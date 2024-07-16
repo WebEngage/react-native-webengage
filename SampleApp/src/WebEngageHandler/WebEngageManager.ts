@@ -11,7 +11,7 @@ export const initWebEngage = () => {
   webEngageManager.notification.onPrepare(function (notificationData) {
     console.log(
       CONSTANTS.WEBENGAGE_INAPP + 'App: in-app notification prepared',
-      +JSON.stringify(notificationData),
+      JSON.stringify(notificationData),
     );
   });
 

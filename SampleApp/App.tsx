@@ -10,11 +10,11 @@ import {
   initWebEngage,
 } from './src/WebEngageHandler/WebEngageManager';
 import {PermissionsAndroid, Platform} from 'react-native';
+import AsyncStorageUtil from './src/utils/AsyncStorageUtils';
 
 function App(): React.JSX.Element {
   enableDevMode();
-  initWebEngage();
-  initWENotificationInbox();
+  // Init WE Libraries only if User is LoggedIn
   // Rquesting permission for Android
   const requestAndroidPermissions = async () => {
     try {
@@ -35,6 +35,20 @@ function App(): React.JSX.Element {
   if (Platform.OS === 'android' && Platform.Version >= 31) {
     requestAndroidPermissions();
   }
+
+  React.useEffect(() => {
+    const checkWEInitialized = async () => {
+      let isWEInitiated = await AsyncStorageUtil.getItem<Boolean>(
+        'isUserLoggedIn',
+      );
+      if (isWEInitiated) {
+        initWebEngage();
+        initWENotificationInbox();
+      }
+      console.log('WebEngage successfully Initialized ', isWEInitiated);
+    };
+    checkWEInitialized();
+  });
 
   return <AppNavigator />;
 }

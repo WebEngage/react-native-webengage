@@ -1,6 +1,7 @@
 package com.webengage.reactSample
 
 import android.app.Application
+import android.content.Context
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -25,6 +26,7 @@ class MainApplication : Application(), ReactApplication {
       object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
+              add(WebEngagePackage())
               // Packages that cannot be autolinked yet can be added manually here, for example:
               // add(MyReactNativePackage())
             }
@@ -48,24 +50,14 @@ class MainApplication : Application(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
-    initWebEngage()
-    initWEPush()
+    SharedPreferencesManager.getInstance(this,"app_pref");
+    if (SharedPreferencesManager.getInstance()?.getValue(SharedPreferencesManager.IS_REAL_USER, false) ?: false) {
+      WebEngageHelper.getInstance().initWebEngage(this, null)
+      initWEPush();
+    }
     ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
   }
 
-  // WebEngage Initialization
-  public fun initWebEngage() {
-    val webEngageConfig = WebEngageConfig.Builder()
-      .setWebEngageKey("YOUR_WEBENGAGE_LICENSE_KEY")
-      .setDebugMode(true) // only in development mode
-      .build()
-    registerActivityLifecycleCallbacks(
-      WebEngageActivityLifeCycleCallbacks(
-        this,
-        webEngageConfig
-      )
-    )
-  }
 
   // WebEngage Push Integration
   public fun initWEPush() {

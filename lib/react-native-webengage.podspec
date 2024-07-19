@@ -18,6 +18,10 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'LICENSE.md', 'README.md', 'package.json', 'index.js'
   s.source_files   = 'ios/*.{h,m}'
 
-  s.dependency 'WebEngage' , '>= 6.6.1'
+  if ENV['WEBENGAGE_USE_CORE'] == 'true'
+    s.dependency 'WebEngage/Core','>= 6.10.0'
+  else
+    s.dependency 'WebEngage','>= 6.10.0'
+  end
   s.dependency 'React-Core'
 end

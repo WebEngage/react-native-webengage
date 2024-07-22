@@ -183,6 +183,7 @@ const HomeScreen = ({navigation}) => {
   function initializeWebEngage(username: string, password?: string) {
     WebEngageModule.initWebEngage()
       .then((result: any) => {
+        console.log('WebEngage Initialization Successful:', result);
         loginUser(username, password); // login after successful Integration of WebEngage
         webEngageManager.screen('Home_Screen');
         AsyncStorageUtil.setItem('isUserLoggedIn', true);

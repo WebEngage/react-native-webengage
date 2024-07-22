@@ -3,7 +3,13 @@
 #import <UIKit/UIKit.h>
 #import <WEGWebEngageBridge.h>
 
-@interface AppDelegate : RCTAppDelegate <UIApplicationDelegate>
+#import <UserNotifications/UserNotifications.h>
+
+@interface AppDelegate : RCTAppDelegate <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 // use weBridge instead of bridge
 @property (nonatomic, strong) WEGWebEngageBridge *weBridge;
+@property (nonatomic, strong) NSString *pushToken;
+
+
+- (void)registerRemotePushManually;
 @end

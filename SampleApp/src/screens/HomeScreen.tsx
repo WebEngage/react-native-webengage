@@ -237,6 +237,12 @@ const HomeScreen = ({navigation}) => {
           buttonText={'Inline'}
           onPress={() => navigate(CONSTANTS.SCREEN_NAMES.INLINE)}
         />
+        <WEButton
+          buttonStyle={styles.buttonContainer}
+          buttonTextStyle={styles.buttonText}
+          buttonText={'WebView'}
+          onPress={() => navigate(CONSTANTS.SCREEN_NAMES.WEBVIEW)}
+        />
       </View>
       <WEModal
         visible={isModalVisible}

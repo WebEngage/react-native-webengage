@@ -25,7 +25,8 @@
     "react-native-screens": "^3.30.1",
     "react-native-we-personalization": "^1.0.0",
     "react-native-webengage": "^1.5.0",
-    "react-native-webengage-inbox": "1.0.0"
+    "react-native-webengage-inbox": "1.0.0",
+    "react-native-webview": "^13.12.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

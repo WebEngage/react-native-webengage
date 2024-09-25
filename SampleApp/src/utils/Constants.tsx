@@ -7,6 +7,7 @@ const CONSTANTS = {
     EVENTS: 'Events',
     SCREENS: 'Screens',
     INLINE: 'Inline',
+    WEBVIEW: 'WebView',
     APP_INBOX: 'AppInbox',
     SCREEN_LIST: 'screenList',
     SCREEN_DETAILS: 'ScreenDetails',

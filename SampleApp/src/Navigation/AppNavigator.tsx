@@ -15,6 +15,7 @@ import ScreenList from '../screens/Inline/ScreenList';
 import ScreenDetails from '../screens/Inline/ScreenDetails';
 import DynamicScreen from '../screens/Inline/DynamicScreen';
 import NotificationInbox from '../screens/NotificationInbox/NotificationInbox';
+import WebviewScreen from '../screens/WebView/WebviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,17 @@ const AppNavigator = () => {
           component={EventsScreen}
           options={{
             title: CONSTANTS.SCREEN_TITLE.EVENTS,
+            headerStyle: styles.headerStyle,
+            headerTintColor: COLORS.white,
+            headerTitleStyle: styles.headerTextStyle,
+          }}
+        />
+
+        <Stack.Screen
+          name={CONSTANTS.SCREEN_NAMES.WEBVIEW}
+          component={WebviewScreen}
+          options={{
+            title: 'WebView',
             headerStyle: styles.headerStyle,
             headerTintColor: COLORS.white,
             headerTitleStyle: styles.headerTextStyle,

@@ -26,7 +26,7 @@ export const handleWebEngageBridgeCall = (data) => {
                 webengage.user.logout();
                 break;
 
-            case "event":
+            case "track":
                 console.log(`${JSON.stringify(message.data)}`);
                 const eventName = message.data.name;
                 const eventData = message.data.attr;

@@ -152,7 +152,7 @@ RCT_EXPORT_METHOD(screenNavigatedWithData:(NSString*) screenName andData: (NSDic
     }
 }
 
-RCT_EXPORT_METHOD(setLocation:(NSNumber *)latitude andLongitude:(NSNumber *)longitude ){
+RCT_EXPORT_METHOD(setLocation:(nonnull NSNumber *)latitude andLongitude:(nonnull NSNumber *)longitude) {
     [[WebEngage sharedInstance].user setUserLocationWithLatitude:latitude andLongitude:longitude];
 }
 

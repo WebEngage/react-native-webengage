@@ -35,7 +35,8 @@ import com.webengage.sdk.android.actions.render.InAppNotificationData;
 import com.webengage.sdk.android.actions.render.PushNotificationData;
 import com.webengage.sdk.android.callbacks.InAppNotificationCallbacks;
 import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
-import com.webengage.sdk.android.callbacks.WESecurityCallback;
+ import com.webengage.sdk.android.callbacks.StateChangeCallbacks;
+ import com.webengage.sdk.android.callbacks.WESecurityCallback;
 import com.webengage.sdk.android.utils.Gender;
 import com.webengage.sdk.android.Channel;
 
@@ -93,6 +94,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     public void setReactNativeContext(ReactApplicationContext context) {
         listenerCount = 0;
         reactApplicationContext = context;
+        registerWEStateChangeCallback();
     }
 
     private WebengageBridge(ReactApplicationContext reactContext) {
@@ -102,6 +104,18 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         WebEngage.registerInAppNotificationCallback(this);
         WebEngage.registerWESecurityCallback(this);
         listenerCount = 0;
+    }
+    public void registerWEStateChangeCallback() {
+        if(reactApplicationContext != null) {
+            WebEngage.registerStateChangeCallback(new StateChangeCallbacks() {
+                @Override
+                public void onAnonymousIdChanged(Context context, String anonymousUserID) {
+                    WritableMap map = Arguments.createMap();
+                    map.putString("onAnonymousIdChanged", anonymousUserID);
+                    sendEvent(reactApplicationContext, "onAnonymousIdChanged", map);
+                }
+            });
+        }
     }
 
     @ReactMethod

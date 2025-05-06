@@ -19,7 +19,7 @@ import java.util.Collections;
 public class WebengagePackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        Log.d("TAG", "createNativeModules: " + reactContext);
+        Log.d("WebEngage", "createNativeModules: " + reactContext);
         List<NativeModule> modules = new ArrayList<>();
         modules.add(WebengageBridge.getInstance(reactContext));
         WebengageBridge.getInstance(reactContext).setReactNativeContext(reactContext);

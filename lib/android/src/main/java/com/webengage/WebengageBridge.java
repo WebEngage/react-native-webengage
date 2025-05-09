@@ -111,7 +111,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
                 @Override
                 public void onAnonymousIdChanged(Context context, String anonymousUserID) {
                     WritableMap map = Arguments.createMap();
-                    map.putString("onAnonymousIdChanged", anonymousUserID);
+                    map.putString("anonymousID", anonymousUserID);
                     sendEvent(reactApplicationContext, "onAnonymousIdChanged", map);
                 }
             });

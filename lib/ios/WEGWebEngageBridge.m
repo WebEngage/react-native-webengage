@@ -22,7 +22,8 @@ RCT_EXPORT_MODULE(webengageBridge);
 
 - (instancetype)init {
     self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
-    [self initialiseWEGVersion];
+    // TODO - Causing issue in receiving onAnonymousIdChanged event
+//    [self initialiseWEGVersion];
     return self;
 }
 
@@ -276,7 +277,7 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated"];
+    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated",@"onAnonymousIdChanged"];
 }
 
 - (void)notification:(NSMutableDictionary *)inAppNotificationData clickedWithAction:(NSString *)actionId {
@@ -372,6 +373,20 @@ RCT_EXPORT_METHOD(logout){
             self.pendingEventsDict[@"universalLinkClicked"] = data;
         } else {
             self.pendingEventsDict[@"universalLinkClicked"] = data;
+        }
+    }
+}
+
+- (void)didReceiveAnonymousID:(NSString *)anonymousID forReason:(WEGReason)reason {
+    NSDictionary *data = @{@"anonymousID":anonymousID};
+    if(weHasListeners) {
+        [self sendEventWithName:@"onAnonymousIdChanged" body:data];
+    } else {
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"onAnonymousIdChanged"] = data;
+        } else {
+            self.pendingEventsDict[@"onAnonymousIdChanged"] = data;
         }
     }
 }

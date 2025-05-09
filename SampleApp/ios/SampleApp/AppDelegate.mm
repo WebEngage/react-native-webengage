@@ -22,11 +22,6 @@
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
-- (BOOL)bridgelessEnabled
-{
- return NO;
-}
-
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler{

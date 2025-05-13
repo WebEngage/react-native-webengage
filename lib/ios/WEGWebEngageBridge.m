@@ -21,11 +21,27 @@ NSString *WEGPluginVersion = @"1.5.3";
 RCT_EXPORT_MODULE(webengageBridge);
 
 - (instancetype)init {
+  self = [super init];
+  if (self) {
     self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
-    // TODO - Causing issue in receiving onAnonymousIdChanged event
-//    [self initialiseWEGVersion];
-    return self;
+    
+    // Listen for bridge load notification
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bridgeDidLoad:)
+                                                 name:RCTJavaScriptDidLoadNotification
+                                               object:nil];
+  }
+  return self;
 }
+
+- (void)bridgeDidLoad:(NSNotification *)notification {
+    [self initialiseWEGVersion];
+  // remove observer after first trigger
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:RCTJavaScriptDidLoadNotification
+                                                object:nil];
+}
+
 
 + (BOOL)requiresMainQueueSetup {
     return NO;
@@ -405,6 +421,10 @@ RCT_EXPORT_METHOD(logout){
 
 - (void)stopObserving {
     weHasListeners = NO;
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark: - Helper for serialization access for observers

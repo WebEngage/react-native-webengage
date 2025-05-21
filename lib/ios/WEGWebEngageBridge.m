@@ -14,34 +14,17 @@
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
-NSString *WEGPluginVersion = @"1.5.3";
+NSString *WEGPluginVersion = @"1.5.4";
 
 @implementation WEGWebEngageBridge
 
 RCT_EXPORT_MODULE(webengageBridge);
 
 - (instancetype)init {
-  self = [super init];
-  if (self) {
     self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
-    
-    // Listen for bridge load notification
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(bridgeDidLoad:)
-                                                 name:RCTJavaScriptDidLoadNotification
-                                               object:nil];
-  }
-  return self;
-}
-
-- (void)bridgeDidLoad:(NSNotification *)notification {
     [self initialiseWEGVersion];
-  // remove observer after first trigger
-  [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                  name:RCTJavaScriptDidLoadNotification
-                                                object:nil];
+    return self;
 }
-
 
 + (BOOL)requiresMainQueueSetup {
     return NO;
@@ -421,10 +404,6 @@ RCT_EXPORT_METHOD(logout){
 
 - (void)stopObserving {
     weHasListeners = NO;
-}
-
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark: - Helper for serialization access for observers

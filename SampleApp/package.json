@@ -27,7 +27,7 @@
     "react-native-screens": "^4.10.0",
     "react-native-svg-transformer": "^1.5.0",
     "react-native-we-personalization": "^1.1.0",
-    "react-native-webengage": "^1.5.3",
+    "react-native-webengage": "^1.5.4",
     "react-native-webengage-inbox": "1.0.3"
   },
   "devDependencies": {

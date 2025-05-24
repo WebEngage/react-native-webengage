@@ -14,7 +14,7 @@
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
-NSString *WEGPluginVersion = @"1.5.3";
+NSString *WEGPluginVersion = @"1.6.0";
 
 @implementation WEGWebEngageBridge
 
@@ -276,7 +276,7 @@ RCT_EXPORT_METHOD(logout){
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated"];
+    return @[@"notificationPrepared", @"notificationShown", @"notificationClicked", @"notificationDismissed", @"pushNotificationClicked",@"universalLinkClicked", @"tokenInvalidated",@"onAnonymousIdChanged"];
 }
 
 - (void)notification:(NSMutableDictionary *)inAppNotificationData clickedWithAction:(NSString *)actionId {
@@ -372,6 +372,20 @@ RCT_EXPORT_METHOD(logout){
             self.pendingEventsDict[@"universalLinkClicked"] = data;
         } else {
             self.pendingEventsDict[@"universalLinkClicked"] = data;
+        }
+    }
+}
+
+- (void)didReceiveAnonymousID:(NSString *)anonymousID forReason:(WEGReason)reason {
+    NSDictionary *data = @{@"anonymousID":anonymousID};
+    if(weHasListeners) {
+        [self sendEventWithName:@"onAnonymousIdChanged" body:data];
+    } else {
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+            self.pendingEventsDict[@"onAnonymousIdChanged"] = data;
+        } else {
+            self.pendingEventsDict[@"onAnonymousIdChanged"] = data;
         }
     }
 }

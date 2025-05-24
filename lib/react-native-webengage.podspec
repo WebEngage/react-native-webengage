@@ -19,9 +19,9 @@ Pod::Spec.new do |s|
   s.source_files   = 'ios/*.{h,m}'
 
   if ENV['WEBENGAGE_USE_CORE'] == 'true'
-    s.dependency 'WebEngage/Core','>= 6.10.0'
+    s.dependency 'WebEngage/Core','>= 6.16.1'
   else
-    s.dependency 'WebEngage','>= 6.10.0'
+    s.dependency 'WebEngage','>= 6.16.1'
   end
   s.dependency 'React-Core'
 end

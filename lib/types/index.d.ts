@@ -69,6 +69,9 @@ declare class WebEngageUserChannel {
   setCompany(name: string): void;
   setDevicePushOptIn(status: boolean): void;
   setOptIn(channel: string, status: boolean): void;
+  onAnonymousIdChanged(
+    callback: (anonymousId: string) => void
+  ): any;
 }
 
 declare class WebEngageNotificationChannel {

@@ -40,6 +40,13 @@ export const initWebEngage = () => {
     );
   });
 
+  webEngageManager.user.onAnonymousIdChanged(function (anonymousId) {
+    console.log(
+      CONSTANTS.WEBENGAGE +
+        ' Anonymous id changed to ' +
+        anonymousId);
+  });
+
   webEngageManager.notification.onDismiss(function (notificationData) {
     console.log(CONSTANTS.WEBENGAGE_INAPP + ' in-app notification dismissed');
   });

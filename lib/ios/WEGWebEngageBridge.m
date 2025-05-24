@@ -14,7 +14,7 @@
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
-NSString *WEGPluginVersion = @"1.5.4";
+NSString *WEGPluginVersion = @"1.6.0";
 
 @implementation WEGWebEngageBridge
 

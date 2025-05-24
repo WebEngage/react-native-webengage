@@ -7,8 +7,9 @@ require Pod::Executable.execute_command('node', ['-p',
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
+# Disable New Architecture
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
 
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -21,32 +22,16 @@ target 'SampleApp' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
-  target 'SampleAppTests' do
-    inherit! :complete
-  end
 
   post_install do |installer|
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
     )
   end
 end
-
-
-# ServiceExtension Target
-target 'NotificationService' do
-  pod 'WebEngageBannerPush'
-end
-
-# ContentExtension Target
-target 'NotificationViewController' do
-  pod 'WebEngageAppEx/ContentExtension'
-end
-

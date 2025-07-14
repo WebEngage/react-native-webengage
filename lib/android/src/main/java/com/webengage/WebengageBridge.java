@@ -410,19 +410,33 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         return deconstructedList;
     }
 
-    public static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
-        Logger.d(TAG, " sendEvent: " + eventName + " context: " + reactContext);
-        if (listenerCount > 0 && reactContext != null) {
-            if (reactContext.hasCatalystInstance()) {
-                Logger.d(TAG, "Bridge hasActiveCatalystInstance");
-                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                        .emit(eventName, params);
+   public static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+
+        try {
+            if (listenerCount > 0 && reactContext != null) {
+                // Check if reactContext can emit directly
+                if (reactContext.hasCatalystInstance()) {
+                    Logger.d(TAG, "Bridge hasActiveCatalystInstance");
+                    // For older versions with CatalystInstance
+                    reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(eventName, params);
+                } else {
+                    try {
+                        // For bridgeless mode or fallback
+                        Logger.d(TAG, "Using bridgeless mode for emitting event");
+                        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit(eventName, params);
+                    } catch (UnsupportedOperationException e) {
+                        Logger.d(TAG, "Bridgeless mode not supported: " + e.getMessage());
+                        queuedMap.put(eventName, params); // Queue for later
+                    }
+                }
             } else {
                 Logger.d(TAG, "QUEUEING event: " + eventName);
                 queuedMap.put(eventName, params);
             }
-        } else {
-            Logger.d(TAG, "QUEUEING event: " + eventName);
+        } catch (Exception e) { 
+            Logger.d(TAG, "ERROR: " + e);
             queuedMap.put(eventName, params);
         }
     }

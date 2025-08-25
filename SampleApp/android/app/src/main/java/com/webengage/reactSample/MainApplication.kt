@@ -18,6 +18,7 @@ import com.webengage.sdk.android.WebEngage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
+import android.util.Log
 
 class MainApplication : Application(), ReactApplication {
 
@@ -44,11 +45,11 @@ class MainApplication : Application(), ReactApplication {
     super.onCreate()
     WebengageBridge.getInstance();
     SoLoader.init(this, OpenSourceMergedSoMapping)
+    Log.d("WebEngage","Architecture: android: isNewArchEnabled "+BuildConfig.IS_NEW_ARCHITECTURE_ENABLED)
+    Log.d("WebEngage", "Architecture: android: isBridgelessEnabled "+BuildConfig.BRIDGELESS_ENABLED)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
-//      load()
-      // Below code will disable the bridgeless Mode
-      load(bridgelessEnabled=false)
+      load(bridgelessEnabled=BuildConfig.BRIDGELESS_ENABLED)
     }
     initWebEngage()
     initWEPush()

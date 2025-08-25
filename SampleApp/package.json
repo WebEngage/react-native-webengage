@@ -7,7 +7,19 @@
     "ios": "npx react-native run-ios --simulator='iPhone 15 Pro'",
     "lint": "eslint .",
     "start": "npx react-native start",
-    "test": "jest"
+    "test": "jest",
+    "android:old": "./scripts/switch-architecture.sh old && cd android && ./gradlew clean && cd .. && REACT_NATIVE_ARCH=old npx react-native run-android",
+    "android:new": "./scripts/switch-architecture.sh new && cd android && ./gradlew clean && cd .. && REACT_NATIVE_ARCH=new npx react-native run-android",
+    "android:bridgeless": "./scripts/switch-architecture.sh bridgeless && cd android && ./gradlew clean && cd .. && REACT_NATIVE_ARCH=bridgeless npx react-native run-android",
+    "ios:old": "./scripts/switch-architecture.sh old && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=old npx react-native run-ios --simulator='iPhone 15 Pro'",
+    "ios:new": "./scripts/switch-architecture.sh new && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=new npx react-native run-ios --simulator='iPhone 15 Pro'",
+    "ios:bridgeless": "./scripts/switch-architecture.sh bridgeless && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=bridgeless npx react-native run-ios --simulator='iPhone 15 Pro'",
+    "start:old": "REACT_NATIVE_ARCH=old npx react-native start",
+    "start:new": "REACT_NATIVE_ARCH=new npx react-native start",
+    "start:bridgeless": "REACT_NATIVE_ARCH=bridgeless npx react-native start",
+    "switch:old": "./scripts/switch-architecture.sh old",
+    "switch:new": "./scripts/switch-architecture.sh new",
+    "switch:bridgeless": "./scripts/switch-architecture.sh bridgeless"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",

@@ -22,6 +22,16 @@ const config = {
     assetExts: assetExts.filter(ext => ext !== 'svg'),
     sourceExts: [...sourceExts, 'svg'],
   },
+  serializer: {
+    getModulesRunBeforeMainModule: () => [
+      require.resolve('react-native/Libraries/Core/InitializeCore'),
+    ],
+  },
 };
+
+// Inject architecture environment variable
+if (process.env.REACT_NATIVE_ARCH) {
+  process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+}
 
 module.exports = mergeConfig(defaultConfig, config);

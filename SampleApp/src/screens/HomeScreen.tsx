@@ -19,6 +19,8 @@ import {
   resetNotificationCount,
 } from 'react-native-webengage-inbox';
 import CONSTANTS from '../utils/Constants';
+import {getArchitectureInfo} from '../utils/ArchitectureDetector';
+import {TurboModuleRegistry} from 'react-native';
 
 // TODO Add Navigation Type
 const HomeScreen = ({navigation}) => {
@@ -31,6 +33,7 @@ const HomeScreen = ({navigation}) => {
   const [securityExceptionLabel, setSecurityExceptionLabel] =
     React.useState<string>('');
   const isFocused = useIsFocused();
+  const architectureInfo = getArchitectureInfo();
 
   const retrieveUserData = async () => {
     const data = await AsyncStorageUtil.getItem<string>('userName');
@@ -206,6 +209,9 @@ const HomeScreen = ({navigation}) => {
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.architectureContainer}>
+        <Text style={styles.architectureText}>{architectureInfo.displayText}</Text>
+      </View>
       {userName && (
         <View>
           <Text style={styles.userName}> Hi {userName},</Text>
@@ -366,6 +372,19 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     height: 50,
     width: 50,
+  },
+  architectureContainer: {
+    backgroundColor: COLORS.purple,
+    padding: 15,
+    margin: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  architectureText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

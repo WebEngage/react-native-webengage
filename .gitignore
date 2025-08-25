@@ -79,3 +79,4 @@ package-lock.json
 webengage-inbox-lib/*
 webengage-sdk-security/*
 framework for NI- sdk security/*
+SampleApp/Gemfile.lock

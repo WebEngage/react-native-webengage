@@ -75,7 +75,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 }
 
 - (BOOL) bridgelessEnabled {
-  return NO;
+  return YES;
 }
 
 

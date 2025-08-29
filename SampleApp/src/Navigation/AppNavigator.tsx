@@ -21,7 +21,10 @@ const Stack = createStackNavigator();
 const AppNavigator = () => {
   return (
     <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator initialRouteName={CONSTANTS.SCREEN_NAMES.HOME}>
+      <Stack.Navigator 
+        initialRouteName={CONSTANTS.SCREEN_NAMES.HOME}
+        detachInactiveScreens={false}
+      >
         <Stack.Screen
           name={CONSTANTS.SCREEN_NAMES.HOME}
           component={HomeScreen}

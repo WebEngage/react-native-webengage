@@ -1,29 +1,23 @@
 import { NativeModules, Platform } from 'react-native';
 
-export type ArchitectureType = 'Old Architecture' | 'New Architecture' | 'Bridgeless';
+export type ArchitectureType = 'Old Architecture' | 'New Architecture + Bridge' | 'New Architecture + Bridgeless';
 
 export const getArchitectureType = (): ArchitectureType => {
   try {
-    // Check for bridgeless mode first
-    if (global.RN$Bridgeless === true || global.__fbBatchedBridge === undefined) {
-      console.log('🏗️ Architecture: Bridgeless (runtime detected)');
-      return 'Bridgeless';
+    const hasNewArch = global.__turboModuleProxy || global.nativeFabricUIManager;
+    const isBridgeless = global.RN$Bridgeless === true || global.__fbBatchedBridge === undefined;
+    
+    if (hasNewArch && isBridgeless) {
+      console.log('🏗️ Architecture: New Architecture + Bridgeless');
+      return 'New Architecture + Bridgeless';
     }
     
-    // Check if TurboModules are available (New Architecture)
-    if (global.__turboModuleProxy) {
-      console.log('🏗️ Architecture: New Architecture (TurboModules detected)');
-      return 'New Architecture';
+    if (hasNewArch && !isBridgeless) {
+      console.log('🏗️ Architecture: New Architecture + Bridge');
+      return 'New Architecture + Bridge';
     }
     
-    // Check if Fabric is enabled (New Architecture)
-    if (global.nativeFabricUIManager) {
-      console.log('🏗️ Architecture: New Architecture (Fabric detected)');
-      return 'New Architecture';
-    }
-    
-    // Default to old architecture
-    console.log('🏗️ Architecture: Old Architecture (default)');
+    console.log('🏗️ Architecture: Old Architecture');
     return 'Old Architecture';
   } catch (error) {
     console.warn('Error detecting architecture:', error);

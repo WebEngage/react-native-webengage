@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "npx react-native run-android",
-    "ios": "npx react-native run-ios --simulator='iPhone 15 Pro'",
+    "ios": "npx react-native run-ios --simulator='iPhone 16 Pro Max'",
     "lint": "eslint .",
     "start": "npx react-native start",
     "test": "jest",
@@ -19,7 +19,9 @@
     "start:bridgeless": "REACT_NATIVE_ARCH=bridgeless npx react-native start",
     "switch:old": "./scripts/switch-architecture.sh old",
     "switch:new": "./scripts/switch-architecture.sh new",
-    "switch:bridgeless": "./scripts/switch-architecture.sh bridgeless"
+    "switch:bridgeless": "./scripts/switch-architecture.sh bridgeless",
+    "clear:ios": "./scripts/clear-ios.sh",
+    "clear:android": "./scripts/clear-android.sh"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
@@ -36,7 +38,7 @@
     "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-modal": "^13.0.2",
     "react-native-safe-area-context": "^5.4.0",
-    "react-native-screens": "^4.10.0",
+    "react-native-screens": "4.15.4",
     "react-native-svg-transformer": "^1.5.0",
     "react-native-we-personalization": "^1.1.0",
     "react-native-webengage": "^1.5.4",

@@ -86,7 +86,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 - (BOOL)newArchEnabled
 {
-  return YES;
+  return NO;
 }
 
 @end

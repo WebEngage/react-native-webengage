@@ -14,10 +14,10 @@ import COLORS from '../Styles/Colors';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
 import AsyncStorageUtil from '../utils/AsyncStorageUtils';
 import {useIsFocused} from '@react-navigation/native';
-import {
-  getNotificationCount,
-  resetNotificationCount,
-} from 'react-native-webengage-inbox';
+// import {
+//   getNotificationCount,
+//   resetNotificationCount,
+// } from 'react-native-webengage-inbox';
 import CONSTANTS from '../utils/Constants';
 import {getArchitectureInfo} from '../utils/ArchitectureDetector';
 import {TurboModuleRegistry} from 'react-native';
@@ -71,13 +71,13 @@ const HomeScreen = ({navigation}) => {
           name = userName;
         }
 
-        if (name) {
-          fetchNotificationCount();
-          secureTokenExpiryListenerRef.current =
-            webEngageManager.user.tokenInvalidatedCallback(
-              invalidTokenCallback,
-            );
-        }
+        // if (name) {
+        //   fetchNotificationCount();
+        //   secureTokenExpiryListenerRef.current =
+        //     webEngageManager.user.tokenInvalidatedCallback(
+        //       invalidTokenCallback,
+        //     );
+        // }
       })();
     }
     return () => {
@@ -108,18 +108,18 @@ const HomeScreen = ({navigation}) => {
     setIsModalVisible(!isModalVisible);
   };
 
-  const fetchNotificationCount = async () => {
-    try {
-      const result = await getNotificationCount();
-      console.log(CONSTANTS.WEBENGAGE_INBOX + ' Count result - ' + result);
-      setNotificationCount(result);
-    } catch (error) {
-      console.error(
-        CONSTANTS.WEBENGAGE_INBOX + 'Error while fetching notification count',
-        error,
-      );
-    }
-  };
+  // const fetchNotificationCount = async () => {
+  //   try {
+  //     const result = await getNotificationCount();
+  //     console.log(CONSTANTS.WEBENGAGE_INBOX + ' Count result - ' + result);
+  //     setNotificationCount(result);
+  //   } catch (error) {
+  //     console.error(
+  //       CONSTANTS.WEBENGAGE_INBOX + 'Error while fetching notification count',
+  //       error,
+  //     );
+  //   }
+  // };
 
   const toggleJwtModal = () => {
     setIsJwtModalVisible(!isJwtModalVisible);

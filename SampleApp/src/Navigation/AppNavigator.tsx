@@ -13,8 +13,8 @@ import CONSTANTS from '../utils/Constants';
 import ScreenComponent from '../screens/ScreenComponent';
 import ScreenList from '../screens/Inline/ScreenList';
 import ScreenDetails from '../screens/Inline/ScreenDetails';
-import DynamicScreen from '../screens/Inline/DynamicScreen';
-import NotificationInbox from '../screens/NotificationInbox/NotificationInbox';
+// import DynamicScreen from '../screens/Inline/DynamicScreen';
+// import NotificationInbox from '../screens/NotificationInbox/NotificationInbox';
 
 const Stack = createStackNavigator();
 
@@ -88,7 +88,7 @@ const AppNavigator = () => {
           }}
           component={ScreenDetails}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name={CONSTANTS.SCREEN_NAMES.DYNAMIC_SCREEN}
           component={DynamicScreen}
           options={({route}) => ({title: route.params.item.screenName})}
@@ -99,7 +99,7 @@ const AppNavigator = () => {
           options={{
             title: CONSTANTS.SCREEN_TITLE.NOTIFICATION_INBOX,
           }}
-        />
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -33,8 +33,45 @@ declare module "react-native" {
       setCompany(name: string): void;
       setDevicePushOptIn(status: boolean): void;
       setOptIn(channel: string, status: boolean): void;
+      updateListenerCount(): void;
+      sendFcmToken(token: string): void;
+      onMessageReceived(remoteMessage: any): void;
     };
   }
+}
+
+// TurboModule interface for new architecture
+export interface NativeWebEngageModule {
+  init(autoRegister: boolean): void;
+  trackEventWithName(eventName: string): void;
+  trackEventWithNameAndData(eventName: string, eventData: any): void;
+  screenNavigated(screenName: string): void;
+  screenNavigatedWithData(screenName: string, screenData: any): void;
+  login(userId: string): void;
+  loginWithSecureToken(userId: string, jwtToken: string): void;
+  setSecureToken(userId: string, secureToken: string): void;
+  logout(): void;
+  setAttribute(attributes: any): void;
+  deleteAttribute(attributeName: string): void;
+  deleteAttributes(attributeNames: string[]): void;
+  setEmail(email: string): void;
+  setHashedEmail(hashedEmail: string): void;
+  setPhone(phone: string): void;
+  setHashedPhone(hashedPhone: string): void;
+  setBirthDateString(birthDate: string): void;
+  setGender(gender: string): void;
+  setFirstName(firstName: string): void;
+  setLastName(lastName: string): void;
+  setCompany(company: string): void;
+  setLocation(latitude: number, longitude: number): void;
+  setDevicePushOptIn(optIn: boolean): void;
+  setOptIn(channel: string, optIn: boolean): void;
+  sendFcmToken(token: string): void;
+  onMessageReceived(remoteMessage: any): void;
+  startGAIDTracking(): void;
+  updateListenerCount(): void;
+  addListener?: (eventType: string) => void;
+  removeListeners?: (count: number) => void;
 }
 
 declare class WebEngagePushChannel {

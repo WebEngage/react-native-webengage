@@ -12,7 +12,7 @@
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "webengage",
@@ -35,5 +35,23 @@
     "android": {
       "javaPackageName": "com.webengage"
     }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "^react-native$": "<rootDir>/jest.mock.js"
+    }
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.3",
+    "@testing-library/react-native": "^13.3.3",
+    "babel-jest": "^30.1.2",
+    "jest": "^30.1.3"
   }
 }

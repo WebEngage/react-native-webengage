@@ -40,7 +40,7 @@
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "4.15.4",
     "react-native-svg-transformer": "^1.5.0",
-    "react-native-webengage": "file:../lib"
+    "react-native-webengage": "file:../lib/react-native-webengage-1.6.2.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",

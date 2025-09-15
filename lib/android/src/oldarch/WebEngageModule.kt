@@ -176,7 +176,8 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
 
     @ReactMethod
     fun updateListenerCount() {
-        webEngageModuleImpl.updateListenerCount()
+        // Call the bridge's updateListenerCount method to maintain compatibility
+        WebengageBridge.getInstance().updateListenerCount()
     }
 
     override fun getConstants(): Map<String, Any> {

@@ -43,13 +43,16 @@ public class WebengagePackage implements ReactPackage {
                 Log.d("WebEngage", "TurboModule registered: " + turboModule.getName());
             } catch (Exception e) {
                 Log.e("WebEngage", "Failed to create TurboModule, falling back to bridge", e);
-                modules.add(WebengageBridge.getInstance(reactContext));
-                WebengageBridge.getInstance(reactContext).setReactNativeContext(reactContext);
+                WebengageBridge bridgeInstance = WebengageBridge.getInstance(reactContext);
+                bridgeInstance.setReactNativeContext(reactContext);
+                modules.add(bridgeInstance);
             }
         } else {
             // Old architecture
-            modules.add(WebengageBridge.getInstance(reactContext));
-            WebengageBridge.getInstance(reactContext).setReactNativeContext(reactContext);
+            Log.d("WebEngage", "Registering bridge for OLD ARCHITECTURE");
+            WebengageBridge bridgeInstance = WebengageBridge.getInstance(reactContext);
+            bridgeInstance.setReactNativeContext(reactContext);
+            modules.add(bridgeInstance);
         }
         
         return modules;

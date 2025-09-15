@@ -13,7 +13,7 @@ import {PermissionsAndroid, Platform} from 'react-native';
 
 function App(): React.JSX.Element {
   // enableDevMode();
-  // initWebEngage(); 
+  initWebEngage(); 
   // initWENotificationInbox();
   // Rquesting permission for Android
   const requestAndroidPermissions = async () => {

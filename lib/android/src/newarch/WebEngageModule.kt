@@ -148,6 +148,8 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     }
 
     override fun updateListenerCount() {
+        // Call the bridge's updateListenerCount method to maintain compatibility
+        WebengageBridge.getInstance().updateListenerCount()
         webEngageModuleImpl.updateListenerCount()
     }
 

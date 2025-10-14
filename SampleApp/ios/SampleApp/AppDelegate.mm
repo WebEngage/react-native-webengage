@@ -1,5 +1,8 @@
 #import "AppDelegate.h"
 #import <React/RCTBundleURLProvider.h>
+#import <WebEngage/WebEngage.h>
+#import <WebEngage/WEGManualIntegration.h>
+#import "WebEngageReact.h"
 
 @implementation AppDelegate
 
@@ -18,10 +21,10 @@
   
   
   // Initialize WebEngage
-  self.weBridge = [WEGWebEngageBridge new];
-  [WebEngage sharedInstance].pushNotificationDelegate = self.weBridge;
+  WebEngageReact *weManager = [WebEngageReact new];
+//   [weManager setDelegates];
   [[WebEngage sharedInstance] application:application
-          didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.weBridge];
+          didFinishLaunchingWithOptions:launchOptions notificationDelegate:weManager];
   
   if (@available(iOS 10.0, *)) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
@@ -81,12 +84,12 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 - (id<RCTBridgeDelegate>)bridgeDelegate
 {
-  return self.weBridge;
+  return [WebEngageReact new];
 }
 
 - (BOOL)newArchEnabled
 {
-  return YES;
+  return NO;
 }
 
 @end

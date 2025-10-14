@@ -2,20 +2,6 @@ import type { TurboModule } from 'react-native/Libraries/TurboModule/RCTExport';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
-  readonly getConstants: () => {
-    WebEngageProfileDidInitialize: string;
-    WebEngageNotificationPrepared: string;
-    WebEngageNotificationShown: string;
-    WebEngageNotificationClicked: string;
-    WebEngageNotificationDismissed: string;
-    WebEngagePushNotificationShown: string;
-    WebEngagePushNotificationClicked: string;
-    WebEngagePushNotificationDismissed: string;
-    WebEngageUniversalLinkClicked: string;
-    WebEngageTokenInvalidated: string;
-    WebEngageOnAnonymousIdChanged: string;
-  };
-
   init(autoRegister: boolean): void;
   trackEventWithName(eventName: string): void;
   trackEventWithNameAndData(eventName: string, eventData: Object): void;
@@ -25,7 +11,7 @@ export interface Spec extends TurboModule {
   loginWithSecureToken(userId: string, jwtToken: string): void;
   setSecureToken(userId: string, secureToken: string): void;
   logout(): void;
-  setAttribute(attributes: Object): void;
+  setAttribute(key: string, value: Object): void;
   deleteAttribute(attributeName: string): void;
   deleteAttributes(attributeNames: string[]): void;
   setEmail(email: string): void;
@@ -45,10 +31,11 @@ export interface Spec extends TurboModule {
   startGAIDTracking(): void;
   updateListenerCount(): void;
 
+  onEventListenerAdded(eventType: string): void;
   // NativeEventEmitter methods for the New Architecture.
   // The implementations are handled implicitly by React Native.
   addListener: (eventType: string) => void;
   removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('WETurboModule');
+export default TurboModuleRegistry.getEnforcing<Spec>('WebEngageReact');

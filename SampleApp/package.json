@@ -4,16 +4,17 @@
   "private": true,
   "scripts": {
     "android": "npx react-native run-android",
-    "ios": "npx react-native run-ios --simulator='iPhone 16 Pro Max'",
+    "ios": "npx react-native run-ios --simulator='iPhone 17 Pro Max'",
     "lint": "eslint .",
     "start": "npx react-native start",
     "test": "jest",
+    "pod-install": "cd ios && pod install && cd ..",
     "android:old": "./scripts/switch-architecture.sh old && cd android && ./gradlew clean && cd .. && REACT_NATIVE_ARCH=old npx react-native run-android",
     "android:new": "./scripts/switch-architecture.sh new && cd android && ./gradlew clean && cd .. && REACT_NATIVE_ARCH=new npx react-native run-android",
     "android:bridgeless": "./scripts/switch-architecture.sh bridgeless && cd android && ./gradlew clean && cd .. && REACT_NATIVE_ARCH=bridgeless npx react-native run-android",
-    "ios:old": "./scripts/switch-architecture.sh old && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=old npx react-native run-ios --simulator='iPhone 15 Pro'",
-    "ios:new": "./scripts/switch-architecture.sh new && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=new npx react-native run-ios --simulator='iPhone 15 Pro'",
-    "ios:bridgeless": "./scripts/switch-architecture.sh bridgeless && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=bridgeless npx react-native run-ios --simulator='iPhone 15 Pro'",
+    "ios:old": "./scripts/switch-architecture.sh old && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=old npx react-native run-ios --simulator='iPhone 17 Pro'",
+    "ios:new": "./scripts/switch-architecture.sh new && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=new npx react-native run-ios --simulator='iPhone 17 Pro'",
+    "ios:bridgeless": "./scripts/switch-architecture.sh bridgeless && cd ios && xcodebuild clean -workspace SampleApp.xcworkspace -scheme SampleApp && cd .. && REACT_NATIVE_ARCH=bridgeless npx react-native run-ios --simulator='iPhone 17 Pro'",
     "start:old": "REACT_NATIVE_ARCH=old npx react-native start",
     "start:new": "REACT_NATIVE_ARCH=new npx react-native start",
     "start:bridgeless": "REACT_NATIVE_ARCH=bridgeless npx react-native start",
@@ -40,7 +41,7 @@
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "4.15.4",
     "react-native-svg-transformer": "^1.5.0",
-    "react-native-webengage": "file:../lib/react-native-webengage-1.6.2.tgz"
+    "react-native-webengage": "file:../lib/react-native-webengage-1.6.41.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",

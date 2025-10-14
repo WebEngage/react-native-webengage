@@ -1,6 +1,6 @@
 {
   "name": "react-native-webengage",
-  "version": "1.6.2",
+  "version": "1.6.41",
   "description": "WebEngage React Native library.",
   "license": "MIT",
   "author": "WebEngage",
@@ -29,11 +29,12 @@
     "react-native": ">=0.65.0"
   },
   "codegenConfig": {
-    "name": "WETurboModuleSpec",
+    "name": "WebEngageReactSpec",
     "type": "modules",
     "jsSrcsDir": "src",
+    "libraryName": "WebEngageReact",
     "android": {
-      "javaPackageName": "com.webengage"
+      "javaPackageName": "com.webengage.react"
     }
   },
   "jest": {

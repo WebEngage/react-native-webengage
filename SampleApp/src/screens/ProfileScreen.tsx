@@ -142,6 +142,18 @@ const ProfileScreen: React.FC = () => {
     setValAttribute(text);
   };
 
+  // TODO - remove this method later
+  const onAttrUpdate = () => {
+    webEngageManager.user.setAttribute("Age", 25) // Number
+    webEngageManager.user.setAttribute("birth_place", "BHL") // String
+    webEngageManager.user.setAttribute("Brand affinity", ["Apple", "Samsung"]) // Array of Strings
+    const simpleMap = {"key1": "value1"};
+    webEngageManager.user.setAttribute("simpleMap", simpleMap) // Map of String key-value pairs // Not working
+    const testDate = new Date('2023-10-10T10:10:10');
+    webEngageManager.user.setAttribute("dateOfBirth", testDate.toISOString()) // Date // not working
+    webEngageManager.user.setAttribute("HasSubscribed", true) // Boolean
+  }
+
   const onSaveAttribute = () => {
     if (keyAttribute && valAttribute) {
       const updatedAttributeList: any = [
@@ -432,6 +444,11 @@ const ProfileScreen: React.FC = () => {
           <Text style={styles.optinLabel}>Viber</Text>
         </View>
       </View>
+      <WEButton
+          onPress={onAttrUpdate}
+          buttonText="Send Multiple Atributes"
+          buttonStyle={styles.modalButton}
+        />
       <WEButton
         buttonText="Save"
         onPress={onSave}

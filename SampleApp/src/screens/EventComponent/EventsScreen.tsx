@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import COLORS from '../../Styles/Colors';
 import WETextInput from '../../CommonComponents/WETextInput';
-import {Picker} from '@react-native-picker/picker';
+import Dropdown from '../../utils/Dropdown';
 import WEUserModal from '../../CommonComponents/WEUserModal';
 import WEButton from '../../CommonComponents/WEButton';
 import ShoppingEventsScreen from './ShoppingEventScreen';
@@ -12,13 +12,16 @@ import CONSTANTS from '../../utils/Constants';
 
 const EventsScreen = () => {
   const [eventName, setEventName] = useState<string>('');
-  const [times, setTimes] = useState<number>(1);
+  const [times, setTimes] = useState<string>('1');
   const [customAttributeList, setCustomAttributeList] = useState({});
   const [showUserModal, setShowUserModal] = useState(false);
   const [keyAttribute, setKeyAttribute] = useState('');
   const [valAttribute, setValAttribute] = useState('');
 
-  const numericValues = Array.from({length: 10}, (_, index) => index + 1);
+  const numericOptions = Array.from({length: 10}, (_, index) => ({
+    label: (index + 1).toString(),
+    value: (index + 1).toString()
+  }));
 
   const handleTrackButtonPress = () => {
     console.log(
@@ -31,7 +34,7 @@ const EventsScreen = () => {
         times +
         ' times',
     );
-    for (let i = 0; i < times; i++) {
+    for (let i = 0; i < parseInt(times); i++) {
       webEngageManager.track(eventName, customAttributeList);
     }
   };
@@ -140,19 +143,13 @@ const EventsScreen = () => {
         </TouchableOpacity>
         <View style={styles.row}>
           <Text style={styles.label}>Times:</Text>
-          <Picker
-            selectedValue={times}
-            onValueChange={value => setTimes(value)}
-            mode="dropdown"
-            style={styles.picker}>
-            {numericValues.map(value => (
-              <Picker.Item
-                key={value}
-                label={value.toString()}
-                value={value.toString()}
-              />
-            ))}
-          </Picker>
+          <Dropdown
+            value={times}
+            onChange={setTimes}
+            options={numericOptions}
+            containerStyle={styles.dropdownContainer}
+            searchable={false}
+          />
         </View>
         <WEUserModal
           modalUI={customAttributeUI}
@@ -211,10 +208,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     borderColor: COLORS.grey,
   },
-  picker: {
-    height: 50,
+  dropdownContainer: {
     width: 100,
-    marginBottom: 10,
   },
   trackButton: {
     padding: 10,

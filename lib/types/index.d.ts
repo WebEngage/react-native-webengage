@@ -138,7 +138,7 @@ declare class WebEngagePlugin {
   inAppShownListener: any;
   _options: Record<string, any>;
 
-  init(autoRegister: boolean): void;
+  init(autoRegister?: boolean): void;
   track(eventName: string, attributes?: Record<string, any>): void;
   screen(name: string, data?: Record<string, any>): void;
   startGAIDTracking(): void;

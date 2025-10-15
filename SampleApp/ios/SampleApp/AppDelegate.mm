@@ -18,13 +18,13 @@
 #else
   NSLog(@"🏗️ Architecture: Old Architecture");
 #endif
-  
-  
+
+
   // Initialize WebEngage
-  WebEngageReact *weManager = [WebEngageReact new];
-//   [weManager setDelegates];
-  [[WebEngage sharedInstance] application:application
-          didFinishLaunchingWithOptions:launchOptions notificationDelegate:weManager];
+  // Docs: Add below 2 lines to Docs
+  self.weManager = [WebEngageReact new];
+  
+  [self.weManager autoRegister:application launchOptions:launchOptions];
   
   if (@available(iOS 10.0, *)) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
@@ -82,14 +82,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 }
 
 
-- (id<RCTBridgeDelegate>)bridgeDelegate
-{
-  return [WebEngageReact new];
-}
-
 - (BOOL)newArchEnabled
 {
-  return NO;
+  return YES;
 }
 
 @end

@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import {Picker} from '@react-native-picker/picker';
 import WETextInput from '../CommonComponents/WETextInput';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
 import WEButton from '../CommonComponents/WEButton';
 import WEUserModal from '../CommonComponents/WEUserModal';
 import CONSTANTS from '../utils/Constants';
+import GenderDropdown from '../utils/GenderDropdown';
 
 const ProfileScreen: React.FC = () => {
   const [firstName, setFirstName] = useState<string>('');
@@ -23,7 +23,7 @@ const ProfileScreen: React.FC = () => {
   const [hashedPhone, setHashedPhone] = useState<string>('');
   const [company, setCompany] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [gender, setGender] = useState('Unknown');
+  const [gender, setGender] = useState('');
   const [birthDate, setBirthDate] = useState<string>('');
   const [showUserModal, setShowUserModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -341,17 +341,7 @@ const ProfileScreen: React.FC = () => {
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Gender</Text>
-          {/* TODO Add a Picker */}
-          <Picker
-            selectedValue={gender}
-            onValueChange={value => setGender(value)}
-            mode="dropdown"
-            style={styles.picker}>
-            <Picker.Item label="Select Gender" value="" />
-            <Picker.Item label="Male" value="Male" />
-            <Picker.Item label="Female" value="Female" />
-            <Picker.Item label="Other" value="" />
-          </Picker>
+          <GenderDropdown value={gender} onChange={setGender} />
         </View>
 
         <View style={styles.row}>

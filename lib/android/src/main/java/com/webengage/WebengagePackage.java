@@ -70,9 +70,9 @@ public class WebengagePackage implements ReactPackage {
             
             // Register TurboModule info
             moduleInfos.put(
-                "WETurboModule",
+                "WebEngageReact",
                 new ReactModuleInfo(
-                    "WETurboModule",
+                    "WebEngageReact",
                     "com.webengage.WebEngageModule",
                     false, // canOverrideExistingModule
                     false, // needsEagerInit

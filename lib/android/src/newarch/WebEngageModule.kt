@@ -20,7 +20,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     override fun getName(): String {
         Logger.d("WebEngage","Architecture: NEW architecture in android lib");
 
-        return "WETurboModule"
+        return "WebEngageReact"
     }
 
     override fun init(autoRegister: Boolean) {
@@ -77,6 +77,14 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
 
     override fun setAttribute(attributes: ReadableMap?) {
         attributes?.let { webEngageModuleImpl.setAttribute(it) }
+    }
+
+    override fun setAndroidAttribute(attributes: ReadableMap?) {
+        attributes?.let { webEngageModuleImpl.setAttribute(it) }
+    }
+
+    override fun setIosAttribute(attributeName: String?, value: ReadableMap?) {
+        // Not used in Android - iOS only method
     }
 
     override fun deleteAttribute(attributeName: String?) {

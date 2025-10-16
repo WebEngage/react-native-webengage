@@ -12,7 +12,7 @@ if (isNewArchitectureEnabled()) {
 if (isNewArchitectureEnabled()) {
     react {
         jsRootDir = file("../src/")
-        libraryName = "WETurboModule"
+        libraryName = "WebEngageReact"
         codegenJavaPackageName = "com.webengage"
     }
 }

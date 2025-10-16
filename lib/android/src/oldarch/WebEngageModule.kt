@@ -21,7 +21,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
 
     override fun getName(): String {
         Logger.d("WebEngage","Architecture: old architecture in android lib");
-        return "WETurboModule"
+        return "WebEngageReact"
     }
 
     @ReactMethod
@@ -87,6 +87,16 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     @ReactMethod
     fun setAttribute(attributes: ReadableMap?) {
         attributes?.let { webEngageModuleImpl.setAttribute(it) }
+    }
+
+    @ReactMethod
+    fun setAndroidAttribute(attributes: ReadableMap?) {
+        attributes?.let { webEngageModuleImpl.setAttribute(it) }
+    }
+
+    @ReactMethod
+    fun setIosAttribute(attributeName: String?, value: ReadableMap?) {
+        // Not used in Android - iOS only method
     }
 
     @ReactMethod

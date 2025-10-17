@@ -9,25 +9,14 @@ import com.webengage.react.NativeWebEngageModuleSpec
 class WebEngageModule(reactContext: ReactApplicationContext?) :
     NativeWebEngageModuleSpec(reactContext) {
 
-    companion object {
-        @JvmStatic
-        fun setInitialUri(uri: android.net.Uri?) {
-            // Handle initial URI if needed
-        }
-    }
-
     private val webEngageModuleImpl: WebEngageModuleImpl = WebEngageModuleImpl(reactContext!!)
 
     override fun getName(): String {
-        Logger.d("WebEngage","Architecture: NEW architecture in android lib");
-
         return "WebEngageReact"
     }
 
-    override fun init(autoRegister: Boolean) {
-        Logger.d("WebEngage","Architecture: NEW architecture in android lib");
-
-        webEngageModuleImpl.init(autoRegister)
+    override fun init() {
+        webEngageModuleImpl.init()
     }
 
     override fun trackEventWithName(eventName: String?) {
@@ -51,17 +40,11 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     }
 
     override fun login(userId: String?) {
-        Logger.d("WebEngage", "login: NEW ARCH - WebEngageModule.login() called with userId: $userId")
-        userId?.let { 
-            Logger.d("WebEngage", "login: NEW ARCH - Delegating to WebEngageModuleImpl.login()")
-            webEngageModuleImpl.login(it) 
-        }
+        userId?.let { webEngageModuleImpl.login(it) }
     }
 
     override fun loginWithSecureToken(userId: String?, jwtToken: String?) {
-        Logger.d("WebEngage", "login: NEW ARCH - WebEngageModule.loginWithSecureToken() called with userId: $userId")
         if (userId != null && jwtToken != null) {
-            Logger.d("WebEngage", "login: NEW ARCH - Delegating to WebEngageModuleImpl.loginWithSecureToken()")
             webEngageModuleImpl.loginWithSecureToken(userId, jwtToken)
         }
     }

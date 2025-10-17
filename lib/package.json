@@ -1,6 +1,6 @@
 {
   "name": "react-native-webengage",
-  "version": "1.6.41",
+  "version": "1.6.60",
   "description": "WebEngage React Native library.",
   "license": "MIT",
   "author": "WebEngage",
@@ -11,8 +11,19 @@
   },
   "main": "src/index.js",
   "types": "types/index.d.ts",
+  "react-native": "src/index.js",
+  "source": "src/index.js",
+  "files": [
+    "src",
+    "types",
+    "android",
+    "ios",
+    "react-native-webengage.podspec",
+    "README.md"
+  ],
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "typescript": "tsc --noEmit"
   },
   "keywords": [
     "webengage",
@@ -23,10 +34,16 @@
     "in-app",
     "notification",
     "android",
-    "ios"
+    "ios",
+    "turbomodule",
+    "new-architecture"
   ],
   "peerDependencies": {
+    "react": "*",
     "react-native": ">=0.65.0"
+  },
+  "engines": {
+    "node": ">=12"
   },
   "codegenConfig": {
     "name": "WebEngageReactSpec",

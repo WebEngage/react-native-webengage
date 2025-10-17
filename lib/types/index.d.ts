@@ -1,7 +1,7 @@
 declare module "react-native" {
   interface NativeModulesStatic {
-    webengageBridge: {
-      init(autoRegister: boolean): void;
+    WebEngageReact: {
+      init(): void;
       trackEventWithName(eventName: string): void;
       trackEventWithNameAndData(
         eventName: string,
@@ -38,7 +38,7 @@ declare module "react-native" {
 
 // TurboModule interface for new architecture
 export interface NativeWebEngageModule {
-  init(autoRegister: boolean): void;
+  init(): void;
   trackEventWithName(eventName: string): void;
   trackEventWithNameAndData(eventName: string, eventData: any): void;
   screenNavigated(screenName: string): void;
@@ -66,8 +66,8 @@ export interface NativeWebEngageModule {
   onMessageReceived(remoteMessage: any): void;
   startGAIDTracking(): void;
   updateListenerCount(): void;
-  addListener?: (eventType: string) => void;
-  removeListeners?: (count: number) => void;
+  addListener: (eventType: string) => void;
+  removeListeners: (count: number) => void;
 }
 
 declare class WebEngagePushChannel {
@@ -134,7 +134,7 @@ declare class WebEngagePlugin {
   inAppShownListener: any;
   _options: Record<string, any>;
 
-  init(autoRegister?: boolean): void;
+  init(): void;
   track(eventName: string, attributes?: Record<string, any>): void;
   screen(name: string, data?: Record<string, any>): void;
   startGAIDTracking(): void;

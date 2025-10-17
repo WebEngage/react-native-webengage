@@ -13,22 +13,7 @@ if (isNewArchitectureEnabled()) {
     react {
         jsRootDir = file("../src/")
         libraryName = "WebEngageReact"
-        codegenJavaPackageName = "com.webengage"
-    }
-}
-
-buildscript {
-    ext {
-        kotlin_version = '1.9.0'
-    }
-    repositories {
-        mavenCentral()
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        codegenJavaPackageName = "com.webengage.react"
     }
 }
 
@@ -55,7 +40,7 @@ android {
         }
     }
 
-    lintOptions {
+    lint {
         abortOnError false
     }
 }
@@ -63,7 +48,7 @@ android {
 repositories {
     mavenCentral()
     google()
-    jcenter()
+
 }
 
 String readVersion() {
@@ -88,4 +73,9 @@ dependencies {
     api 'com.webengage:android-sdk:[4.4,)'
     implementation 'androidx.core:core-ktx:1.9.0'
     compileOnly 'androidx.annotation:annotation:1.2.0'
+    
+    if (isNewArchitectureEnabled()) {
+        implementation 'com.facebook.react:react-android'
+        implementation 'com.facebook.react:hermes-android'
+    }
 }

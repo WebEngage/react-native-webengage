@@ -1,6 +1,5 @@
 package com.webengage
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -11,24 +10,15 @@ import com.webengage.sdk.android.Logger
 class WebEngageModule(reactContext: ReactApplicationContext?) :
     ReactContextBaseJavaModule(reactContext) {
 
-    companion object {
-        @JvmStatic
-        fun setInitialUri(uri: android.net.Uri?) {
-            // Handle initial URI if needed
-        }
-    }
-
     private val webEngageModuleImpl: WebEngageModuleImpl = WebEngageModuleImpl(reactContext!!)
 
     override fun getName(): String {
-        Logger.d("WebEngage","Architecture: old architecture in android lib");
         return "WebEngageReact"
     }
 
     @ReactMethod
-    fun init(autoRegister: Boolean) {
-        Logger.d("WebEngage","Architecture: old architecture in android lib");
-        webEngageModuleImpl.init(autoRegister)
+    fun init() {
+        webEngageModuleImpl.init()
     }
 
     @ReactMethod
@@ -57,18 +47,12 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
 
     @ReactMethod
     fun login(userId: String?) {
-        Logger.d("WebEngage", "login: OLD ARCH - WebEngageModule.login() called with userId: $userId")
-        userId?.let { 
-            Logger.d("WebEngage", "login: OLD ARCH - Delegating to WebEngageModuleImpl.login()")
-            webEngageModuleImpl.login(it) 
-        }
+        userId?.let { webEngageModuleImpl.login(it) }
     }
 
     @ReactMethod
     fun loginWithSecureToken(userId: String?, jwtToken: String?) {
-        Logger.d("WebEngage", "login: OLD ARCH - WebEngageModule.loginWithSecureToken() called with userId: $userId")
         if (userId != null && jwtToken != null) {
-            Logger.d("WebEngage", "login: OLD ARCH - Delegating to WebEngageModuleImpl.loginWithSecureToken()")
             webEngageModuleImpl.loginWithSecureToken(userId, jwtToken)
         }
     }

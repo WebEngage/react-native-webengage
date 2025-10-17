@@ -9,13 +9,13 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.source         = { :git => 'https://github.com/WebEngage/react-native-webengage.git', :tag => s.version }
+  s.source         = { :git => package['repository']['url'].gsub('git+', ''), :tag => s.version }
 
   s.requires_arc   = true
   s.module_name    = 'WebEngageReact' 
-  s.platform       = :ios, '10.0'
+  s.platform       = :ios, '11.0'
 
-  s.preserve_paths = 'LICENSE.md', 'README.md', 'package.json', 'index.js'
+  s.preserve_paths = 'LICENSE.md', 'README.md', 'package.json', 'src/**/*', 'types/**/*'
   s.source_files   = 'ios/WebEngageReact/*.{h,m,mm}'
 
   if respond_to?(:install_modules_dependencies, true)
@@ -31,11 +31,18 @@ Pod::Spec.new do |s|
   end
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
+    s.compiler_flags = '-DRCT_NEW_ARCH_ENABLED=1'
     s.pod_target_xcconfig = {
       'DEFINES_MODULE' => 'YES',
       'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) COCOAPODS=1 RCT_NEW_ARCH_ENABLED=1',
       "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
       "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
     }
+    
+    s.dependency 'React-Codegen'
+    s.dependency 'RCT-Folly'
+    s.dependency 'RCTRequired'
+    s.dependency 'RCTTypeSafety'
+    s.dependency 'ReactCommon/turbomodule/core'
   end
 end

@@ -4,15 +4,6 @@ package com.webengage;
  * Created by uzma on 10/25/17.
  */
 
- import android.app.ActivityManager;
- import android.content.Intent;
- import android.net.Uri;
- import android.content.Context;
- import android.os.Bundle;
-import android.util.Log;
-
-import com.webengage.sdk.android.Logger;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -20,46 +11,28 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.webengage.sdk.android.Analytics;
-import com.webengage.sdk.android.UserProfile;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.WritableNativeArray;
-import com.webengage.sdk.android.WebEngage;
-import com.webengage.sdk.android.actions.render.InAppNotificationData;
-import com.webengage.sdk.android.actions.render.PushNotificationData;
-import com.webengage.sdk.android.callbacks.InAppNotificationCallbacks;
-import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
- import com.webengage.sdk.android.callbacks.StateChangeCallbacks;
- import com.webengage.sdk.android.callbacks.WESecurityCallback;
-import com.webengage.sdk.android.utils.Gender;
-import com.webengage.sdk.android.Channel;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.webengage.sdk.android.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
 //WebEngageBridge singleton
 
 public class WebengageBridge extends ReactContextBaseJavaModule {
-    private static final String TAG = "webengageBridge";
+    private static final String TAG = "WebEngageReact";
     private static int listenerCount = 0;
     private static volatile WebengageBridge INSTANCE = null;
     private static final Object lock = new Object();
@@ -69,7 +42,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
     //no parameter initialization to be called from application class during react native initialization
     public static WebengageBridge getInstance() {
-        Logger.d(TAG, "getInstance without context: ");
         if (INSTANCE == null) {
             synchronized (lock) {
                 INSTANCE = new WebengageBridge(null);
@@ -80,7 +52,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
     //to be called during setting up package list
     public static WebengageBridge getInstance(ReactApplicationContext reactContext) {
-        Logger.d(TAG, "getInstance: " + reactContext);
         if (INSTANCE == null) {
             synchronized (lock) {
                 INSTANCE = new WebengageBridge(reactContext);
@@ -99,7 +70,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
     private WebengageBridge(ReactApplicationContext reactContext) {
         super(reactContext);
-        Log.d(TAG, "Constructor called");
         if (reactContext != null) {
             webEngageModuleImpl = new WebEngageModuleImpl(reactContext);
         }
@@ -141,13 +111,11 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void init(boolean autoRegister) {
+    public void init() {
         if (webEngageModuleImpl != null) {
-            webEngageModuleImpl.init(autoRegister);
+            webEngageModuleImpl.init();
         }
     }
-
-    // Date parsing moved to WebEngageModuleImpl
 
     @ReactMethod
     public void trackEventWithName(String name) {
@@ -179,18 +147,14 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void login(String userIdentifier) {
-        Logger.d(TAG, "login: BRIDGE - WebengageBridge.login() called with userId: " + userIdentifier);
         if (webEngageModuleImpl != null) {
-            Logger.d(TAG, "login: BRIDGE - Delegating to WebEngageModuleImpl.login()");
             webEngageModuleImpl.login(userIdentifier);
         }
     }
 
     @ReactMethod
     public void loginWithSecureToken(String userIdentifier, String jwtToken) {
-        Logger.d(TAG, "login: BRIDGE - WebengageBridge.loginWithSecureToken() called with userId: " + userIdentifier);
         if (webEngageModuleImpl != null) {
-            Logger.d(TAG, "login: BRIDGE - Delegating to WebEngageModuleImpl.loginWithSecureToken()");
             webEngageModuleImpl.loginWithSecureToken(userIdentifier, jwtToken);
         }
     }
@@ -350,7 +314,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
             // 1. Bridgeless / new arch safe (if available in RN version)
             try {
-                // Only if you’ve extended ReactContext to add emitDeviceEvent()
                 reactContext.emitDeviceEvent(eventName, params);
                 emitted = true;
                 Logger.d(TAG, "Event emitted via bridgeless: " + eventName);
@@ -380,10 +343,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
     }
 }
 
-
-    private ReadableMap convertJsonObjectToReadable(JSONObject jsonObject) {
-        return convertJsonObjectToWriteable(jsonObject);
-    }
 
     public static WritableMap convertJsonObjectToWriteable(JSONObject jsonObj) {
         WritableMap map = Arguments.createMap();
@@ -501,5 +460,3 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
         return arr;
     }
 
-    // Callback implementations are now handled by WebEngageModuleImpl
-}

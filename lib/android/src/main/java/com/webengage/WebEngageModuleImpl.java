@@ -1,10 +1,9 @@
 package com.webengage;
 
 import android.content.Context;
-import android.util.Log;
+
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -14,7 +13,7 @@ import com.facebook.react.bridge.WritableMap;
 
 import com.webengage.sdk.android.Analytics;
 import com.webengage.sdk.android.Logger;
-import com.webengage.sdk.android.UserProfile;
+
 import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.actions.render.InAppNotificationData;
 import com.webengage.sdk.android.actions.render.PushNotificationData;
@@ -82,10 +81,7 @@ public class WebEngageModuleImpl implements PushNotificationCallbacks, InAppNoti
         }
     }
 
-    public void init(boolean autoRegister) {
-        WebEngage.registerPushNotificationCallback(this);
-        WebEngage.registerInAppNotificationCallback(this);
-        WebEngage.registerWESecurityCallback(this);
+    public void init() {
     }
 
     public void trackEventWithName(String name) {
@@ -107,17 +103,11 @@ public class WebEngageModuleImpl implements PushNotificationCallbacks, InAppNoti
     }
 
     public void login(String userIdentifier) {
-        Logger.d(TAG, "login: IMPL - WebEngageModuleImpl.login() called with userId: " + userIdentifier);
-        Logger.d(TAG, "login: IMPL - Calling WebEngage SDK login()");
         WebEngage.get().user().login(userIdentifier);
-        Logger.d(TAG, "login: IMPL - WebEngage SDK login() completed");
     }
 
     public void loginWithSecureToken(String userIdentifier, String jwtToken) {
-        Logger.d(TAG, "login: IMPL - WebEngageModuleImpl.loginWithSecureToken() called with userId: " + userIdentifier);
-        Logger.d(TAG, "login: IMPL - Calling WebEngage SDK loginWithSecureToken()");
         WebEngage.get().user().login(userIdentifier, jwtToken);
-        Logger.d(TAG, "login: IMPL - WebEngage SDK loginWithSecureToken() completed");
     }
 
     public void setSecureToken(String cuid, String secureToken) {
@@ -389,7 +379,7 @@ public class WebEngageModuleImpl implements PushNotificationCallbacks, InAppNoti
                 }
             }
         } catch (JSONException e) {
-            Log.e(TAG, "JSONException while getting action link from in-app notification data", e);
+            Logger.e(TAG, "JSONException while getting action link from in-app notification data", e);
         }
 
         WritableMap map = WebengageBridge.convertJsonObjectToWriteable(jsonObject);

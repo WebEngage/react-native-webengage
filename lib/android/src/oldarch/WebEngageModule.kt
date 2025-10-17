@@ -1,5 +1,6 @@
 package com.webengage
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -82,11 +83,6 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     @ReactMethod
     fun logout() {
         webEngageModuleImpl.logout()
-    }
-
-    @ReactMethod
-    fun setAttribute(attributes: ReadableMap?) {
-        attributes?.let { webEngageModuleImpl.setAttribute(it) }
     }
 
     @ReactMethod
@@ -188,6 +184,17 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     fun updateListenerCount() {
         // Call the bridge's updateListenerCount method to maintain compatibility
         WebengageBridge.getInstance().updateListenerCount()
+    }
+
+    @ReactMethod
+    fun addListener(eventType: String?) {
+        // Required by NativeEventEmitter - handled by React Native
+    }
+
+    @ReactMethod
+    fun removeListeners(count: Double) {
+        // Required by NativeEventEmitter to avoid warnings
+        // This method is called when listeners are removed
     }
 
     override fun getConstants(): Map<String, Any> {

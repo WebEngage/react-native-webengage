@@ -1,8 +1,4 @@
 declare module "react-native" {
-  interface NativeEventEmitter {
-    addListener: (method: string, callback: (...args: any[]) => void) => any;
-  }
-
   interface NativeModulesStatic {
     webengageBridge: {
       init(autoRegister: boolean): void;

@@ -124,9 +124,20 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void addListener(String eventType) {
+        // Required by NativeEventEmitter - handled by React Native
+    }
+
+    @ReactMethod
+    public void removeListeners(double count) {
+        // Required by NativeEventEmitter to avoid warnings
+        // This method is called when listeners are removed
+    }
+
     @Override
     public String getName() {
-        return TAG;
+        return "WebEngageReact";
     }
 
     @ReactMethod

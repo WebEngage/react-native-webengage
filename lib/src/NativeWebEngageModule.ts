@@ -11,7 +11,6 @@ export interface Spec extends TurboModule {
   loginWithSecureToken(userId: string, secureToken: string): void;
   setSecureToken(userId: string, secureToken: string): void;
   logout(): void;
-  setAttribute(attributeName: string, value: Object): void;
   setAndroidAttribute(attributes: Object): void;
   setIosAttribute(attributeName: string, value: Object): void;
   deleteAttribute(attributeName: string): void;
@@ -33,7 +32,6 @@ export interface Spec extends TurboModule {
   startGAIDTracking(): void;
   updateListenerCount(): void;
 
-  onEventListenerAdded(eventType: string): void;
   // NativeEventEmitter methods for the New Architecture.
   // The implementations are handled implicitly by React Native.
   addListener: (eventType: string) => void;

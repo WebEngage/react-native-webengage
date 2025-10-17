@@ -4,6 +4,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.webengage.sdk.android.Logger
+import com.webengage.react.NativeWebEngageModuleSpec
 
 class WebEngageModule(reactContext: ReactApplicationContext?) :
     NativeWebEngageModuleSpec(reactContext) {
@@ -73,10 +74,6 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
 
     override fun logout() {
         webEngageModuleImpl.logout()
-    }
-
-    override fun setAttribute(attributes: ReadableMap?) {
-        attributes?.let { webEngageModuleImpl.setAttribute(it) }
     }
 
     override fun setAndroidAttribute(attributes: ReadableMap?) {
@@ -158,10 +155,9 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     override fun updateListenerCount() {
         // Call the bridge's updateListenerCount method to maintain compatibility
         WebengageBridge.getInstance().updateListenerCount()
-        webEngageModuleImpl.updateListenerCount()
     }
-
-    override fun addListener(eventType: String?) {
+    
+     override fun addListener(eventType: String?) {
         // Handled by React Native
     }
 
@@ -169,7 +165,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
         // Handled by React Native
     }
 
-    override fun getTypedExportedConstants(): Map<String, Any> {
+    override fun getConstants(): Map<String, Any>? {
         return webEngageModuleImpl.webEngageConstants
     }
 }

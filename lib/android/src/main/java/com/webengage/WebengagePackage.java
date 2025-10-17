@@ -84,9 +84,9 @@ public class WebengagePackage implements ReactPackage {
             
             // Also register bridge module for backward compatibility
             moduleInfos.put(
-                "webengageBridge",
+                "WebEngageReact",
                 new ReactModuleInfo(
-                    "webengageBridge",
+                    "WebEngageReact",
                     "com.webengage.WebengageBridge",
                     false, // canOverrideExistingModule
                     false, // needsEagerInit

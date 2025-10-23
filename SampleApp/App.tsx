@@ -1,9 +1,9 @@
 import React from 'react';
 import AppNavigator from './src/Navigation/AppNavigator';
-// import {
-//   enableDevMode,
-//   initWENotificationInbox,
-// } from 'react-native-webengage-inbox';
+import {
+  enableDevMode,
+  initWENotificationInbox,
+} from 'react-native-webengage-inbox';
 import {
   disableWebEngagePush,
   enableWebEngagePush,
@@ -12,9 +12,9 @@ import {
 import {PermissionsAndroid, Platform} from 'react-native';
 
 function App(): React.JSX.Element {
-  // enableDevMode();
+  enableDevMode();
   initWebEngage(); 
-  // initWENotificationInbox();
+  initWENotificationInbox();
   // Rquesting permission for Android
   const requestAndroidPermissions = async () => {
     try {

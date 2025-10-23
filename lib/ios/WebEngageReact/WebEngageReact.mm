@@ -18,8 +18,8 @@ NSString *WEGPluginVersion = @"1.5.1";
 
 RCT_EXPORT_MODULE();
 - (instancetype)init {
-    self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
-    [self initialiseWEGVersion];
+        self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
+        [self initialiseWEGVersion];
     return self;
 }
 
@@ -39,21 +39,6 @@ RCT_EXPORT_MODULE();
 - (void)initialiseWEGVersion {
     WegVersionKey key = WegVersionKeyRN;
     [[WebEngage sharedInstance] setVersionForChildSDK:WEGPluginVersion forKey:key];
-}
-
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
-#if DEBUG
-    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-#else
-    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-#endif
-}
-
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
-    WebEngageReact* b = [WebEngageReact new];
-    self.wegBridge = b;
-    b.bridge = bridge;
-    return @[b];
 }
 
 - (NSDate *)getDate:(NSString *)strValue {
@@ -103,6 +88,7 @@ RCT_EXPORT_MODULE();
     return mutableArr;
 }
 
+// TODO - This was not called anywhere in develop!
 RCT_EXPORT_METHOD(initialize) {
     // TODO - yet to fix this!
 //    [WEGJWTManager shared].tokenInvalidatedCallback = ^{
@@ -253,9 +239,6 @@ RCT_EXPORT_METHOD(updateListenerCount){
     // This is only available for Android
 }
 
-RCT_EXPORT_METHOD(init:(BOOL)autoRegister) {
-    [self initialize];
-}
 
 - (void)autoRegister:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions {
     [self initialize];

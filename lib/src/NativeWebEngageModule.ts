@@ -2,7 +2,7 @@ import type { TurboModule } from 'react-native/Libraries/TurboModule/RCTExport';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
-  init(): void;
+  initialize(): void;
   trackEventWithName(eventName: string): void;
   trackEventWithNameAndData(name: string, andValue: Object): void;
   screenNavigated(screenName: string): void;

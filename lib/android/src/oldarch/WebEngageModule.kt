@@ -17,7 +17,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun init() {
+    fun initialize() {
         webEngageModuleImpl.init()
     }
 

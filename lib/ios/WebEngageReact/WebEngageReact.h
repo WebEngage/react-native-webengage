@@ -7,20 +7,15 @@
 #import <WebEngageReactSpec/WebEngageReactSpec.h>
 @interface WebEngageReact: RCTEventEmitter <NativeWebEngageModuleSpec, WEGInAppNotificationProtocol, WEGAppDelegate, RCTBridgeDelegate>
 #else
-#ifdef RCT_NEW_ARCH_ENABLED
-#import <WebEngageReactSpec/WebEngageReactSpec.h>
-@interface WebEngageReact: RCTEventEmitter <NativeWebEngageModuleSpec, WEGInAppNotificationProtocol, WEGAppDelegate, RCTBridgeDelegate>
-#else
 #import <React/RCTBridgeModule.h>
 @interface WebEngageReact: RCTEventEmitter <RCTBridgeModule, WEGInAppNotificationProtocol, WEGAppDelegate, RCTBridgeDelegate>
 #endif
-#endif
 
 
-@property WebEngageReact* wegBridge;
 @property NSMutableDictionary *pendingEventsDict;
 @property dispatch_queue_t serialQueue;
 
+// Used to Initialize WebEngage SDK Automatically from client's AppDelegate
 - (void)autoRegister:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions;
 
 @end

@@ -18,10 +18,10 @@
   
   
   // Initialize WebEngage
-  self.weBridge = [WEGWebEngageBridge new];
-  [WebEngage sharedInstance].pushNotificationDelegate = self.weBridge;
-  [[WebEngage sharedInstance] application:application
-          didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.weBridge];
+  // Docs: Add below 2 lines to Docs
+  self.weManager = [WebEngageReact new];
+  
+  [self.weManager autoRegister:application launchOptions:launchOptions];
   
   if (@available(iOS 10.0, *)) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;

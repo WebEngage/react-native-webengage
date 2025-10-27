@@ -25,9 +25,9 @@ Pod::Spec.new do |s|
   end
 
   if ENV['WEBENGAGE_USE_CORE'] == 'true'
-    s.dependency 'WebEngage/Core','>= 6.16.1'
+    s.dependency 'WebEngage/Core','>= 6.16.6'
   else
-    s.dependency 'WebEngage','>= 6.16.1'
+    s.dependency 'WebEngage','>= 6.16.6'
   end
 
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then

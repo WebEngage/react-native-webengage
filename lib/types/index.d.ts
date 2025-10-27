@@ -1,7 +1,7 @@
 declare module "react-native" {
   interface NativeModulesStatic {
     WebEngageReact: {
-      init(): void;
+      initializeWebEngage(): void;
       trackEventWithName(eventName: string): void;
       trackEventWithNameAndData(
         eventName: string,
@@ -38,7 +38,7 @@ declare module "react-native" {
 
 // TurboModule interface for new architecture
 export interface NativeWebEngageModule {
-  init(): void;
+  initializeWebEngage(): void;
   trackEventWithName(eventName: string): void;
   trackEventWithNameAndData(eventName: string, eventData: any): void;
   screenNavigated(screenName: string): void;
@@ -134,7 +134,7 @@ declare class WebEngagePlugin {
   inAppShownListener: any;
   _options: Record<string, any>;
 
-  init(): void;
+  initialize(): void;
   track(eventName: string, attributes?: Record<string, any>): void;
   screen(name: string, data?: Record<string, any>): void;
   startGAIDTracking(): void;

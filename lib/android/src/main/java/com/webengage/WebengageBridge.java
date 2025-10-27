@@ -459,4 +459,4 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
         return arr;
     }
-
+}

@@ -7,6 +7,7 @@ const webEngageManager = new WebEngage();
 export default webEngageManager;
 
 export const initWebEngage = () => {
+  webEngageManager.initialize();
   // In-app notification callbacks
   webEngageManager.notification.onPrepare(function (notificationData) {
     console.log(

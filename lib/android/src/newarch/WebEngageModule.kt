@@ -15,7 +15,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
         return "WebEngageReact"
     }
 
-    override fun initialize() {
+    override fun initializeWebEngage() {
         webEngageModuleImpl.init()
     }
 

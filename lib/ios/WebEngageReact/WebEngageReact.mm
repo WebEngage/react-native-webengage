@@ -9,6 +9,19 @@
 #import <WebEngageReactSpec/WebEngageReactSpec.h>
 #endif
 
+// TODO - remove later, hack for running on main thread
+#define RUN_ON_MAIN_THREAD(block) \
+  if ([NSThread isMainThread]) { \
+    NSLog(@"[WebEngageBridge] ✅ Executing on MAIN thread"); \
+    block(); \
+  } else { \
+    NSLog(@"[WebEngageBridge] ⚠️ Executing on BACKGROUND thread — dispatching to main"); \
+    dispatch_async(dispatch_get_main_queue(), ^{ \
+      NSLog(@"[WebEngageBridge] 🔁 Switched to MAIN thread"); \
+      block(); \
+    }); \
+  }
+
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
@@ -18,6 +31,7 @@ NSString *WEGPluginVersion = @"1.5.1";
 
 RCT_EXPORT_MODULE();
 - (instancetype)init {
+    
         self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
         [self initialiseWEGVersion];
     return self;
@@ -89,7 +103,7 @@ RCT_EXPORT_MODULE();
 }
 
 // TODO - This was not called anywhere in develop!
-RCT_EXPORT_METHOD(initialize) {
+RCT_EXPORT_METHOD(initializeWebEngage) {
     // TODO - yet to fix this!
 //    [WEGJWTManager shared].tokenInvalidatedCallback = ^{
 //        NSLog(@"webengageBridge: JWT Token is Invalid. Please send valid ");
@@ -241,7 +255,7 @@ RCT_EXPORT_METHOD(updateListenerCount){
 
 
 - (void)autoRegister:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions {
-    [self initialize];
+    [self initializeWebEngage];
     // Initializes Push with WebEngage Bridge
     [WebEngage sharedInstance].pushNotificationDelegate = self;
     // Initializes InApp with WebEngage Bridge
@@ -285,7 +299,9 @@ RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {
 }
 
 RCT_EXPORT_METHOD(logout){
-    [[WebEngage sharedInstance].user logout];
+    RUN_ON_MAIN_THREAD(^{
+        [[WebEngage sharedInstance].user logout];
+      });
 }
 
 - (NSArray<NSString *> *)supportedEvents {

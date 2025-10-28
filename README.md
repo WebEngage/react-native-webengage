@@ -202,7 +202,6 @@ buildscript {
     ...
     repositories {
         google()
-        jcenter()
     }
     dependencies {
         ...
@@ -214,13 +213,10 @@ allprojects {
     repositories {
         mavenLocal()
         google()
-        jcenter()
         ...
     }
 }
 ```
-
-**Note**: Make sure that you have google() repository is placed above jcenter().
 
 3. Add firebase messaging dependency in app-level build gradle `android/app/build.gradle` file.
 

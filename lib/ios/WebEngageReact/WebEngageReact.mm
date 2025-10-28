@@ -10,19 +10,6 @@
 #import <WebEngageReactSpec/WebEngageReactSpec.h>
 #endif
 
-// TODO - remove later, hack for running on main thread
-#define RUN_ON_MAIN_THREAD(block) \
-  if ([NSThread isMainThread]) { \
-    NSLog(@"[WebEngageBridge] ✅ Executing on MAIN thread"); \
-    block(); \
-  } else { \
-    NSLog(@"[WebEngageBridge] ⚠️ Executing on BACKGROUND thread — dispatching to main"); \
-    dispatch_async(dispatch_get_main_queue(), ^{ \
-      NSLog(@"[WebEngageBridge] 🔁 Switched to MAIN thread"); \
-      block(); \
-    }); \
-  }
-
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
@@ -32,9 +19,8 @@ NSString *WEGPluginVersion = @"1.5.1";
 
 RCT_EXPORT_MODULE();
 - (instancetype)init {
-    
-        self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
-        [self initialiseWEGVersion];
+    self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
+    [self initialiseWEGVersion];
     return self;
 }
 
@@ -298,9 +284,7 @@ RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {
 }
 
 RCT_EXPORT_METHOD(logout){
-    RUN_ON_MAIN_THREAD(^{
-        [[WebEngage sharedInstance].user logout];
-      });
+    [[WebEngage sharedInstance].user logout];
 }
 
 - (NSArray<NSString *> *)supportedEvents {

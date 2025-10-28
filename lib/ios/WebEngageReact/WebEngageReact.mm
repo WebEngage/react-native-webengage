@@ -4,6 +4,7 @@
 #import <WebEngage/WebEngage.h>
 #import <WebEngage/WEGAnalytics.h>
 #import <React/RCTBundleURLProvider.h>
+#import <WebEngage/WebEngage-Swift.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <WebEngageReactSpec/WebEngageReactSpec.h>
@@ -105,27 +106,27 @@ RCT_EXPORT_MODULE();
 // TODO - This was not called anywhere in develop!
 RCT_EXPORT_METHOD(initializeWebEngage) {
     // TODO - yet to fix this!
-//    [WEGJWTManager shared].tokenInvalidatedCallback = ^{
-//        NSLog(@"webengageBridge: JWT Token is Invalid. Please send valid ");
-//        NSDictionary *data = @{
-//            @"error": @{
-//                @"response": @{
-//                    @"status": @"UID_MISMATCH",
-//                    @"message": @"Invalid JWT token passed"
-//                }
-//            }
-//        };
-//        if(weHasListeners) {
-//            [self sendEventWithName:@"tokenInvalidated" body:data];
-//        } else {
-//            if (self.pendingEventsDict == nil) {
-//            self.pendingEventsDict = [NSMutableDictionary dictionary];
-//            self.pendingEventsDict[@"tokenInvalidated"] = data;
-//        } else {
-//            self.pendingEventsDict[@"tokenInvalidated"] = data;
-//        }
-//        }
-//    };
+   [WEGJWTManager shared].tokenInvalidatedCallback = ^{
+       NSLog(@"webengageBridge: JWT Token is Invalid. Please send valid ");
+       NSDictionary *data = @{
+           @"error": @{
+               @"response": @{
+                   @"status": @"UID_MISMATCH",
+                   @"message": @"Invalid JWT token passed"
+               }
+           }
+       };
+       if(weHasListeners) {
+           [self sendEventWithName:@"tokenInvalidated" body:data];
+       } else {
+           if (self.pendingEventsDict == nil) {
+           self.pendingEventsDict = [NSMutableDictionary dictionary];
+           self.pendingEventsDict[@"tokenInvalidated"] = data;
+       } else {
+           self.pendingEventsDict[@"tokenInvalidated"] = data;
+       }
+       }
+   };
 }
 
 RCT_EXPORT_METHOD(trackEventWithName:(NSString *)name){

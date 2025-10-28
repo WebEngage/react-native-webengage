@@ -103,9 +103,7 @@ RCT_EXPORT_MODULE();
     return mutableArr;
 }
 
-// TODO - This was not called anywhere in develop!
 RCT_EXPORT_METHOD(initializeWebEngage) {
-    // TODO - yet to fix this!
    [WEGJWTManager shared].tokenInvalidatedCallback = ^{
        NSLog(@"webengageBridge: JWT Token is Invalid. Please send valid ");
        NSDictionary *data = @{

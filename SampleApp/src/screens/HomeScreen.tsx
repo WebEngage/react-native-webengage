@@ -39,8 +39,9 @@ const HomeScreen = ({navigation}) => {
     const data = await AsyncStorageUtil.getItem<string>('userName');
 
     if (data) {
-      setUserName(data);
-      return data;
+      const parsedData = JSON.parse(data);
+      setUserName(parsedData);
+      return parsedData;
     }
     return null;
   };
@@ -80,6 +81,7 @@ const HomeScreen = ({navigation}) => {
         }
       })();
     }
+    // comment below code if you want to receive callback across App
     return () => {
       if (secureTokenExpiryListenerRef.current) {
         console.log(
@@ -197,7 +199,7 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-  const updateJWTToken = (jwt: String) => {
+  const updateJWTToken = (jwt: string) => {
     console.log(CONSTANTS.WEBENGAGE_INBOX + ' Update jwt token ' + jwt);
     if (userName) {
       webEngageManager.user.setSecureToken(userName, jwt);

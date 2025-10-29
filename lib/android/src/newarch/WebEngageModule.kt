@@ -9,58 +9,76 @@ import com.webengage.react.NativeWebEngageModuleSpec
 class WebEngageModule(reactContext: ReactApplicationContext?) :
     NativeWebEngageModuleSpec(reactContext) {
 
-    private val webEngageModuleImpl: WebEngageModuleImpl = WebEngageModuleImpl(reactContext!!)
+    private val webEngageModuleImpl: WebEngageModuleImpl? = try {
+        reactContext?.let { WebEngageModuleImpl(it) }
+    } catch (e: Exception) {
+        Logger.e("WebEngageModule", "Failed to initialize WebEngageModuleImpl", e)
+        null
+    }
+
+    private fun safeExecute(action: (WebEngageModuleImpl) -> Unit) {
+        webEngageModuleImpl?.let(action) ?: Logger.w("WebEngageModule", "Module not initialized")
+    }
+
+    private fun <T> safeExecuteWithReturn(action: (WebEngageModuleImpl) -> T): T? {
+        return try {
+            webEngageModuleImpl?.let(action)
+        } catch (e: Exception) {
+            Logger.e("WebEngageModule", "Error executing action with return", e)
+            null
+        }
+    }
 
     override fun getName(): String {
         return "WebEngageReact"
     }
 
     override fun initializeWebEngage() {
-        webEngageModuleImpl.init()
+        safeExecute { it.init() }
     }
 
     override fun trackEventWithName(eventName: String?) {
-        eventName?.let { webEngageModuleImpl.trackEventWithName(it) }
+        eventName?.let { name -> safeExecute { it.trackEventWithName(name) } }
     }
 
     override fun trackEventWithNameAndData(eventName: String?, eventData: ReadableMap?) {
         if (eventName != null && eventData != null) {
-            webEngageModuleImpl.trackEventWithNameAndData(eventName, eventData)
+            safeExecute { it.trackEventWithNameAndData(eventName, eventData) }
         }
     }
 
     override fun screenNavigated(screenName: String?) {
-        screenName?.let { webEngageModuleImpl.screenNavigated(it) }
+        screenName?.let { name -> safeExecute { it.screenNavigated(name) } }
     }
 
     override fun screenNavigatedWithData(screenName: String?, screenData: ReadableMap?) {
         if (screenName != null && screenData != null) {
-            webEngageModuleImpl.screenNavigatedWithData(screenName, screenData)
+            safeExecute { it.screenNavigatedWithData(screenName, screenData) }
         }
     }
 
     override fun login(userId: String?) {
-        userId?.let { webEngageModuleImpl.login(it) }
+        userId?.let { id -> safeExecute { it.login(id) } }
     }
 
     override fun loginWithSecureToken(userId: String?, jwtToken: String?) {
         if (userId != null && jwtToken != null) {
-            webEngageModuleImpl.loginWithSecureToken(userId, jwtToken)
+            safeExecute { it.loginWithSecureToken(userId, jwtToken) }
         }
     }
 
     override fun setSecureToken(userId: String?, secureToken: String?) {
         if (userId != null && secureToken != null) {
-            webEngageModuleImpl.setSecureToken(userId, secureToken)
+            safeExecute { it.setSecureToken(userId, secureToken) }
         }
     }
 
     override fun logout() {
-        webEngageModuleImpl.logout()
+        safeExecute { it.logout() }
     }
 
     override fun setAndroidAttribute(attributes: ReadableMap?) {
-        attributes?.let { webEngageModuleImpl.setAttribute(it) }
+        attributes?.let { attrs -> safeExecute { it.setAttribute(attrs) } }
     }
 
     override fun setIosAttribute(attributeName: String?, value: ReadableMap?) {
@@ -68,71 +86,71 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     }
 
     override fun deleteAttribute(attributeName: String?) {
-        attributeName?.let { webEngageModuleImpl.deleteAttribute(it) }
+        attributeName?.let { name -> safeExecute { it.deleteAttribute(name) } }
     }
 
     override fun deleteAttributes(attributeNames: ReadableArray?) {
-        attributeNames?.let { webEngageModuleImpl.deleteAttributes(it) }
+        attributeNames?.let { names -> safeExecute { it.deleteAttributes(names) } }
     }
 
     override fun setEmail(email: String?) {
-        email?.let { webEngageModuleImpl.setEmail(it) }
+        email?.let { e -> safeExecute { it.setEmail(e) } }
     }
 
     override fun setHashedEmail(hashedEmail: String?) {
-        hashedEmail?.let { webEngageModuleImpl.setHashedEmail(it) }
+        hashedEmail?.let { e -> safeExecute { it.setHashedEmail(e) } }
     }
 
     override fun setPhone(phone: String?) {
-        phone?.let { webEngageModuleImpl.setPhone(it) }
+        phone?.let { p -> safeExecute { it.setPhone(p) } }
     }
 
     override fun setHashedPhone(hashedPhone: String?) {
-        hashedPhone?.let { webEngageModuleImpl.setHashedPhone(it) }
+        hashedPhone?.let { p -> safeExecute { it.setHashedPhone(p) } }
     }
 
     override fun setBirthDateString(birthDate: String?) {
-        birthDate?.let { webEngageModuleImpl.setBirthDateString(it) }
+        birthDate?.let { date -> safeExecute { it.setBirthDateString(date) } }
     }
 
     override fun setGender(gender: String?) {
-        gender?.let { webEngageModuleImpl.setGender(it) }
+        gender?.let { g -> safeExecute { it.setGender(g) } }
     }
 
     override fun setFirstName(firstName: String?) {
-        firstName?.let { webEngageModuleImpl.setFirstName(it) }
+        firstName?.let { name -> safeExecute { it.setFirstName(name) } }
     }
 
     override fun setLastName(lastName: String?) {
-        lastName?.let { webEngageModuleImpl.setLastName(it) }
+        lastName?.let { name -> safeExecute { it.setLastName(name) } }
     }
 
     override fun setCompany(company: String?) {
-        company?.let { webEngageModuleImpl.setCompany(it) }
+        company?.let { c -> safeExecute { it.setCompany(c) } }
     }
 
     override fun setLocation(latitude: Double, longitude: Double) {
-        webEngageModuleImpl.setLocation(latitude, longitude)
+        safeExecute { it.setLocation(latitude, longitude) }
     }
 
     override fun setDevicePushOptIn(optIn: Boolean) {
-        webEngageModuleImpl.setDevicePushOptIn(optIn)
+        safeExecute { it.setDevicePushOptIn(optIn) }
     }
 
     override fun setOptIn(channel: String?, optIn: Boolean) {
-        channel?.let { webEngageModuleImpl.setOptIn(it, optIn) }
+        channel?.let { ch -> safeExecute { it.setOptIn(ch, optIn) } }
     }
 
     override fun sendFcmToken(token: String?) {
-        token?.let { webEngageModuleImpl.sendFcmToken(it) }
+        token?.let { t -> safeExecute { it.sendFcmToken(t) } }
     }
 
     override fun onMessageReceived(remoteMessage: ReadableMap?) {
-        remoteMessage?.let { webEngageModuleImpl.onMessageReceived(it) }
+        remoteMessage?.let { msg -> safeExecute { it.onMessageReceived(msg) } }
     }
 
     override fun startGAIDTracking() {
-        webEngageModuleImpl.startGAIDTracking()
+        safeExecute { it.startGAIDTracking() }
     }
 
     override fun updateListenerCount() {
@@ -149,6 +167,6 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     }
 
     override fun getConstants(): Map<String, Any>? {
-        return webEngageModuleImpl.webEngageConstants
+        return safeExecuteWithReturn { it.webEngageConstants }
     }
 }

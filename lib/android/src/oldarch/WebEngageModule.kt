@@ -10,7 +10,20 @@ import com.webengage.sdk.android.Logger
 class WebEngageModule(reactContext: ReactApplicationContext?) :
     ReactContextBaseJavaModule(reactContext) {
 
-    private val webEngageModuleImpl: WebEngageModuleImpl = WebEngageModuleImpl(reactContext!!)
+    private val webEngageModuleImpl: WebEngageModuleImpl? = try {
+        reactContext?.let { WebEngageModuleImpl(it) }
+    } catch (e: Exception) {
+        Logger.e("WebEngageModule", "Failed to initialize WebEngageModuleImpl", e)
+        null
+    }
+
+    private fun safeExecute(action: (WebEngageModuleImpl) -> Unit) {
+        webEngageModuleImpl?.let(action) ?: Logger.w("WebEngageModule", "Module not initialized")
+    }
+
+    private fun <T> safeExecuteWithReturn(action: (WebEngageModuleImpl) -> T): T? {
+        return webEngageModuleImpl?.let(action)
+    }
 
     override fun getName(): String {
         return "WebEngageReact"
@@ -18,60 +31,60 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
 
     @ReactMethod
     fun initializeWebEngage() {
-        webEngageModuleImpl.init()
+        safeExecute { it.init() }
     }
 
     @ReactMethod
     fun trackEventWithName(eventName: String?) {
-        eventName?.let { webEngageModuleImpl.trackEventWithName(it) }
+        eventName?.let { name -> safeExecute { it.trackEventWithName(name) } }
     }
 
     @ReactMethod
     fun trackEventWithNameAndData(eventName: String?, eventData: ReadableMap?) {
         if (eventName != null && eventData != null) {
-            webEngageModuleImpl.trackEventWithNameAndData(eventName, eventData)
+            safeExecute { it.trackEventWithNameAndData(eventName, eventData) }
         }
     }
 
     @ReactMethod
     fun screenNavigated(screenName: String?) {
-        screenName?.let { webEngageModuleImpl.screenNavigated(it) }
+        screenName?.let { name -> safeExecute { it.screenNavigated(name) } }
     }
 
     @ReactMethod
     fun screenNavigatedWithData(screenName: String?, screenData: ReadableMap?) {
         if (screenName != null && screenData != null) {
-            webEngageModuleImpl.screenNavigatedWithData(screenName, screenData)
+            safeExecute { it.screenNavigatedWithData(screenName, screenData) }
         }
     }
 
     @ReactMethod
     fun login(userId: String?) {
-        userId?.let { webEngageModuleImpl.login(it) }
+        userId?.let { id -> safeExecute { it.login(id) } }
     }
 
     @ReactMethod
     fun loginWithSecureToken(userId: String?, jwtToken: String?) {
         if (userId != null && jwtToken != null) {
-            webEngageModuleImpl.loginWithSecureToken(userId, jwtToken)
+            safeExecute { it.loginWithSecureToken(userId, jwtToken) }
         }
     }
 
     @ReactMethod
     fun setSecureToken(userId: String?, secureToken: String?) {
         if (userId != null && secureToken != null) {
-            webEngageModuleImpl.setSecureToken(userId, secureToken)
+            safeExecute { it.setSecureToken(userId, secureToken) }
         }
     }
 
     @ReactMethod
     fun logout() {
-        webEngageModuleImpl.logout()
+        safeExecute { it.logout() }
     }
 
     @ReactMethod
     fun setAndroidAttribute(attributes: ReadableMap?) {
-        attributes?.let { webEngageModuleImpl.setAttribute(it) }
+        attributes?.let { attrs -> safeExecute { it.setAttribute(attrs) } }
     }
 
     @ReactMethod
@@ -81,87 +94,87 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
 
     @ReactMethod
     fun deleteAttribute(attributeName: String?) {
-        attributeName?.let { webEngageModuleImpl.deleteAttribute(it) }
+        attributeName?.let { name -> safeExecute { it.deleteAttribute(name) } }
     }
 
     @ReactMethod
     fun deleteAttributes(attributeNames: ReadableArray?) {
-        attributeNames?.let { webEngageModuleImpl.deleteAttributes(it) }
+        attributeNames?.let { names -> safeExecute { it.deleteAttributes(names) } }
     }
 
     @ReactMethod
     fun setEmail(email: String?) {
-        email?.let { webEngageModuleImpl.setEmail(it) }
+        email?.let { e -> safeExecute { it.setEmail(e) } }
     }
 
     @ReactMethod
     fun setHashedEmail(hashedEmail: String?) {
-        hashedEmail?.let { webEngageModuleImpl.setHashedEmail(it) }
+        hashedEmail?.let { e -> safeExecute { it.setHashedEmail(e) } }
     }
 
     @ReactMethod
     fun setPhone(phone: String?) {
-        phone?.let { webEngageModuleImpl.setPhone(it) }
+        phone?.let { p -> safeExecute { it.setPhone(p) } }
     }
 
     @ReactMethod
     fun setHashedPhone(hashedPhone: String?) {
-        hashedPhone?.let { webEngageModuleImpl.setHashedPhone(it) }
+        hashedPhone?.let { p -> safeExecute { it.setHashedPhone(p) } }
     }
 
     @ReactMethod
     fun setBirthDateString(birthDate: String?) {
-        birthDate?.let { webEngageModuleImpl.setBirthDateString(it) }
+        birthDate?.let { date -> safeExecute { it.setBirthDateString(date) } }
     }
 
     @ReactMethod
     fun setGender(gender: String?) {
-        gender?.let { webEngageModuleImpl.setGender(it) }
+        gender?.let { g -> safeExecute { it.setGender(g) } }
     }
 
     @ReactMethod
     fun setFirstName(firstName: String?) {
-        firstName?.let { webEngageModuleImpl.setFirstName(it) }
+        firstName?.let { name -> safeExecute { it.setFirstName(name) } }
     }
 
     @ReactMethod
     fun setLastName(lastName: String?) {
-        lastName?.let { webEngageModuleImpl.setLastName(it) }
+        lastName?.let { name -> safeExecute { it.setLastName(name) } }
     }
 
     @ReactMethod
     fun setCompany(company: String?) {
-        company?.let { webEngageModuleImpl.setCompany(it) }
+        company?.let { c -> safeExecute { it.setCompany(c) } }
     }
 
     @ReactMethod
     fun setLocation(latitude: Double, longitude: Double) {
-        webEngageModuleImpl.setLocation(latitude, longitude)
+        safeExecute { it.setLocation(latitude, longitude) }
     }
 
     @ReactMethod
     fun setDevicePushOptIn(optIn: Boolean) {
-        webEngageModuleImpl.setDevicePushOptIn(optIn)
+        safeExecute { it.setDevicePushOptIn(optIn) }
     }
 
     @ReactMethod
     fun setOptIn(channel: String?, optIn: Boolean) {
-        channel?.let { webEngageModuleImpl.setOptIn(it, optIn) }
+        channel?.let { ch -> safeExecute { it.setOptIn(ch, optIn) } }
     }
 
     @ReactMethod
     fun sendFcmToken(token: String?) {
-        token?.let { webEngageModuleImpl.sendFcmToken(it) }
+        token?.let { t -> safeExecute { it.sendFcmToken(t) } }
     }
 
     @ReactMethod
     fun onMessageReceived(remoteMessage: ReadableMap?) {
-        remoteMessage?.let { webEngageModuleImpl.onMessageReceived(it) }
+        remoteMessage?.let { msg -> safeExecute { it.onMessageReceived(msg) } }
     }
 
     @ReactMethod
     fun startGAIDTracking() {
-        webEngageModuleImpl.startGAIDTracking()
+        safeExecute { it.startGAIDTracking() }
     }
 
     @ReactMethod
@@ -181,7 +194,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
         // This method is called when listeners are removed
     }
 
-    override fun getConstants(): Map<String, Any> {
-        return webEngageModuleImpl.webEngageConstants
+    override fun getConstants(): Map<String, Any>? {
+        return safeExecuteWithReturn { it.webEngageConstants }
     }
 }

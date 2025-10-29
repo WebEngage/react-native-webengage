@@ -78,12 +78,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   return YES;
 }
 
-
-- (id<RCTBridgeDelegate>)bridgeDelegate
-{
-  return self.weBridge;
-}
-
 - (BOOL)newArchEnabled
 {
   return YES;

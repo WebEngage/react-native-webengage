@@ -69,7 +69,7 @@ String readVersion() {
 }
 
 dependencies {
-    implementation 'com.facebook.react:react-native:+'
+    compileOnly 'com.facebook.react:react-native:+'
     api 'com.webengage:android-sdk:[4.4,)'
     implementation 'androidx.core:core-ktx:1.9.0'
     compileOnly 'androidx.annotation:annotation:1.2.0'

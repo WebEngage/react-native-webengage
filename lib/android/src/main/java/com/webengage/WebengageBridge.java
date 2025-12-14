@@ -312,21 +312,13 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
         if (listenerCount > 0) {
             boolean emitted = false;
 
-            // 1. Bridgeless / new arch safe (if available in RN version)
             try {
-                reactContext.emitDeviceEvent(eventName, params);
+                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit(eventName, params);
                 emitted = true;
-                Logger.d(TAG, "Event emitted via bridgeless: " + eventName);
-            } catch (Throwable ignore) {
-                // 2. Old bridge path
-                try {
-                    reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                        .emit(eventName, params);
-                    emitted = true;
-                    Logger.d(TAG, "Event emitted via DeviceEventManager: " + eventName);
-                } catch (Throwable inner) {
-                    Logger.d(TAG, "Bridge emit failed: " + inner.getMessage());
-                }
+                Logger.d(TAG, "Event emitted via DeviceEventManager: " + eventName);
+            } catch (Throwable e) {
+                Logger.d(TAG, "DeviceEventManager emit failed: " + e.getMessage());
             }
 
             if (!emitted) {

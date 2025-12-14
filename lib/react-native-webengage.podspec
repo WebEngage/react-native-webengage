@@ -12,11 +12,12 @@ Pod::Spec.new do |s|
   s.source         = { :git => package['repository']['url'].gsub('git+', ''), :tag => s.version }
 
   s.requires_arc   = true
-  s.module_name    = 'WebEngageReact' 
+  s.module_name    = 'WEGWebEngageBridge' 
   s.platform       = :ios, '11.0'
 
   s.preserve_paths = 'LICENSE.md', 'README.md', 'package.json', 'src/**/*', 'types/**/*'
-  s.source_files   = 'ios/WebEngageReact/*.{h,m,mm}'
+  s.source_files   = 'ios/WEGWebEngageBridge/*.{h,m,mm}'
+  s.public_header_files = 'ios/WEGWebEngageBridge/WEGWebEngageBridge.h'
 
   if respond_to?(:install_modules_dependencies, true)
     install_modules_dependencies(s)

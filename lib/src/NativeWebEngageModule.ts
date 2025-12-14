@@ -38,4 +38,4 @@ export interface Spec extends TurboModule {
   removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('WebEngageReact');
+export default TurboModuleRegistry.getEnforcing<Spec>('WEGWebEngageBridge');

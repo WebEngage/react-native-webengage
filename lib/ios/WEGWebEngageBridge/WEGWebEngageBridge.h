@@ -4,13 +4,12 @@
 #import <React/RCTBridgeDelegate.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
-#import <WebEngageReactSpec/WebEngageReactSpec.h>
-@interface WebEngageReact: RCTEventEmitter <NativeWebEngageModuleSpec, WEGInAppNotificationProtocol, WEGAppDelegate, RCTBridgeDelegate>
+#import <WEGWebEngageBridgeSpec/WEGWebEngageBridgeSpec.h>
+@interface WEGWebEngageBridge: RCTEventEmitter <NativeWebEngageModuleSpec, WEGInAppNotificationProtocol, WEGAppDelegate, RCTBridgeDelegate>
 #else
 #import <React/RCTBridgeModule.h>
-@interface WebEngageReact: RCTEventEmitter <RCTBridgeModule, WEGInAppNotificationProtocol, WEGAppDelegate, RCTBridgeDelegate>
+@interface WEGWebEngageBridge: RCTEventEmitter <RCTBridgeModule, WEGInAppNotificationProtocol, WEGAppDelegate, RCTBridgeDelegate>
 #endif
-
 
 @property NSMutableDictionary *pendingEventsDict;
 @property dispatch_queue_t serialQueue;

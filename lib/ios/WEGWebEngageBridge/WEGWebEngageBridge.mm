@@ -1,4 +1,4 @@
-#import "WebEngageReact.h"
+#import "WEGWebEngageBridge.h"
 
 #import <React/RCTLog.h>
 #import <WebEngage/WebEngage.h>
@@ -7,7 +7,7 @@
 #import <WebEngage/WebEngage-Swift.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
-#import <WebEngageReactSpec/WebEngageReactSpec.h>
+#import <WEGWebEngageBridgeSpec/WEGWebEngageBridgeSpec.h>
 #endif
 
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -15,21 +15,25 @@ int const DATE_FORMAT_LENGTH = 24;
 bool weHasListeners = NO;
 NSString *WEGPluginVersion = @"1.5.1";
 
-@implementation WebEngageReact
+@implementation WEGWebEngageBridge
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(WEGWebEngageBridge);
 - (instancetype)init {
-    self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
-    [self initialiseWEGVersion];
+    if (self = [super init]) {
+        self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
+        [self initialiseWEGVersion];
+    }
     return self;
 }
+
+
 
 + (BOOL)requiresMainQueueSetup {
     return NO;
 }
 
 + (id)allocWithZone:(NSZone *)zone {
-    static WebEngageReact *sharedInstance = nil;
+    static WEGWebEngageBridge *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [super allocWithZone:zone];

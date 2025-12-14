@@ -107,7 +107,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "WebEngageReact";
+        return "WEGWebEngageBridge";
     }
 
     @ReactMethod

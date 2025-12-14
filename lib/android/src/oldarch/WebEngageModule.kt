@@ -26,7 +26,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     }
 
     override fun getName(): String {
-        return "WebEngageReact"
+        return "WEGWebEngageBridge"
     }
 
     @ReactMethod

@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 public class WebEngageModuleImpl implements PushNotificationCallbacks, InAppNotificationCallbacks, WESecurityCallback {
-    private static final String TAG = "WebEngageReact";
+    private static final String TAG = "WEGWebEngageBridge";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final int DATE_FORMAT_LENGTH = DATE_FORMAT.replaceAll("'", "").length();
 

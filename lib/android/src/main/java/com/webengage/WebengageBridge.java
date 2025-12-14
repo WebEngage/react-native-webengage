@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 //WebEngageBridge singleton
 
 public class WebengageBridge extends ReactContextBaseJavaModule {
-    private static final String TAG = "WebEngageReact";
+    private static final String TAG = "WEGWebEngageBridge";
     private static int listenerCount = 0;
     private static volatile WebengageBridge INSTANCE = null;
     private static final Object lock = new Object();

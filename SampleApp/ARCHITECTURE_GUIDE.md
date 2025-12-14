@@ -82,14 +82,14 @@ function initializeWebEngageModule() {
     try {
       const NativeWebEngageModule = require('./NativeWebEngageModule').default;
       return NativeWebEngageModule?.initializeWebEngage ?
-        NativeWebEngageModule : NativeModules.WebEngageReact;
+        NativeWebEngageModule : NativeModules.WEGWebEngageBridge;
     } catch (e) {
       // Fallback to legacy module
-      return NativeModules.WebEngageReact;
+      return NativeModules.WEGWebEngageBridge;
     }
   }
   // Legacy Architecture
-  return NativeModules.WebEngageReact;
+  return NativeModules.WEGWebEngageBridge;
 }
 ```
 

@@ -5,4 +5,3 @@ rootProject.name = 'SampleApp'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
 include ':android-notification-inbox'
-

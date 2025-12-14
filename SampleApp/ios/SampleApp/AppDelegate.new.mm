@@ -20,7 +20,7 @@
   
   // Initialize WebEngage
   // Docs: Add below 2 lines to Docs
-  self.weManager = [WebEngageReact new];
+  self.weManager = [WEGWebEngageBridge new];
   
   [self.weManager autoRegister:application launchOptions:launchOptions];
   

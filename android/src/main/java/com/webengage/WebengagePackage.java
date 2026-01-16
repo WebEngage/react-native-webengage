@@ -49,9 +49,9 @@ public class WebengagePackage implements ReactPackage {
             
             // Register module info for both architectures
             moduleInfos.put(
-                "WebEngageReact",
+                "WEGWebEngageBridge",
                 new ReactModuleInfo(
-                    "WebEngageReact",
+                    "WEGWebEngageBridge",
                     "com.webengage.WebEngageModule",
                     false, // canOverrideExistingModule
                     false, // needsEagerInit

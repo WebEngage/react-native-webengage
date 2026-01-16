@@ -9,18 +9,21 @@ import {
 
 // Initialize WebEngage module based on architecture
 function initializeWebEngageModule() {
-	if (global.__turboModuleProxy) {
-		// New Architecture - try TurboModule first
-		try {
-			const NativeWebEngageModule = require('./NativeWebEngageModule').default;
-			return NativeWebEngageModule?.initializeWebEngage ?
-				NativeWebEngageModule : NativeModules.WEGWebEngageBridge;
-		} catch (e) {
-			// Fallback to legacy module
-			return NativeModules.WEGWebEngageBridge;
+	// Try TurboModule first, fallback to legacy
+	try {
+		const { TurboModuleRegistry } = require('react-native');
+		const NativeWebEngageModule = TurboModuleRegistry.get('WEGWebEngageBridge');
+		
+		if (NativeWebEngageModule) {
+			console.log('WebEngage: Using TurboModule (New Architecture)');
+			return NativeWebEngageModule;
 		}
+	} catch (e) {
+		// TurboModuleRegistry not available or module not found
 	}
-	// Legacy Architecture
+	
+	// Fallback to legacy bridge
+	console.log('WebEngage: Using Legacy Bridge');
 	return NativeModules.WEGWebEngageBridge;
 }
 

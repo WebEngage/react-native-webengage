@@ -4,7 +4,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.webengage.sdk.android.Logger
-import com.webengage.react.NativeWebEngageModuleSpec
+import com.webengage.bridge.NativeWebEngageModuleSpec
 
 class WebEngageModule(reactContext: ReactApplicationContext?) :
     NativeWebEngageModuleSpec(reactContext) {
@@ -30,7 +30,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     }
 
     override fun getName(): String {
-        return "WebEngageReact"
+        return "WEGWebEngageBridge"
     }
 
     override fun initializeWebEngage() {

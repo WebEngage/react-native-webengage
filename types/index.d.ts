@@ -1,6 +1,6 @@
 declare module "react-native" {
   interface NativeModulesStatic {
-    WebEngageReact: {
+    WEGWebEngageBridge: {
       /**
        * Initialize WebEngage SDK
        * @description Must be called before using any other WebEngage methods

@@ -1,6 +1,6 @@
 {
   "name": "react-native-webengage",
-  "version": "1.6.60",
+  "version": "1.7.21",
   "description": "WebEngage React Native library.",
   "license": "MIT",
   "author": "WebEngage",
@@ -46,12 +46,12 @@
     "node": ">=12"
   },
   "codegenConfig": {
-    "name": "WebEngageReactSpec",
+    "name": "WEGWebEngageBridgeSpec",
     "type": "modules",
     "jsSrcsDir": "src",
-    "libraryName": "WebEngageReact",
+    "libraryName": "WEGWebEngageBridge",
     "android": {
-      "javaPackageName": "com.webengage.react"
+      "javaPackageName": "com.webengage.bridge"
     }
   },
   "jest": {

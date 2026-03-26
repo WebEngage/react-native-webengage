@@ -9,6 +9,12 @@ import com.webengage.bridge.NativeWebEngageModuleSpec
 class WebEngageModule(reactContext: ReactApplicationContext?) :
     NativeWebEngageModuleSpec(reactContext) {
 
+    init {
+        reactContext?.let {
+            WebengageBridge.getInstance().setReactNativeContext(it)
+        }
+    }
+
     private val webEngageModuleImpl: WebEngageModuleImpl? = try {
         reactContext?.let { WebEngageModuleImpl(it) }
     } catch (e: Exception) {

@@ -10,6 +10,12 @@ import com.webengage.sdk.android.Logger
 class WebEngageModule(reactContext: ReactApplicationContext?) :
     ReactContextBaseJavaModule(reactContext) {
 
+    init {
+        reactContext?.let {
+            WebengageBridge.getInstance().setReactNativeContext(it)
+        }
+    }
+
     private val webEngageModuleImpl: WebEngageModuleImpl? = try {
         reactContext?.let { WebEngageModuleImpl(it) }
     } catch (e: Exception) {

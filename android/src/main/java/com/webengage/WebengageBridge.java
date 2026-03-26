@@ -80,7 +80,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
     @ReactMethod
     public void updateListenerCount() {
         listenerCount++;
-        Logger.d(TAG, "updateListenerCount called, count: " + listenerCount);
         synchronized (lock) {
             if (listenerCount > 0) {
                 HashMap<String, WritableMap> map = new HashMap<>();

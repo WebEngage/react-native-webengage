@@ -31,19 +31,4 @@ Pod::Spec.new do |s|
     s.dependency 'WebEngage','>= 6.16.6'
   end
 
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
-    s.compiler_flags = '-DRCT_NEW_ARCH_ENABLED=1'
-    s.pod_target_xcconfig = {
-      'DEFINES_MODULE' => 'YES',
-      'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) COCOAPODS=1 RCT_NEW_ARCH_ENABLED=1',
-      "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
-      "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
-    }
-    
-    s.dependency 'React-Codegen'
-    s.dependency 'RCT-Folly'
-    s.dependency 'RCTRequired'
-    s.dependency 'RCTTypeSafety'
-    s.dependency 'ReactCommon/turbomodule/core'
-  end
 end

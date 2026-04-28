@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +37,7 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
     private static int listenerCount = 0;
     private static volatile WebengageBridge INSTANCE = null;
     private static final Object lock = new Object();
-    private static final HashMap<String, WritableMap> queuedMap = new HashMap<>(); 
+    private static final HashMap<String, ArrayList<WritableMap>> queuedMap = new HashMap<>(); 
     private ReactApplicationContext reactApplicationContext;
     private WebEngageModuleImpl webEngageModuleImpl;
 
@@ -63,15 +64,21 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
     public void setReactNativeContext(ReactApplicationContext context) {
         listenerCount = 0;
         reactApplicationContext = context;
-        if (webEngageModuleImpl == null && context != null) {
-            webEngageModuleImpl = new WebEngageModuleImpl(context);
+        if (context != null) {
+            if (webEngageModuleImpl == null) {
+                webEngageModuleImpl = WebEngageModuleImpl.getInstance(context);
+            } else {
+                webEngageModuleImpl.setContext(context);
+            }
         }
     }
 
     private WebengageBridge(ReactApplicationContext reactContext) {
         super(reactContext);
         if (reactContext != null) {
-            webEngageModuleImpl = new WebEngageModuleImpl(reactContext);
+            webEngageModuleImpl = WebEngageModuleImpl.getInstance(reactContext);
+        } else {
+            webEngageModuleImpl = WebEngageModuleImpl.getInstance();
         }
         listenerCount = 0;
     }
@@ -79,15 +86,30 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void updateListenerCount() {
-        listenerCount++;
+        ArrayList<Map.Entry<String, ArrayList<WritableMap>>> eventsToFlush;
         synchronized (lock) {
-            if (listenerCount > 0) {
-                HashMap<String, WritableMap> map = new HashMap<>();
-                map.putAll(queuedMap);
-                for (Map.Entry<String, WritableMap> entry : map.entrySet()) {
-                    sendEvent(reactApplicationContext, entry.getKey(), entry.getValue());
-                    queuedMap.remove(entry.getKey());
-                    Logger.d(TAG, "Sending queued event: " + entry.getKey());
+            listenerCount++;
+            if (queuedMap.isEmpty()) {
+                return;
+            }
+            eventsToFlush = new ArrayList<>(queuedMap.entrySet());
+            queuedMap.clear();
+        }
+        for (Map.Entry<String, ArrayList<WritableMap>> entry : eventsToFlush) {
+            String eventName = entry.getKey();
+            ArrayList<WritableMap> events = entry.getValue();
+            Logger.d(TAG, "Flushing " + events.size() + " queued events for: " + eventName);
+            for (WritableMap event : events) {
+                try {
+                    if (reactApplicationContext != null) {
+                        reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(eventName, event);
+                        Logger.d(TAG, "Flushed event: " + eventName);
+                    } else {
+                        Logger.d(TAG, "ReactContext null during flush, dropping event: " + eventName);
+                    }
+                } catch (Throwable e) {
+                    Logger.d(TAG, "Failed to flush event: " + eventName + ", dropping. Error: " + e.getMessage());
                 }
             }
         }
@@ -302,8 +324,14 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
 
    public static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
     if (reactContext == null) {
-        Logger.d(TAG, "ReactContext is null, queueing event: " + eventName);
-        queuedMap.put(eventName, params);
+        Logger.d(TAG, "ReactContext is null, queuing event: " + eventName);
+        synchronized (lock) {
+            if (!queuedMap.containsKey(eventName)) {
+                queuedMap.put(eventName, new ArrayList<>());
+            }
+            queuedMap.get(eventName).add(params);
+            Logger.d(TAG, "Event queued: " + eventName + " | pending=" + queuedMap.get(eventName).size());
+        }
         return;
     }
 
@@ -315,22 +343,37 @@ public class WebengageBridge extends ReactContextBaseJavaModule {
                 reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                     .emit(eventName, params);
                 emitted = true;
-                Logger.d(TAG, "Event emitted via DeviceEventManager: " + eventName);
+                Logger.d(TAG, "Event emitted directly: " + eventName);
             } catch (Throwable e) {
-                Logger.d(TAG, "DeviceEventManager emit failed: " + e.getMessage());
+                Logger.d(TAG, "Direct emit failed: " + eventName + " | Error: " + e.getMessage());
             }
 
             if (!emitted) {
-                queuedMap.put(eventName, params);
-                Logger.d(TAG, "Event queued: " + eventName);
+                synchronized (lock) {
+                    if (!queuedMap.containsKey(eventName)) {
+                        queuedMap.put(eventName, new ArrayList<>());
+                    }
+                    queuedMap.get(eventName).add(params);
+                    Logger.d(TAG, "Event queued (emit failed): " + eventName + " | pending=" + queuedMap.get(eventName).size());
+                }
             }
         } else {
-            Logger.d(TAG, "No listeners yet, queueing: " + eventName);
-            queuedMap.put(eventName, params);
+            synchronized (lock) {
+                if (!queuedMap.containsKey(eventName)) {
+                    queuedMap.put(eventName, new ArrayList<>());
+                }
+                queuedMap.get(eventName).add(params);
+                Logger.d(TAG, "Event queued (no listeners): " + eventName + " | pending=" + queuedMap.get(eventName).size());
+            }
         }
     } catch (Exception e) {
-        Logger.d(TAG, "ERROR sending event: " + eventName + ", queueing. Error: " + e);
-        queuedMap.put(eventName, params);
+        Logger.d(TAG, "ERROR sending event: " + eventName + ", queuing. Error: " + e);
+        synchronized (lock) {
+            if (!queuedMap.containsKey(eventName)) {
+                queuedMap.put(eventName, new ArrayList<>());
+            }
+            queuedMap.get(eventName).add(params);
+        }
     }
 }
 

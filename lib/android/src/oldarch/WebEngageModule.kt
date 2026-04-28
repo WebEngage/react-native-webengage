@@ -17,7 +17,7 @@ class WebEngageModule(reactContext: ReactApplicationContext?) :
     }
 
     private val webEngageModuleImpl: WebEngageModuleImpl? = try {
-        reactContext?.let { WebEngageModuleImpl(it) }
+        reactContext?.let { WebEngageModuleImpl.getInstance(it) }
     } catch (e: Exception) {
         Logger.e("WebEngageModule", "Failed to initialize WebEngageModuleImpl", e)
         null

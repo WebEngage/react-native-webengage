@@ -11,7 +11,7 @@
 @interface WEGWebEngageBridge: RCTEventEmitter <RCTBridgeModule, WEGInAppNotificationProtocol, WEGAppDelegate, RCTBridgeDelegate>
 #endif
 
-@property NSMutableDictionary *pendingEventsDict;
+@property NSMutableDictionary<NSString *, NSMutableArray *> *pendingEventsDict;
 @property dispatch_queue_t serialQueue;
 
 // Used to Initialize WebEngage SDK Automatically from client's AppDelegate

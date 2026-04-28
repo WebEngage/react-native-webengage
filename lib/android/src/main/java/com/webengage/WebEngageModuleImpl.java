@@ -42,14 +42,48 @@ public class WebEngageModuleImpl implements PushNotificationCallbacks, InAppNoti
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final int DATE_FORMAT_LENGTH = DATE_FORMAT.replaceAll("'", "").length();
 
-    private final ReactApplicationContext context;
+    private static volatile WebEngageModuleImpl INSTANCE = null;
+    private static final Object lock = new Object();
+    private volatile ReactApplicationContext context;
 
-    public WebEngageModuleImpl(ReactApplicationContext reactContext) {
+    public static WebEngageModuleImpl getInstance(ReactApplicationContext reactContext) {
+        if (INSTANCE == null) {
+            synchronized (lock) {
+                if (INSTANCE == null) {
+                    INSTANCE = new WebEngageModuleImpl(reactContext);
+                }
+            }
+        }
+        if (reactContext != null && INSTANCE.context != reactContext) {
+            INSTANCE.setContext(reactContext);
+        }
+        return INSTANCE;
+    }
+
+    public static WebEngageModuleImpl getInstance() {
+        if (INSTANCE == null) {
+            synchronized (lock) {
+                if (INSTANCE == null) {
+                    INSTANCE = new WebEngageModuleImpl(null);
+                }
+            }
+        }
+        return INSTANCE;
+    }
+
+    public void setContext(ReactApplicationContext reactContext) {
+        this.context = reactContext;
+        registerStateChangeCallback();
+    }
+
+    private WebEngageModuleImpl(ReactApplicationContext reactContext) {
         this.context = reactContext;
         WebEngage.registerPushNotificationCallback(this);
         WebEngage.registerInAppNotificationCallback(this);
         WebEngage.registerWESecurityCallback(this);
-        registerStateChangeCallback();
+        if (reactContext != null) {
+            registerStateChangeCallback();
+        }
     }
 
     public Map<String, Object> getWebEngageConstants() {

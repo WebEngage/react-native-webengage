@@ -18,7 +18,8 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'LICENSE.md', 'README.md', 'package.json', 'src/**/*', 'types/**/*'
   s.source_files   = 'ios/WEGWebEngageBridge/*.{h,m,mm}'
   s.public_header_files = 'ios/WEGWebEngageBridge/WEGWebEngageBridge.h'
-
+  s.pod_target_xcconfig  = { 'DEFINES_MODULE' => 'YES' }
+  
   if respond_to?(:install_modules_dependencies, true)
     install_modules_dependencies(s)
   else

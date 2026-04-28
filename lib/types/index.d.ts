@@ -555,6 +555,14 @@ declare class WebEngagePlugin {
   _options: Record<string, any>;
 
   /**
+   * Enable or disable debug logging
+   * @param enabled true to enable logs, false to disable
+   * @description Logs are disabled by default. Call this to enable SDK debug logs.
+   * @example webengage.setDebugMode(true)
+   */
+  setDebugMode(enabled: boolean): void;
+
+  /**
    * Initialize WebEngage SDK
    * @description Must be called before using any other WebEngage methods
    * @example webengage.initialize()

@@ -12,7 +12,7 @@
 
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
-bool weHasListeners = NO;
+static BOOL weHasListeners = NO;
 NSString *WEGPluginVersion = @"1.5.1";
 
 @implementation WEGWebEngageBridge
@@ -44,6 +44,34 @@ RCT_EXPORT_MODULE(WEGWebEngageBridge);
 - (void)initialiseWEGVersion {
     WegVersionKey key = WegVersionKeyRN;
     [[WebEngage sharedInstance] setVersionForChildSDK:WEGPluginVersion forKey:key];
+}
+
+- (void)queueEvent:(NSString *)eventName body:(id)body {
+    dispatch_sync(self.serialQueue, ^{
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+        }
+        if (self.pendingEventsDict[eventName] == nil) {
+            self.pendingEventsDict[eventName] = [NSMutableArray array];
+        }
+        [self.pendingEventsDict[eventName] addObject:body];
+    });
+}
+
+- (void)sendOrQueueEvent:(NSString *)eventName body:(id)body {
+    dispatch_sync(self.serialQueue, ^{
+        if (weHasListeners) {
+            [self sendEventWithName:eventName body:body];
+        } else {
+            if (self.pendingEventsDict == nil) {
+                self.pendingEventsDict = [NSMutableDictionary dictionary];
+            }
+            if (self.pendingEventsDict[eventName] == nil) {
+                self.pendingEventsDict[eventName] = [NSMutableArray array];
+            }
+            [self.pendingEventsDict[eventName] addObject:body];
+        }
+    });
 }
 
 - (NSDate *)getDate:(NSString *)strValue {
@@ -104,16 +132,7 @@ RCT_EXPORT_METHOD(initializeWebEngage) {
                }
            }
        };
-       if(weHasListeners) {
-           [self sendEventWithName:@"tokenInvalidated" body:data];
-       } else {
-           if (self.pendingEventsDict == nil) {
-           self.pendingEventsDict = [NSMutableDictionary dictionary];
-           self.pendingEventsDict[@"tokenInvalidated"] = data;
-       } else {
-           self.pendingEventsDict[@"tokenInvalidated"] = data;
-       }
-       }
+       [self sendOrQueueEvent:@"tokenInvalidated" body:data];
    };
 }
 
@@ -309,127 +328,63 @@ RCT_EXPORT_METHOD(logout){
             }
         }
     }
-    if(weHasListeners) {
-        [self sendEventWithName:@"notificationClicked" body:inAppNotificationData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"notificationClicked"] = inAppNotificationData;
-        } else {
-            self.pendingEventsDict[@"notificationClicked"] = inAppNotificationData;
-        }
-    }
+    [self sendOrQueueEvent:@"notificationClicked" body:inAppNotificationData];
 }
 
 - (void)notificationDismissed:(NSMutableDictionary *)inAppNotificationData {
-    if(weHasListeners) {
-        RCTLogInfo(@"webengageBridge: in-app notification dismissed");
-        [self sendEventWithName:@"notificationDismissed" body:inAppNotificationData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"notificationDismissed"] = inAppNotificationData;
-        } else {
-            self.pendingEventsDict[@"notificationDismissed"] = inAppNotificationData;
-        }
-    }
+    [self sendOrQueueEvent:@"notificationDismissed" body:inAppNotificationData];
 }
 
 - (NSMutableDictionary *)notificationPrepared:(NSMutableDictionary *)inAppNotificationData shouldStop:(BOOL *)stopRendering {
-    if (weHasListeners) {
-        [self sendEventWithName:@"notificationPrepared" body:inAppNotificationData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"notificationPrepared"] = inAppNotificationData;
-        } else {
-            self.pendingEventsDict[@"notificationPrepared"] = inAppNotificationData;
-        }
-    }
+    [self sendOrQueueEvent:@"notificationPrepared" body:inAppNotificationData];
     return inAppNotificationData;
 }
 
 - (void)notificationShown:(NSMutableDictionary *)inAppNotificationData {
-    if (weHasListeners) {
-        [self sendEventWithName:@"notificationShown" body:inAppNotificationData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"notificationShown"] = inAppNotificationData;
-        } else {
-            self.pendingEventsDict[@"notificationShown"] = inAppNotificationData;
-        }
-    }
+    [self sendOrQueueEvent:@"notificationShown" body:inAppNotificationData];
 }
 
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
     RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-    if (weHasListeners) {
-        [self sendEventWithName:@"pushNotificationClicked" body:pushData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
-        } else {
-            self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
-        }
-    }
+    [self sendOrQueueEvent:@"pushNotificationClicked" body:pushData];
 }
 
 - (void)sendUniversalLinkLocation:(NSString *)location{
     RCTLogInfo(@"webengageBridge: universal link clicked with location: %@", location);
     NSDictionary *data = @{@"location":location};
-    if (weHasListeners) {
-        [self sendEventWithName:@"universalLinkClicked" body:data];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"universalLinkClicked"] = data;
-        } else {
-            self.pendingEventsDict[@"universalLinkClicked"] = data;
-        }
-    }
+    [self sendOrQueueEvent:@"universalLinkClicked" body:data];
 }
 
 - (void)didReceiveAnonymousID:(NSString *)anonymousID forReason:(WEGReason)reason {
     NSDictionary *data = @{@"anonymousID":anonymousID};
-    if(weHasListeners) {
-        [self sendEventWithName:@"onAnonymousIdChanged" body:data];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"onAnonymousIdChanged"] = data;
-        } else {
-            self.pendingEventsDict[@"onAnonymousIdChanged"] = data;
-        }
-    }
+    [self sendOrQueueEvent:@"onAnonymousIdChanged" body:data];
 }
 
 
 // Will be called when this module's first listener is added.
-- (void) startObserving {
-    weHasListeners = YES;
-    if (self.pendingEventsDict != nil) {
-        for (id key in [self getObserversNonMutable]) {
-            [self sendEventWithName:key body:self.pendingEventsDict[key]];
-            [self.pendingEventsDict removeObjectForKey: key];
+- (void)startObserving {
+    __block NSDictionary *snapshot = nil;
+    dispatch_sync(self.serialQueue, ^{
+        weHasListeners = YES;
+        if (self.pendingEventsDict != nil && self.pendingEventsDict.count > 0) {
+            snapshot = [self.pendingEventsDict copy];
+            [self.pendingEventsDict removeAllObjects];
+        }
+    });
+    if (snapshot) {
+        for (NSString *key in snapshot) {
+            for (id event in snapshot[key]) {
+                [self sendEventWithName:key body:event];
+            }
         }
     }
 }
 
 - (void)stopObserving {
-    weHasListeners = NO;
-}
-
-#pragma mark: - Helper for serialization access for observers
-
-- (NSDictionary *)getObserversNonMutable {
-    __block NSDictionary *object;
     dispatch_sync(self.serialQueue, ^{
-        object = [self.pendingEventsDict copy];
+        weHasListeners = NO;
     });
-    return object;
 }
 
 # pragma mark - Turbo Module

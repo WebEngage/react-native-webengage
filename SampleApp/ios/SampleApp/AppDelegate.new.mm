@@ -20,9 +20,9 @@
   
   // Initialize WebEngage
   // Docs: Add below 2 lines to Docs
-  self.weManager = [WEGWebEngageBridge new];
+  self.weBridge = [WEGWebEngageBridge new];
   
-  [self.weManager autoRegister:application launchOptions:launchOptions];
+  [self.weBridge autoRegister:application launchOptions:launchOptions];
   
   
   if (@available(iOS 10.0, *)) {

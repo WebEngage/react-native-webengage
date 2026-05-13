@@ -13,15 +13,21 @@ Pod::Spec.new do |s|
 
   s.requires_arc   = true
   s.module_name    = 'webengageBridge' 
-  s.platform       = :ios, '10.0'
+  s.platform       = :ios, '13.0'
 
   s.preserve_paths = 'LICENSE.md', 'README.md', 'package.json', 'index.js'
   s.source_files   = 'ios/*.{h,m}'
 
-  if ENV['WEBENGAGE_USE_CORE'] == 'true'
-    s.dependency 'WebEngage/Core','>= 6.16.1'
-  else
-    s.dependency 'WebEngage','>= 6.16.1'
-  end
   s.dependency 'React-Core'
+
+  # WebEngage native SDK is now provided via Swift Package Manager (SPM).
+  # Add the WebEngage SPM package in your Xcode project:
+  #   URL: https://github.com/WebEngage/webengage-ios-sdk
+
+  # Allow the bridge code to find SPM-provided WebEngage framework headers
+  s.pod_target_xcconfig = {
+    'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_CONFIGURATION_BUILD_DIR)"',
+    'HEADER_SEARCH_PATHS' => '"$(PODS_CONFIGURATION_BUILD_DIR)/WebEngage.framework/Headers"',
+    'OTHER_LDFLAGS' => '-framework WebEngage'
+  }
 end

@@ -22,7 +22,6 @@ import CONSTANTS from '../utils/Constants';
 import {getArchitectureInfo} from '../utils/ArchitectureDetector';
 import {TurboModuleRegistry} from 'react-native';
 
-// TODO Add Navigation Type
 const HomeScreen = ({navigation}) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [isJwtModalVisible, setIsJwtModalVisible] = React.useState(false);

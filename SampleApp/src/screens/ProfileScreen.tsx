@@ -142,7 +142,6 @@ const ProfileScreen: React.FC = () => {
     setValAttribute(text);
   };
 
-  // TODO - remove this method later
   const onAttrUpdate = () => {
     webEngageManager.user.setAttribute("Age", 25) // Number
     webEngageManager.user.setAttribute("birth_place", "BHL") // String
@@ -341,7 +340,6 @@ const ProfileScreen: React.FC = () => {
             onChangeText={handleCompanyChange}
           />
         </View>
-        {/* TODO - Add this for library in iOS */}
         <View style={styles.row}>
           <Text style={styles.label}>Location</Text>
           <WETextInput

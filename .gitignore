@@ -80,3 +80,5 @@ webengage-inbox-lib/*
 webengage-sdk-security/*
 framework for NI- sdk security/*
 SampleApp/Gemfile.lock
+
+lib/IMPLEMENTATION_SUMMARY.md

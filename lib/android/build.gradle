@@ -13,7 +13,7 @@ if (isNewArchitectureEnabled()) {
     react {
         jsRootDir = file("../src/")
         libraryName = "WEGWebEngageBridge"
-        codegenJavaPackageName = "com.webengage.react"
+        codegenJavaPackageName = "com.webengage.bridge"
     }
 }
 

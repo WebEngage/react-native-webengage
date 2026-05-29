@@ -1,8 +1,5 @@
 #import "AppDelegate.h"
 #import <React/RCTBundleURLProvider.h>
-#import <WebEngage/WebEngage.h>
-#import <WebEngage/WEGManualIntegration.h>
-#import <WEGWebEngageBridge.h>
 
 @implementation AppDelegate
 
@@ -18,19 +15,13 @@
 #else
   NSLog(@"🏗️ Architecture: Old Architecture");
 #endif
-
-    self.weBridge = [WEGWebEngageBridge new];
-    // Initializes Push with WebEngage Bridge
-    [WebEngage sharedInstance].pushNotificationDelegate = self.weBridge;
-    // Initializes InApp with WebEngage Bridge
-    [[WebEngage sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.weBridge]; 
-
-
+  
+  
   // Initialize WebEngage
   // Docs: Add below 2 lines to Docs
-  // self.weBridge = [WEGWebEngageBridge new];
+  self.weBridge = [WEGWebEngageBridge new];
   
-  // [self.weBridge autoRegister:application launchOptions:launchOptions];
+  [self.weBridge autoRegister:application launchOptions:launchOptions];
   
   if (@available(iOS 10.0, *)) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
@@ -84,13 +75,12 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 }
 
 - (BOOL) bridgelessEnabled {
-  return NO;
+  return YES;
 }
-
 
 - (BOOL)newArchEnabled
 {
-  return NO;
+  return YES;
 }
 
 @end

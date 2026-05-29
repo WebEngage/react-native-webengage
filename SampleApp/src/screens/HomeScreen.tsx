@@ -243,6 +243,12 @@ const HomeScreen = ({navigation}) => {
           buttonText={'Inline'}
           onPress={() => navigate(CONSTANTS.SCREEN_NAMES.INLINE)}
         />
+        <WEButton
+          buttonStyle={[styles.buttonContainer, {borderColor: '#4CAF50'}]}
+          buttonTextStyle={styles.buttonText}
+          buttonText={'SDK Tests'}
+          onPress={() => navigate(CONSTANTS.SCREEN_NAMES.SDK_TEST)}
+        />
       </View>
       <WEModal
         visible={isModalVisible}

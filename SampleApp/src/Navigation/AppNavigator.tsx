@@ -15,6 +15,7 @@ import ScreenList from '../screens/Inline/ScreenList';
 import ScreenDetails from '../screens/Inline/ScreenDetails';
 import DynamicScreen from '../screens/Inline/DynamicScreen';
 import NotificationInbox from '../screens/NotificationInbox/NotificationInbox';
+import SDKTestScreen from '../screens/SDKTestScreen';
 
 const Stack = createStackNavigator();
 
@@ -98,6 +99,16 @@ const AppNavigator = () => {
           component={NotificationInbox}
           options={{
             title: CONSTANTS.SCREEN_TITLE.NOTIFICATION_INBOX,
+          }}
+        />
+        <Stack.Screen
+          name={CONSTANTS.SCREEN_NAMES.SDK_TEST}
+          component={SDKTestScreen}
+          options={{
+            title: CONSTANTS.SCREEN_TITLE.SDK_TEST,
+            headerStyle: styles.headerStyle,
+            headerTintColor: COLORS.white,
+            headerTitleStyle: styles.headerTextStyle,
           }}
         />
       </Stack.Navigator>

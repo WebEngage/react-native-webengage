@@ -58,7 +58,7 @@ class MainApplication : Application(), ReactApplication {
   // WebEngage Initialization
   public fun initWebEngage() {
     val webEngageConfig = WebEngageConfig.Builder()
-      .setWebEngageKey("YOUR_WEBENGAGE_LICENSE_KEY")
+      .setWebEngageKey("~2024b713")
       .setDebugMode(true) // only in development mode
       .build()
     registerActivityLifecycleCallbacks(

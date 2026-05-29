@@ -12,6 +12,7 @@ const CONSTANTS = {
     SCREEN_DETAILS: 'ScreenDetails',
     DYNAMIC_SCREEN: 'DynamicScreen',
     NOTIFICATION_INBOX: 'NotificationInbox',
+    SDK_TEST: 'SDKTest',
   },
 
   SCREEN_TITLE: {
@@ -25,6 +26,7 @@ const CONSTANTS = {
     SCREEN_DETAILS: 'Screen Details',
     DYNAMIC_SCREEN: 'Dynamic Screen',
     NOTIFICATION_INBOX: 'Notification Inbox',
+    SDK_TEST: 'SDK API Tests',
   },
 
   WEBENGAGE: 'WebEngage:',

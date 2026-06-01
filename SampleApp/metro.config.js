@@ -1,14 +1,16 @@
-
-
+const path = require('path');
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
-
 const defaultConfig = getDefaultConfig(__dirname);
 
 const {
   resolver: { sourceExts, assetExts },
 } = getDefaultConfig(__dirname);
 
+// Path to the local lib that react-native-webengage symlinks to
+const webengageLib = path.resolve(__dirname, '../lib');
+
 const config = {
+  watchFolders: [webengageLib],
   transformer: {
     getTransformOptions: async () => ({
       transform: {
@@ -21,6 +23,7 @@ const config = {
   resolver: {
     assetExts: assetExts.filter(ext => ext !== 'svg'),
     sourceExts: [...sourceExts, 'svg'],
+    nodeModulesPaths: [path.resolve(__dirname, 'node_modules')],
   },
   serializer: {
     getModulesRunBeforeMainModule: () => [
@@ -29,7 +32,6 @@ const config = {
   },
 };
 
-// Inject architecture environment variable
 if (process.env.REACT_NATIVE_ARCH) {
   process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 }

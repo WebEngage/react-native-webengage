@@ -82,3 +82,4 @@ framework for NI- sdk security/*
 SampleApp/Gemfile.lock
 
 lib/IMPLEMENTATION_SUMMARY.md
+ios/*

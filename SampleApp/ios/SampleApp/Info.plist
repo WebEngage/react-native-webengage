@@ -77,7 +77,7 @@
 	<key>WEGEnvironment</key>
 	<string>DEFAULT</string>
 	<key>WEGLicenseCode</key>
-	<string>~1341056cd</string>
+	<string>YOU_LICENSE_CODE</string>
 	<key>WEGLogLevel</key>
 	<string>VERBOSE</string>
 	<key>WEGManualIntegration</key>

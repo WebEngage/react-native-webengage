@@ -83,6 +83,20 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 #endif
 }
 
+// Universal Link: Required by WebEngage SDK
+// getAndTrackDeeplink resolves the wrapped URL and tracks the click.
+// sendUniversalLinkLocation forwards the resolved deeplink to JS.
+// Refer docs(Confluence) - subdomain provided by WebEngage
+- (BOOL)application:(UIApplication *)application
+    continueUserActivity:(NSUserActivity *)userActivity
+    restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
+
+  [[WebEngage sharedInstance].deeplinkManager getAndTrackDeeplink:userActivity.webpageURL callbackBlock:^(NSString *location) {
+    [self.weBridge sendUniversalLinkLocation:location];
+  }];
+  return YES;
+}
+
 - (BOOL) bridgelessEnabled {
   return NO;
 }

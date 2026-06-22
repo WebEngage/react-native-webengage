@@ -18,5 +18,5 @@
 - (void)autoRegister:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions;
 
 // Forwards resolved universal link deeplink to JS via 'universalLinkClicked' event.
-- (void) sendUniversalLinkLocation:(NSString *)location;
+- (void)sendUniversalLinkLocation:(NSString *)location;
 @end

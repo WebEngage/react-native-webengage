@@ -17,4 +17,6 @@
 // Used to Initialize WebEngage SDK Automatically from client's AppDelegate
 - (void)autoRegister:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions;
 
+// Forwards resolved universal link deeplink to JS via 'universalLinkClicked' event.
+- (void)sendUniversalLinkLocation:(NSString *)location;
 @end

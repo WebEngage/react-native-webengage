@@ -60,6 +60,14 @@ export const initWebEngage = () => {
     );
     Alert.alert('It is a Simple Alert ' + JSON.stringify(notificationData));
   });
+
+  // Universal link callback - receives resolved deeplink from native
+  webEngageManager.universalLink.onClick(function (location) {
+    console.log(
+      CONSTANTS.WEBENGAGE + ' universal link clicked: ' + JSON.stringify(location),
+    );
+    Alert.alert('Universal Link', 'Location: ' + JSON.stringify(location));
+  });
 };
 
 export const enableWebEngagePush = () => {

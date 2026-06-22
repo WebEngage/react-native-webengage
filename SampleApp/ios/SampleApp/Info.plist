@@ -32,6 +32,16 @@
 				<string>account1.weurl</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>webengage-sample</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>webengage-sample</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>

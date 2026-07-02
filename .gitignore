@@ -83,3 +83,6 @@ SampleApp/Gemfile.lock
 
 lib/IMPLEMENTATION_SUMMARY.md
 SampleApp/ios/Podfile.lock
+
+SampleApp/node_modules 07-16-25-135
+*.bak

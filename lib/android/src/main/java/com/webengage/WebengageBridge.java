@@ -4,15 +4,6 @@ package com.webengage;
  * Created by uzma on 10/25/17.
  */
 
- import android.app.ActivityManager;
- import android.content.Intent;
- import android.net.Uri;
- import android.content.Context;
- import android.os.Bundle;
-import android.util.Log;
-
-import com.webengage.sdk.android.Logger;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -20,58 +11,38 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.webengage.sdk.android.Analytics;
-import com.webengage.sdk.android.UserProfile;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.WritableNativeArray;
-import com.webengage.sdk.android.WebEngage;
-import com.webengage.sdk.android.actions.render.InAppNotificationData;
-import com.webengage.sdk.android.actions.render.PushNotificationData;
-import com.webengage.sdk.android.callbacks.InAppNotificationCallbacks;
-import com.webengage.sdk.android.callbacks.PushNotificationCallbacks;
- import com.webengage.sdk.android.callbacks.StateChangeCallbacks;
- import com.webengage.sdk.android.callbacks.WESecurityCallback;
-import com.webengage.sdk.android.utils.Gender;
-import com.webengage.sdk.android.Channel;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.webengage.sdk.android.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
-//WebEngageBridge singelton
+//WebEngageBridge singleton
 
-public class WebengageBridge extends ReactContextBaseJavaModule implements PushNotificationCallbacks,
-        InAppNotificationCallbacks, WESecurityCallback {
-    private static final String TAG = "webengageBridge";
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    private static final int DATE_FORMAT_LENGTH = DATE_FORMAT.replaceAll("'", "").length();
+public class WebengageBridge extends ReactContextBaseJavaModule {
+    private static final String TAG = "WEGWebEngageBridge";
     private static int listenerCount = 0;
     private static volatile WebengageBridge INSTANCE = null;
     private static final Object lock = new Object();
-    private static final HashMap<String, WritableMap> queuedMap = new HashMap<>();
+    private static final HashMap<String, ArrayList<WritableMap>> queuedMap = new HashMap<>(); 
     private ReactApplicationContext reactApplicationContext;
+    private WebEngageModuleImpl webEngageModuleImpl;
 
     //no parameter initialization to be called from application class during react native initialization
     public static WebengageBridge getInstance() {
-        Logger.d(TAG, "getInstance without context: ");
         if (INSTANCE == null) {
             synchronized (lock) {
                 INSTANCE = new WebengageBridge(null);
@@ -82,7 +53,6 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
 
     //to be called during setting up package list
     public static WebengageBridge getInstance(ReactApplicationContext reactContext) {
-        Logger.d(TAG, "getInstance: " + reactContext);
         if (INSTANCE == null) {
             synchronized (lock) {
                 INSTANCE = new WebengageBridge(reactContext);
@@ -94,356 +64,319 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
     public void setReactNativeContext(ReactApplicationContext context) {
         listenerCount = 0;
         reactApplicationContext = context;
-        registerWEStateChangeCallback();
+        if (context != null) {
+            if (webEngageModuleImpl == null) {
+                webEngageModuleImpl = WebEngageModuleImpl.getInstance(context);
+            } else {
+                webEngageModuleImpl.setContext(context);
+            }
+        }
     }
 
     private WebengageBridge(ReactApplicationContext reactContext) {
         super(reactContext);
-        Log.d(TAG, "MyLogs Constructor called");
-        WebEngage.registerPushNotificationCallback(this);
-        WebEngage.registerInAppNotificationCallback(this);
-        WebEngage.registerWESecurityCallback(this);
+        if (reactContext != null) {
+            webEngageModuleImpl = WebEngageModuleImpl.getInstance(reactContext);
+        } else {
+            webEngageModuleImpl = WebEngageModuleImpl.getInstance();
+        }
         listenerCount = 0;
     }
-    public void registerWEStateChangeCallback() {
-        if(reactApplicationContext != null) {
-            WebEngage.registerStateChangeCallback(new StateChangeCallbacks() {
-                @Override
-                public void onAnonymousIdChanged(Context context, String anonymousUserID) {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("anonymousID", anonymousUserID);
-                    sendEvent(reactApplicationContext, "onAnonymousIdChanged", map);
+
+
+    @ReactMethod
+    public void updateListenerCount() {
+        ArrayList<Map.Entry<String, ArrayList<WritableMap>>> eventsToFlush;
+        synchronized (lock) {
+            listenerCount++;
+            if (queuedMap.isEmpty()) {
+                return;
+            }
+            eventsToFlush = new ArrayList<>(queuedMap.entrySet());
+            queuedMap.clear();
+        }
+        for (Map.Entry<String, ArrayList<WritableMap>> entry : eventsToFlush) {
+            String eventName = entry.getKey();
+            ArrayList<WritableMap> events = entry.getValue();
+            Logger.d(TAG, "Flushing " + events.size() + " queued events for: " + eventName);
+            for (WritableMap event : events) {
+                try {
+                    if (reactApplicationContext != null) {
+                        reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(eventName, event);
+                        Logger.d(TAG, "Flushed event: " + eventName);
+                    } else {
+                        Logger.d(TAG, "ReactContext null during flush, dropping event: " + eventName);
+                    }
+                } catch (Throwable e) {
+                    Logger.d(TAG, "Failed to flush event: " + eventName + ", dropping. Error: " + e.getMessage());
                 }
-            });
+            }
         }
     }
 
     @ReactMethod
-    public void updateListenerCount() {
-        listenerCount++;
-        Logger.e(TAG, "updateListenerCount: " + listenerCount);
-        synchronized (lock) {
-            if (listenerCount > 0) {
-                HashMap<String, WritableMap> map = new HashMap<>();
-                map.putAll(queuedMap);
-                for (Map.Entry<String, WritableMap> entry : map.entrySet()) {
-                    sendEvent(reactApplicationContext, entry.getKey(), entry.getValue());
-                    queuedMap.remove(entry.getKey());
-                    Logger.d(TAG, "Sending queued event: " + entry.getKey());
-                }
-            }
-        }
+    public void addListener(String eventType) {
+        // Required by NativeEventEmitter - handled by React Native
+    }
+
+    @ReactMethod
+    public void removeListeners(double count) {
+        // Required by NativeEventEmitter to avoid warnings
+        // This method is called when listeners are removed
     }
 
     @Override
     public String getName() {
-        return TAG;
+        return "WEGWebEngageBridge";
     }
 
     @ReactMethod
-    public void init(boolean autoRegister) {
-        WebEngage.registerPushNotificationCallback(this);
-        WebEngage.registerInAppNotificationCallback(this);
-        WebEngage.registerWESecurityCallback(this);
-    }
-
-    private static Date getDate(String value) {
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return simpleDateFormat.parse(value);
-        } catch (Throwable t) {
+    public void init() {
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.init();
         }
-        return null;
     }
 
     @ReactMethod
     public void trackEventWithName(String name) {
-        Analytics weAnalytics = WebEngage.get().analytics();
-        weAnalytics.track(name);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.trackEventWithName(name);
+        }
     }
 
     @ReactMethod
     public void trackEventWithNameAndData(String name, ReadableMap values) {
-        Map<String, Object> map = recursivelyDeconstructReadableMap(values);
-        WebEngage.get().analytics().track(name, map);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.trackEventWithNameAndData(name, values);
+        }
     }
 
     @ReactMethod
     public void screenNavigated(String name) {
-        WebEngage.get().analytics().screenNavigated(name);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.screenNavigated(name);
+        }
     }
 
     @ReactMethod
     public void screenNavigatedWithData(String name, ReadableMap userData) {
-        WebEngage.get().analytics().screenNavigated(name, recursivelyDeconstructReadableMap(userData));
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.screenNavigatedWithData(name, userData);
+        }
     }
 
     @ReactMethod
     public void login(String userIdentifier) {
-        Logger.d(TAG, "login without jwt: " + userIdentifier);
-        WebEngage.get().user().login(userIdentifier);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.login(userIdentifier);
+        }
     }
 
     @ReactMethod
     public void loginWithSecureToken(String userIdentifier, String jwtToken) {
-        Logger.d(TAG, "login with jwt: " + userIdentifier + "| JWT -  " + jwtToken);
-        WebEngage.get().user().login(userIdentifier, jwtToken);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.loginWithSecureToken(userIdentifier, jwtToken);
+        }
     }
 
     @ReactMethod
-    public void setSecureToken(String cuid,String secureToken) {
-        Logger.d(TAG, "setSecureToken updating token- " + secureToken + " | for id - "+cuid);
-        WebEngage.get().setSecurityToken(cuid, secureToken);
+    public void setSecureToken(String cuid, String secureToken) {
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setSecureToken(cuid, secureToken);
+        }
     }
 
     @ReactMethod
-    public void setAttribute(ReadableMap readableMap) throws JSONException {
-        JSONObject jsonObject = new JSONObject();
-        Map<String, Object> hashMap = recursivelyDeconstructReadableMap(readableMap);
-        Logger.d(TAG, "Setting user attributes: " + hashMap);
-        WebEngage.get().user().setAttributes(hashMap);
+    public void setAttribute(ReadableMap readableMap) {
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setAttribute(readableMap);
+        }
     }
 
     @ReactMethod
     public void deleteAttribute(String attributeName) {
-        WebEngage.get().user().deleteAttribute(attributeName);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.deleteAttribute(attributeName);
+        }
     }
 
     @ReactMethod
     public void deleteAttributes(ReadableArray attributeNames) {
-        int n = attributeNames.size();
-        List<String> result = new ArrayList<String>(n);
-        for (int i = 0; i < n; i++) {
-            ReadableType indexType = attributeNames.getType(i);
-            if (indexType == ReadableType.String) {
-                result.add(attributeNames.getString(i));
-            } else {
-                Logger.e(TAG, "Invalid data type at index " + i + ", key must be String.");
-            }
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.deleteAttributes(attributeNames);
         }
-        WebEngage.get().user().deleteAttributes(result);
     }
 
     @ReactMethod
     public void setEmail(String email) {
-        WebEngage.get().user().setEmail(email);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setEmail(email);
+        }
     }
 
     @ReactMethod
     public void setHashedEmail(String hashedEmail) {
-        WebEngage.get().user().setHashedEmail(hashedEmail);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setHashedEmail(hashedEmail);
+        }
     }
 
     @ReactMethod
     public void setPhone(String phone) {
-        WebEngage.get().user().setPhoneNumber(phone);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setPhone(phone);
+        }
     }
 
     @ReactMethod
     public void setHashedPhone(String hashedPhone) {
-        WebEngage.get().user().setHashedPhoneNumber(hashedPhone);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setHashedPhone(hashedPhone);
+        }
     }
 
     @ReactMethod
     public void setBirthDateString(String birthDateString) {
-        WebEngage.get().user().setBirthDate(birthDateString);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setBirthDateString(birthDateString);
+        }
     }
 
     @ReactMethod
     public void setGender(String gender) {
-        WebEngage.get().user().setGender(Gender.valueByString(gender));
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setGender(gender);
+        }
     }
 
     @ReactMethod
     public void setFirstName(String name) {
-        WebEngage.get().user().setFirstName(name);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setFirstName(name);
+        }
     }
     
     @ReactMethod
-    public void setLocation(Double lat,Double lng) {
-        WebEngage.get().user().setLocation(lat,lng);
+    public void setLocation(Double lat, Double lng) {
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setLocation(lat, lng);
+        }
     }
 
     @ReactMethod
     public void setLastName(String name) {
-        WebEngage.get().user().setLastName(name);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setLastName(name);
+        }
     }
 
     @ReactMethod
     public void setCompany(String company) {
-        WebEngage.get().user().setCompany(company);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setCompany(company);
+        }
     }
 
     @ReactMethod
     public void setDevicePushOptIn(Boolean state) {
-        WebEngage.get().user().setDevicePushOptIn(state);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setDevicePushOptIn(state);
+        }
     }
 
     @ReactMethod
     public void sendFcmToken(String fcmToken) {
-        WebEngage.get().setRegistrationID(fcmToken);
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.sendFcmToken(fcmToken);
+        }
     }
 
     @ReactMethod
     public void onMessageReceived(ReadableMap readableMap) {
-        Map<String, Object> hashMap = recursivelyDeconstructReadableMap(readableMap);
-        Logger.d(TAG, "onMessageReceived " + hashMap);
-        Map<String, String> data = (Map<String, String>) hashMap.get("data");
-         if(data != null) {
-             if(data.containsKey("source") && "webengage".equals(data.get("source"))) {
-                WebEngage.get().receive(data);
-             }
-         }
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.onMessageReceived(readableMap);
+        }
     }
 
     @ReactMethod
     public void setOptIn(String channel, boolean status) {
-        if ("push".equalsIgnoreCase(channel)) {
-            WebEngage.get().user().setOptIn(Channel.PUSH, status);
-        } else if ("sms".equalsIgnoreCase(channel)) {
-            WebEngage.get().user().setOptIn(Channel.SMS, status);
-        } else if ("email".equalsIgnoreCase(channel)) {
-            WebEngage.get().user().setOptIn(Channel.EMAIL, status);
-        } else if ("in_app".equalsIgnoreCase(channel)) {
-            WebEngage.get().user().setOptIn(Channel.IN_APP, status);
-        } else if ("whatsapp".equalsIgnoreCase(channel)) {
-            WebEngage.get().user().setOptIn(Channel.WHATSAPP, status);
-        } else if ("viber".equalsIgnoreCase(channel)) {
-            WebEngage.get().user().setOptIn(Channel.VIBER, status);
-        } else {
-            Logger.e(TAG, "Invalid channel: " + channel + ". Must be one of [push, sms, email, in_app, whatsapp, viber].");
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.setOptIn(channel, status);
         }
     }
 
     @ReactMethod
     public void logout() {
-        WebEngage.get().user().logout();
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.logout();
+        }
     }
 
     @ReactMethod
     public void startGAIDTracking() {
-        WebEngage.get().startGAIDTracking();
+        if (webEngageModuleImpl != null) {
+            webEngageModuleImpl.startGAIDTracking();
+        }
     }
 
-    private Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
-        ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
-        Map<String, Object> deconstructedMap = new HashMap<>();
-        while (iterator.hasNextKey()) {
-            String key = iterator.nextKey();
-            ReadableType type = readableMap.getType(key);
-            switch (type) {
-                case Null:
-                    deconstructedMap.put(key, null);
-                    break;
-                case Boolean:
-                    deconstructedMap.put(key, readableMap.getBoolean(key));
-                    break;
-                case Number:
-                    deconstructedMap.put(key, readableMap.getDouble(key));
-                    break;
-                case String:
-                    String value = readableMap.getString(key);
-                    if (value.length() == DATE_FORMAT_LENGTH) {
-                        Date date = getDate(value);
-                        if (date != null) {
-                            deconstructedMap.put(key, date);
-                        } else {
-                            deconstructedMap.put(key, value);
-                        }
-                    } else {
-                        deconstructedMap.put(key, value);
-                    }
-                    break;
-                case Map:
-                    Map<String, Object> nestedMap = recursivelyDeconstructReadableMap(readableMap.getMap(key));
-                    deconstructedMap.put(key, nestedMap);
-                    break;
-                case Array:
-                    List<Object> nestedList = recursivelyDeconstructReadableArray(readableMap.getArray(key));
-                    deconstructedMap.put(key, nestedList);
-                    break;
-                default:
-                    Logger.e(TAG, "Could not convert object with key: " + key);
-            }
-        }
-        return deconstructedMap;
-    }
-
-    private List<Object> recursivelyDeconstructReadableArray(ReadableArray readableArray) {
-        List<Object> deconstructedList = new ArrayList<>(readableArray.size());
-        for (int i = 0; i < readableArray.size(); i++) {
-            ReadableType indexType = readableArray.getType(i);
-            switch (indexType) {
-                case Null:
-                    deconstructedList.add(i, null);
-                    break;
-                case Boolean:
-                    deconstructedList.add(i, readableArray.getBoolean(i));
-                    break;
-                case Number:
-                    deconstructedList.add(i, readableArray.getDouble(i));
-                    break;
-                case String:
-                    String value = readableArray.getString(i);
-                    if (value.length() == DATE_FORMAT_LENGTH) {
-                        Date date = getDate(value);
-                        if (date != null) {
-                            deconstructedList.add(i, date);
-                        } else {
-                            deconstructedList.add(i, value);
-                        }
-                    } else {
-                        deconstructedList.add(i, value);
-                    }
-                    break;
-                case Map:
-                    deconstructedList.add(i, recursivelyDeconstructReadableMap(readableArray.getMap(i)));
-                    break;
-                case Array:
-                    deconstructedList.add(i, recursivelyDeconstructReadableArray(readableArray.getArray(i)));
-                    break;
-                default:
-                    Logger.e(TAG, "Could not convert object at index " + i);
-            }
-        }
-        return deconstructedList;
-    }
+    // Helper methods moved to WebEngageModuleImpl
 
    public static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
-
-        try {
-            if (listenerCount > 0 && reactContext != null) {
-                // Check if reactContext can emit directly
-                if (reactContext.hasCatalystInstance()) {
-                    Logger.d(TAG, "Bridge hasActiveCatalystInstance");
-                    // For older versions with CatalystInstance
-                    reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(eventName, params);
-                } else {
-                    try {
-                        // For bridgeless mode or fallback
-                        Logger.d(TAG, "Using bridgeless mode for emitting event");
-                        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                .emit(eventName, params);
-                    } catch (UnsupportedOperationException e) {
-                        Logger.d(TAG, "Bridgeless mode not supported: " + e.getMessage());
-                        queuedMap.put(eventName, params); // Queue for later
-                    }
-                }
-            } else {
-                Logger.d(TAG, "QUEUEING event: " + eventName);
-                queuedMap.put(eventName, params);
+    if (reactContext == null) {
+        Logger.d(TAG, "ReactContext is null, queuing event: " + eventName);
+        synchronized (lock) {
+            if (!queuedMap.containsKey(eventName)) {
+                queuedMap.put(eventName, new ArrayList<>());
             }
-        } catch (Exception e) { 
-            Logger.d(TAG, "ERROR: " + e);
-            queuedMap.put(eventName, params);
+            queuedMap.get(eventName).add(params);
+            Logger.d(TAG, "Event queued: " + eventName + " | pending=" + queuedMap.get(eventName).size());
+        }
+        return;
+    }
+
+    try {
+        if (listenerCount > 0) {
+            boolean emitted = false;
+
+            try {
+                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit(eventName, params);
+                emitted = true;
+                Logger.d(TAG, "Event emitted directly: " + eventName);
+            } catch (Throwable e) {
+                Logger.d(TAG, "Direct emit failed: " + eventName + " | Error: " + e.getMessage());
+            }
+
+            if (!emitted) {
+                synchronized (lock) {
+                    if (!queuedMap.containsKey(eventName)) {
+                        queuedMap.put(eventName, new ArrayList<>());
+                    }
+                    queuedMap.get(eventName).add(params);
+                    Logger.d(TAG, "Event queued (emit failed): " + eventName + " | pending=" + queuedMap.get(eventName).size());
+                }
+            }
+        } else {
+            synchronized (lock) {
+                if (!queuedMap.containsKey(eventName)) {
+                    queuedMap.put(eventName, new ArrayList<>());
+                }
+                queuedMap.get(eventName).add(params);
+                Logger.d(TAG, "Event queued (no listeners): " + eventName + " | pending=" + queuedMap.get(eventName).size());
+            }
+        }
+    } catch (Exception e) {
+        Logger.d(TAG, "ERROR sending event: " + eventName + ", queuing. Error: " + e);
+        synchronized (lock) {
+            if (!queuedMap.containsKey(eventName)) {
+                queuedMap.put(eventName, new ArrayList<>());
+            }
+            queuedMap.get(eventName).add(params);
         }
     }
+}
 
-    private ReadableMap convertJsonObjectToReadable(JSONObject jsonObject) {
-        return convertJsonObjectToWriteable(jsonObject);
-    }
 
     public static WritableMap convertJsonObjectToWriteable(JSONObject jsonObj) {
         WritableMap map = Arguments.createMap();
@@ -559,113 +492,5 @@ public class WebengageBridge extends ReactContextBaseJavaModule implements PushN
         }
 
         return arr;
-    }
-
-    @Override
-    public PushNotificationData onPushNotificationReceived(Context context, PushNotificationData pushNotificationData) {
-        WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
-        map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
-        return pushNotificationData;
-    }
-
-    @Override
-    public void onPushNotificationShown(Context context, PushNotificationData pushNotificationData) {
-        WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
-        map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
-        sendEvent(reactApplicationContext, "pushNotificationShown", map);
-    }
-
-    @Override
-    public boolean onPushNotificationClicked(Context context, PushNotificationData pushNotificationData) {
-        WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
-        map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
-        sendEvent(reactApplicationContext, "pushNotificationClicked", map);
-        return false;
-    }
-
-    @Override
-    public void onPushNotificationDismissed(Context context, PushNotificationData pushNotificationData) {
-        WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
-        map.putString("deeplink", pushNotificationData.getPrimeCallToAction().getAction());
-        sendEvent(reactApplicationContext, "pushNotificationDismissed", map);
-    }
-
-    @Override
-    public boolean onPushNotificationActionClicked(Context context, PushNotificationData pushNotificationData, String buttonId) {
-        WritableMap map = Arguments.fromBundle(pushNotificationData.getCustomData());
-        map.putMap("userData", convertJsonObjectToWriteable(pushNotificationData.getPushPayloadJSON()));
-        map.putString("deeplink", pushNotificationData.getCallToActionById(buttonId).getAction());
-
-        sendEvent(reactApplicationContext, "pushNotificationClicked", map);
-        return false;
-    }
-
-    @Override
-    public InAppNotificationData onInAppNotificationPrepared(Context context, InAppNotificationData inAppNotificationData) {
-        sendEvent(reactApplicationContext, "notificationPrepared", convertJsonObjectToWriteable(inAppNotificationData.getData()));
-        return inAppNotificationData;
-    }
-
-    @Override
-    public void onInAppNotificationShown(Context context, InAppNotificationData inAppNotificationData) {
-        WritableMap map = convertJsonObjectToWriteable(inAppNotificationData.getData());
-        Logger.d(TAG, "in-app notification data: " + map);
-        sendEvent(reactApplicationContext, "notificationShown", map);
-    }
-
-    @Override
-    public boolean onInAppNotificationClicked(Context context, InAppNotificationData inAppNotificationData, String actionId) {
-        Logger.d(TAG, "action id: " + actionId);
-        JSONObject jsonObject = inAppNotificationData.getData();
-        String actionLink = null;
-        try {
-            JSONArray actions = jsonObject.isNull("actions") ? null : jsonObject.getJSONArray("actions");
-            if (actions != null) {
-                for (int i = 0; i < actions.length(); i++) {
-                    JSONObject action = actions.getJSONObject(i);
-                    String actionEId = action.isNull("actionEId") ? null : action.optString("actionEId");
-                    if (actionEId != null && actionEId.equals(actionId)) {
-                        actionLink = action.isNull("actionLink") ? null : action.getString("actionLink");
-                        break;
-                    }
-                }
-
-                List<String> params = null;
-                try {
-                    params = Uri.parse(actionLink).getPathSegments();
-                } catch (Exception e) {
-
-                }
-
-                if (params != null && params.size() > 1) {
-                    actionLink = params.get(1);
-                }
-
-                Logger.d(TAG, "action link: " + actionLink);
-            }
-        } catch (JSONException e) {
-            Logger.e(TAG, "JSONException while getting action link from in-app notification data", e);
-        }
-
-        WritableMap map = convertJsonObjectToWriteable(jsonObject);
-        map.putString("deepLink", actionLink);
-        map.putString("clickId", actionId);
-        sendEvent(reactApplicationContext, "notificationClicked", map);
-        return false;
-    }
-
-    @Override
-    public void onInAppNotificationDismissed(Context context, InAppNotificationData inAppNotificationData) {
-        sendEvent(reactApplicationContext, "notificationDismissed", convertJsonObjectToWriteable(inAppNotificationData.getData()));
-    }
-
-    @Override
-    public void onSecurityException(Map<String, Object> map) {
-        Logger.d("WebEngage", "onSecurity Exception!!!");
-        sendEvent(reactApplicationContext, "tokenInvalidated", convertMapToWritableMap(map));
     }
 }

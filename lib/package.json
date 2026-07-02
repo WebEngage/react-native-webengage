@@ -1,6 +1,6 @@
 {
   "name": "react-native-webengage",
-  "version": "1.6.2",
+  "version": "2.0.1",
   "description": "WebEngage React Native library.",
   "license": "MIT",
   "author": "WebEngage",
@@ -9,11 +9,25 @@
     "type": "git",
     "url": "git+https://github.com/WebEngage/react-native-webengage.git"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "types": "types/index.d.ts",
+  "react-native": "src/index.js",
+  "source": "src/index.js",
+  "files": [
+    "src",
+    "types",
+    "android/src",
+    "android/build.gradle",
+    "android/version.properties",
+    "ios/WEGWebEngageBridge",
+    "ios/WEGWebEngageBridge.xcodeproj/project.pbxproj",
+    "react-native-webengage.podspec",
+    "README.md"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node scripts/postinstall.js"
+    "test": "jest",
+    "postinstall": "node scripts/postinstall.js",
+    "typescript": "tsc --noEmit"
   },
   "keywords": [
     "webengage",
@@ -24,9 +38,42 @@
     "in-app",
     "notification",
     "android",
-    "ios"
+    "ios",
+    "turbomodule",
+    "new-architecture"
   ],
   "peerDependencies": {
-    "react-native": ">=0.39.0"
+    "react": "*",
+    "react-native": ">=0.65.0"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "codegenConfig": {
+    "name": "WEGWebEngageBridgeSpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "libraryName": "WEGWebEngageBridge",
+    "android": {
+      "javaPackageName": "com.webengage.bridge"
+    }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "^react-native$": "<rootDir>/jest.mock.js"
+    }
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.3",
+    "@testing-library/react-native": "^13.3.3",
+    "babel-jest": "^30.1.2",
+    "jest": "^30.1.3"
   }
 }

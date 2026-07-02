@@ -7,10 +7,11 @@ const webEngageManager = new WebEngage();
 export default webEngageManager;
 
 export const initWebEngage = () => {
+  webEngageManager.initialize();
   // In-app notification callbacks
   webEngageManager.notification.onPrepare(function (notificationData) {
     console.log(
-      CONSTANTS.WEBENGAGE_INAPP + 'App: in-app notification prepared',
+      CONSTANTS.WEBENGAGE_INAPP + 'App: in-app notification prepared'
       +JSON.stringify(notificationData),
     );
   });
@@ -58,6 +59,14 @@ export const initWebEngage = () => {
         JSON.stringify(notificationData.userData),
     );
     Alert.alert('It is a Simple Alert ' + JSON.stringify(notificationData));
+  });
+
+  // Universal link callback - receives resolved deeplink from native
+  webEngageManager.universalLink.onClick(function (location) {
+    console.log(
+      CONSTANTS.WEBENGAGE + ' universal link clicked: ' + JSON.stringify(location),
+    );
+    Alert.alert('Universal Link', 'Location: ' + JSON.stringify(location));
   });
 };
 

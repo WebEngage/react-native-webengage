@@ -1,30 +1,32 @@
-/**
- *  webengageBridge.m
- *
- *  Created by Uzma Sayyed on 10/16/17.
- */
-
 #import "WEGWebEngageBridge.h"
+
 #import <React/RCTLog.h>
 #import <WebEngage/WebEngage.h>
 #import <WebEngage/WEGAnalytics.h>
 #import <React/RCTBundleURLProvider.h>
-@import UserNotifications;
+#import <WebEngage/WebEngage-Swift.h>
+
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <WEGWebEngageBridgeSpec/WEGWebEngageBridgeSpec.h>
+#endif
 
 NSString * const DATE_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 int const DATE_FORMAT_LENGTH = 24;
-bool weHasListeners = NO;
-NSString *WEGPluginVersion = @"1.6.2";
+static BOOL weHasListeners = NO;
+NSString *WEGPluginVersion = @"2.0.1";
 
 @implementation WEGWebEngageBridge
 
-RCT_EXPORT_MODULE(webengageBridge);
-
+RCT_EXPORT_MODULE(WEGWebEngageBridge);
 - (instancetype)init {
-    self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
-    [self initialiseWEGVersion];
+    if (self = [super init]) {
+        self.serialQueue = dispatch_queue_create("com.reactNativeWebEngage.serialqueue", DISPATCH_QUEUE_SERIAL);
+        [self initialiseWEGVersion];
+    }
     return self;
 }
+
+
 
 + (BOOL)requiresMainQueueSetup {
     return NO;
@@ -41,22 +43,35 @@ RCT_EXPORT_MODULE(webengageBridge);
 
 - (void)initialiseWEGVersion {
     WegVersionKey key = WegVersionKeyRN;
-    [[WebEngage sharedInstance] setVersionForChildSDK:WEGPluginVersion forKey:key];;
+    [[WebEngage sharedInstance] setVersionForChildSDK:WEGPluginVersion forKey:key];
 }
 
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
-#if DEBUG
-    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-#else
-    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-#endif
+- (void)queueEvent:(NSString *)eventName body:(id)body {
+    dispatch_sync(self.serialQueue, ^{
+        if (self.pendingEventsDict == nil) {
+            self.pendingEventsDict = [NSMutableDictionary dictionary];
+        }
+        if (self.pendingEventsDict[eventName] == nil) {
+            self.pendingEventsDict[eventName] = [NSMutableArray array];
+        }
+        [self.pendingEventsDict[eventName] addObject:body];
+    });
 }
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
-    WEGWebEngageBridge* b = [WEGWebEngageBridge new];
-    self.wegBridge = b;
-    b.bridge = bridge;
-    return @[b];
+- (void)sendOrQueueEvent:(NSString *)eventName body:(id)body {
+    dispatch_sync(self.serialQueue, ^{
+        if (weHasListeners) {
+            [self sendEventWithName:eventName body:body];
+        } else {
+            if (self.pendingEventsDict == nil) {
+                self.pendingEventsDict = [NSMutableDictionary dictionary];
+            }
+            if (self.pendingEventsDict[eventName] == nil) {
+                self.pendingEventsDict[eventName] = [NSMutableArray array];
+            }
+            [self.pendingEventsDict[eventName] addObject:body];
+        }
+    });
 }
 
 - (NSDate *)getDate:(NSString *)strValue {
@@ -106,28 +121,19 @@ RCT_EXPORT_MODULE(webengageBridge);
     return mutableArr;
 }
 
-RCT_EXPORT_METHOD(initialize) {
-    [WEGJWTManager shared].tokenInvalidatedCallback = ^{
-        NSLog(@"webengageBridge: JWT Token is Invalid. Please send valid ");
-        NSDictionary *data = @{
-            @"error": @{
-                @"response": @{
-                    @"status": @"UID_MISMATCH",
-                    @"message": @"Invalid JWT token passed"
-                }
-            }
-        };
-        if(weHasListeners) {
-            [self sendEventWithName:@"tokenInvalidated" body:data];
-        } else {
-            if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"tokenInvalidated"] = data;
-        } else {
-            self.pendingEventsDict[@"tokenInvalidated"] = data;
-        }
-        }
-    };
+RCT_EXPORT_METHOD(initializeWebEngage) {
+   [WEGJWTManager shared].tokenInvalidatedCallback = ^{
+       NSLog(@"webengageBridge: JWT Token is Invalid. Please send valid ");
+       NSDictionary *data = @{
+           @"error": @{
+               @"response": @{
+                   @"status": @"UID_MISMATCH",
+                   @"message": @"Invalid JWT token passed"
+               }
+           }
+       };
+       [self sendOrQueueEvent:@"tokenInvalidated" body:data];
+   };
 }
 
 RCT_EXPORT_METHOD(trackEventWithName:(NSString *)name){
@@ -168,7 +174,11 @@ RCT_EXPORT_METHOD(setSecureToken:(NSString*)userId secureToken:(NSString*)secure
     [[WebEngage sharedInstance].user setSecureToken:userId jwtToken:secureToken];
 }
 
-RCT_EXPORT_METHOD(setAttribute:(NSString*)attributeName value:(id)value){
+RCT_EXPORT_METHOD(setAndroidAttribute:(NSDictionary*)attributes){
+    // Not used in iOS - Android only method
+}
+
+RCT_EXPORT_METHOD(setIosAttribute:(NSString*)attributeName value:(id)value){
     if ([value isKindOfClass:[NSString class]]) {
         if ([value length] == DATE_FORMAT_LENGTH) {
             NSDate * date = [self getDate:value];
@@ -251,6 +261,31 @@ RCT_EXPORT_METHOD(updateListenerCount){
     // This is only available for Android
 }
 
+
+- (void)autoRegister:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions {
+    [self initializeWebEngage];
+    // Initializes Push with WebEngage Bridge
+    [WebEngage sharedInstance].pushNotificationDelegate = self;
+    // Initializes InApp with WebEngage Bridge
+    [[WebEngage sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions notificationDelegate:self];
+}
+
+RCT_EXPORT_METHOD(setDevicePushOptIn:(BOOL)optIn) {
+    [[WebEngage sharedInstance].user setOptInStatusForChannel:WEGEngagementChannelPush status:optIn];
+}
+
+RCT_EXPORT_METHOD(startGAIDTracking) {
+    // Android only - GAID tracking
+}
+
+RCT_EXPORT_METHOD(addListener:(NSString *)eventType) {
+    [super addListener:eventType];
+}
+
+RCT_EXPORT_METHOD(removeListeners:(double)count) {
+    [super removeListeners:count];
+}
+
 RCT_EXPORT_METHOD(setOptIn:(NSString*)channel status:(BOOL)status) {
     NSLocale* locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
     NSString* ch = [channel lowercaseStringWithLocale:locale];
@@ -293,126 +328,71 @@ RCT_EXPORT_METHOD(logout){
             }
         }
     }
-    if(weHasListeners) {
-        [self sendEventWithName:@"notificationClicked" body:inAppNotificationData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"notificationClicked"] = inAppNotificationData;
-        } else {
-            self.pendingEventsDict[@"notificationClicked"] = inAppNotificationData;
-        }
-    }
+    [self sendOrQueueEvent:@"notificationClicked" body:inAppNotificationData];
 }
 
 - (void)notificationDismissed:(NSMutableDictionary *)inAppNotificationData {
-    if(weHasListeners) {
-        RCTLogInfo(@"webengageBridge: in-app notification dismissed");
-        [self sendEventWithName:@"notificationDismissed" body:inAppNotificationData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"notificationDismissed"] = inAppNotificationData;
-        } else {
-            self.pendingEventsDict[@"notificationDismissed"] = inAppNotificationData;
-        }
-    }
+    [self sendOrQueueEvent:@"notificationDismissed" body:inAppNotificationData];
 }
 
 - (NSMutableDictionary *)notificationPrepared:(NSMutableDictionary *)inAppNotificationData shouldStop:(BOOL *)stopRendering {
-    if (weHasListeners) {
-        [self sendEventWithName:@"notificationPrepared" body:inAppNotificationData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"notificationPrepared"] = inAppNotificationData;
-        } else {
-            self.pendingEventsDict[@"notificationPrepared"] = inAppNotificationData;
-        }
-    }
+    [self sendOrQueueEvent:@"notificationPrepared" body:inAppNotificationData];
     return inAppNotificationData;
 }
 
 - (void)notificationShown:(NSMutableDictionary *)inAppNotificationData {
-    if (weHasListeners) {
-        [self sendEventWithName:@"notificationShown" body:inAppNotificationData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"notificationShown"] = inAppNotificationData;
-        } else {
-            self.pendingEventsDict[@"notificationShown"] = inAppNotificationData;
-        }
-    }
+    [self sendOrQueueEvent:@"notificationShown" body:inAppNotificationData];
 }
 
 -(void)WEGHandleDeeplink:(NSString *)deeplink userData:(NSDictionary *)data{
     RCTLogInfo(@"webengageBridge: push notification clicked with deeplink: %@", deeplink);
     NSDictionary *pushData = @{@"deeplink":deeplink, @"userData":data};
-    if (weHasListeners) {
-        [self sendEventWithName:@"pushNotificationClicked" body:pushData];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
-        } else {
-            self.pendingEventsDict[@"pushNotificationClicked"] = pushData;
-        }
-    }
+    [self sendOrQueueEvent:@"pushNotificationClicked" body:pushData];
 }
 
 - (void)sendUniversalLinkLocation:(NSString *)location{
     RCTLogInfo(@"webengageBridge: universal link clicked with location: %@", location);
     NSDictionary *data = @{@"location":location};
-    if (weHasListeners) {
-        [self sendEventWithName:@"universalLinkClicked" body:data];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"universalLinkClicked"] = data;
-        } else {
-            self.pendingEventsDict[@"universalLinkClicked"] = data;
-        }
-    }
+    [self sendOrQueueEvent:@"universalLinkClicked" body:data];
 }
 
 - (void)didReceiveAnonymousID:(NSString *)anonymousID forReason:(WEGReason)reason {
     NSDictionary *data = @{@"anonymousID":anonymousID};
-    if(weHasListeners) {
-        [self sendEventWithName:@"onAnonymousIdChanged" body:data];
-    } else {
-        if (self.pendingEventsDict == nil) {
-            self.pendingEventsDict = [NSMutableDictionary dictionary];
-            self.pendingEventsDict[@"onAnonymousIdChanged"] = data;
-        } else {
-            self.pendingEventsDict[@"onAnonymousIdChanged"] = data;
-        }
-    }
+    [self sendOrQueueEvent:@"onAnonymousIdChanged" body:data];
 }
 
 
 // Will be called when this module's first listener is added.
-- (void) startObserving {
-    weHasListeners = YES;
-    if (self.pendingEventsDict != nil) {
-        for (id key in [self getObserversNonMutable]) {
-            [self sendEventWithName:key body:self.pendingEventsDict[key]];
-            [self.pendingEventsDict removeObjectForKey: key];
+- (void)startObserving {
+    __block NSDictionary *snapshot = nil;
+    dispatch_sync(self.serialQueue, ^{
+        weHasListeners = YES;
+        if (self.pendingEventsDict != nil && self.pendingEventsDict.count > 0) {
+            snapshot = [self.pendingEventsDict copy];
+            [self.pendingEventsDict removeAllObjects];
+        }
+    });
+    if (snapshot) {
+        for (NSString *key in snapshot) {
+            for (id event in snapshot[key]) {
+                [self sendEventWithName:key body:event];
+            }
         }
     }
 }
 
 - (void)stopObserving {
-    weHasListeners = NO;
-}
-
-#pragma mark: - Helper for serialization access for observers
-
-- (NSDictionary *)getObserversNonMutable {
-    __block NSDictionary *object;
     dispatch_sync(self.serialQueue, ^{
-        object = [self.pendingEventsDict copy];
+        weHasListeners = NO;
     });
-    return object;
 }
+
+# pragma mark - Turbo Module
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeWebEngageModuleSpecJSI>(params);
+}
+#endif
+
 @end

@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import {Picker} from '@react-native-picker/picker';
 import WETextInput from '../CommonComponents/WETextInput';
 import webEngageManager from '../WebEngageHandler/WebEngageManager';
 import WEButton from '../CommonComponents/WEButton';
 import WEUserModal from '../CommonComponents/WEUserModal';
 import CONSTANTS from '../utils/Constants';
+import GenderDropdown from '../utils/GenderDropdown';
 
 const ProfileScreen: React.FC = () => {
   const [firstName, setFirstName] = useState<string>('');
@@ -23,7 +23,7 @@ const ProfileScreen: React.FC = () => {
   const [hashedPhone, setHashedPhone] = useState<string>('');
   const [company, setCompany] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [gender, setGender] = useState('Unknown');
+  const [gender, setGender] = useState('');
   const [birthDate, setBirthDate] = useState<string>('');
   const [showUserModal, setShowUserModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -141,6 +141,17 @@ const ProfileScreen: React.FC = () => {
   const onValueAttrChange = (text: string) => {
     setValAttribute(text);
   };
+
+  const onAttrUpdate = () => {
+    webEngageManager.user.setAttribute("Age", 25) // Number
+    webEngageManager.user.setAttribute("birth_place", "BHL") // String
+    webEngageManager.user.setAttribute("Brand affinity", ["Apple", "Samsung"]) // Array of Strings
+    const simpleMap = {"key1": "value1"};
+    webEngageManager.user.setAttribute("simpleMap", simpleMap) // Map of String key-value pairs // Not working
+    const testDate = new Date('2023-10-10T10:10:10');
+    webEngageManager.user.setAttribute("dateOfBirth", testDate.toISOString()) // Date // not working
+    webEngageManager.user.setAttribute("HasSubscribed", true) // Boolean
+  }
 
   const onSaveAttribute = () => {
     if (keyAttribute && valAttribute) {
@@ -329,7 +340,6 @@ const ProfileScreen: React.FC = () => {
             onChangeText={handleCompanyChange}
           />
         </View>
-        {/* TODO - Add this for library in iOS */}
         <View style={styles.row}>
           <Text style={styles.label}>Location</Text>
           <WETextInput
@@ -341,17 +351,7 @@ const ProfileScreen: React.FC = () => {
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Gender</Text>
-          {/* TODO Add a Picker */}
-          <Picker
-            selectedValue={gender}
-            onValueChange={value => setGender(value)}
-            mode="dropdown"
-            style={styles.picker}>
-            <Picker.Item label="Select Gender" value="" />
-            <Picker.Item label="Male" value="Male" />
-            <Picker.Item label="Female" value="Female" />
-            <Picker.Item label="Other" value="" />
-          </Picker>
+          <GenderDropdown value={gender} onChange={setGender} />
         </View>
 
         <View style={styles.row}>
@@ -377,38 +377,76 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       {/* Opt-in options */}
-      <View style={styles.optinOptions}>
-        <Text style={styles.header}> User Opt-Ins</Text>
-        <View style={styles.row}>
-          <BouncyCheckbox isChecked={pushOptin} onPress={onPushOptIn} />
-          <Text>Push</Text>
+      <View style={styles.optinContainer}>
+        <Text style={styles.optinHeader}>User Opt-Ins</Text>
+        
+        <View style={styles.optinRow}>
+
+          <BouncyCheckbox 
+            isChecked={pushOptin} 
+            onPress={onPushOptIn}
+            fillColor="#A782E4"
+            size={25}
+          />
+          <Text style={styles.optinLabel}>Push Notifications</Text>
+
         </View>
 
-        <View style={styles.row}>
-          <BouncyCheckbox isChecked={inappOptin} onPress={onInAppOptIn} />
-          <Text>In-app</Text>
+        <View style={styles.optinRow}>
+          <BouncyCheckbox 
+            isChecked={inappOptin} 
+            onPress={onInAppOptIn}
+            fillColor="#A782E4"
+            size={25}
+          />
+          <Text style={styles.optinLabel}>In-App Messages</Text>
         </View>
 
-        <View style={styles.row}>
-          <BouncyCheckbox isChecked={smsOptin} onPress={onSMSOptIn} />
-          <Text>SMS</Text>
+        <View style={styles.optinRow}>
+          <BouncyCheckbox 
+            isChecked={smsOptin} 
+            onPress={onSMSOptIn}
+            fillColor="#A782E4"
+            size={25}
+          />
+          <Text style={styles.optinLabel}>SMS</Text>
         </View>
 
-        <View style={styles.row}>
-          <BouncyCheckbox isChecked={emailOptin} onPress={onEmailOptIn} />
-          <Text>Email</Text>
+        <View style={styles.optinRow}>
+          <BouncyCheckbox 
+            isChecked={emailOptin} 
+            onPress={onEmailOptIn}
+            fillColor="#A782E4"
+            size={25}
+          />
+          <Text style={styles.optinLabel}>Email</Text>
         </View>
 
-        <View style={styles.row}>
-          <BouncyCheckbox isChecked={whatsappOptin} onPress={onWhatsappOptIn} />
-          <Text>Whatsapp</Text>
+        <View style={styles.optinRow}>
+          <BouncyCheckbox 
+            isChecked={whatsappOptin} 
+            onPress={onWhatsappOptIn}
+            fillColor="#A782E4"
+            size={25}
+          />
+          <Text style={styles.optinLabel}>WhatsApp</Text>
         </View>
 
-        <View style={styles.row}>
-          <BouncyCheckbox isChecked={viberOptin} onPress={onViberOptIn} />
-          <Text>Viber</Text>
+        <View style={styles.optinRow}>
+          <BouncyCheckbox 
+            isChecked={viberOptin} 
+            onPress={onViberOptIn}
+            fillColor="#A782E4"
+            size={25}
+          />
+          <Text style={styles.optinLabel}>Viber</Text>
         </View>
       </View>
+      <WEButton
+          onPress={onAttrUpdate}
+          buttonText="Send Multiple Atributes"
+          buttonStyle={styles.modalButton}
+        />
       <WEButton
         buttonText="Save"
         onPress={onSave}
@@ -439,6 +477,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontWeight: 'bold',
     borderBottomWidth: 1,
+    color: '#000000',
   },
   modalContainer: {},
   linkText: {
@@ -454,9 +493,51 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 16,
   },
-  optinOptions: {
-    alignSelf: 'center',
-    marginTop: 20,
+  optinContainer: {
+    marginTop: 30,
+    marginRight: 20,
+    backgroundColor: '#6289afff',
+    borderRadius: 15,
+    padding: 20,
+    borderWidth: 2,
+    borderColor: '#A782E4',
+    shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 4,
+    // },
+    // shadowOpacity: 0.15,
+    // shadowRadius: 6,
+    // elevation: 5,
+  },
+  optinHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 20,
+    textAlign: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: '#A782E4',
+    paddingBottom: 10,
+  },
+  optinRow: {
+    flexDirection: 'row',
+    // alignItems: 'center',
+    height: 40,
+    // paddingVertical: 12,
+    paddingHorizontal: 10,
+    marginBottom: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  optinLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#030609ff',
+    marginLeft: 15,
+    flex: 1,
   },
   row: {
     flexDirection: 'row',

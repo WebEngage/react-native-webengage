@@ -1,8 +1,5 @@
 #import "AppDelegate.h"
 #import <React/RCTBundleURLProvider.h>
-#import <WebEngage/WebEngage.h>
-#import <WebEngage/WEGManualIntegration.h>
-#import <WEGWebEngageBridge.h>
 
 @implementation AppDelegate
 
@@ -18,19 +15,13 @@
 #else
   NSLog(@"🏗️ Architecture: Old Architecture");
 #endif
-
-    self.weBridge = [WEGWebEngageBridge new];
-    // Initializes Push with WebEngage Bridge
-    [WebEngage sharedInstance].pushNotificationDelegate = self.weBridge;
-    // Initializes InApp with WebEngage Bridge
-    [[WebEngage sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions notificationDelegate:self.weBridge]; 
-
-
+  
+  
   // Initialize WebEngage
   // Docs: Add below 2 lines to Docs
-  // self.weBridge = [WEGWebEngageBridge new];
+  self.weBridge = [WEGWebEngageBridge new];
   
-  // [self.weBridge autoRegister:application launchOptions:launchOptions];
+  [self.weBridge autoRegister:application launchOptions:launchOptions];
   
   if (@available(iOS 10.0, *)) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
@@ -83,28 +74,13 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 #endif
 }
 
-// Universal Link: Required by WebEngage SDK
-// getAndTrackDeeplink resolves the wrapped URL and tracks the click.
-// sendUniversalLinkLocation forwards the resolved deeplink to JS.
-// Refer docs(Confluence) - subdomain provided by WebEngage
-- (BOOL)application:(UIApplication *)application
-    continueUserActivity:(NSUserActivity *)userActivity
-    restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
-
-  [[WebEngage sharedInstance].deeplinkManager getAndTrackDeeplink:userActivity.webpageURL callbackBlock:^(NSString *location) {
-    [self.weBridge sendUniversalLinkLocation:location];
-  }];
+- (BOOL) bridgelessEnabled {
   return YES;
 }
 
-- (BOOL) bridgelessEnabled {
-  return NO;
-}
-
-
 - (BOOL)newArchEnabled
 {
-  return NO;
+  return YES;
 }
 
 @end

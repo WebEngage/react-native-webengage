@@ -7,8 +7,10 @@ require Pod::Executable.execute_command('node', ['-p',
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
-# Disable New Architecture
-ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+# Enable New Architecture
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+# Explicitly disable bridgeless mode
+ENV['RCT_BRIDGELESS_ENABLED'] = '0'
 
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -23,7 +25,10 @@ target 'SampleApp' do
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :hermes_enabled => true,          # Hermes is recommended
+    :fabric_enabled => true,          # Enable Fabric renderer
+    :new_arch_enabled => true         # Enable TurboModules + Fabric
   )
 
   post_install do |installer|

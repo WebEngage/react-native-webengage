@@ -4,6 +4,47 @@
 
 ## Changelogs 2026
 
+### v2.1.0 [16 July 2026]
+
+* **Added Swift Package Manager (SPM) support** for the native WebEngage iOS SDK dependency, as an alternative to CocoaPods.
+* **SPM is now used by default** when your project supports it (React Native ≥ 0.75, Xcode 15+). Your next `pod install` after upgrading will link the WebEngage SDK via SPM instead of CocoaPods automatically. See "Staying on CocoaPods" below if you'd rather not switch yet.
+* Added two optional environment variables — see "Podfile configuration" below for how to set them.
+
+#### Podfile configuration
+
+Set these in your app's `ios/Podfile`, above the `require_relative` lines, before running `pod install`:
+
+```ruby
+# Uncomment to stay on CocoaPods instead of switching to SPM:
+# ENV['WEBENGAGE_DISABLE_SPM'] = 'true'
+
+# Uncomment to link only WebEngageCore (skips WebEngageLocation):
+# ENV['WEBENGAGE_USE_CORE'] = 'true'
+```
+
+* `WEBENGAGE_DISABLE_SPM` — keeps the WebEngage native SDK on CocoaPods, even on RN ≥ 0.75. Use this if you're not ready to migrate yet.
+* `WEBENGAGE_USE_CORE` — links only `WebEngageCore`, skipping `WebEngageLocation`. Use this if your app doesn't use WebEngage's geofencing/location features. Applies on both SPM and CocoaPods.
+
+#### Staying on CocoaPods
+
+* No action needed beyond setting `WEBENGAGE_DISABLE_SPM = 'true'` above, then running `pod install` as usual.
+
+#### Migrating an existing app to SPM
+
+* Update to `react-native-webengage` v2.1.0 or later.
+* Remove any manual `pod 'WebEngage'` line from your `ios/Podfile`, if present.
+* Run the following in your terminal:
+
+```bash
+cd ios
+pod deintegrate
+rm -rf Pods Podfile.lock
+pod install
+```
+
+* Open `.xcworkspace` in Xcode afterward and confirm `webengage-ios-sdk` now appears under **Package Dependencies** instead of in the Pods project.
+* If your Podfile uses `use_frameworks!` and you hit linker errors after switching, try `use_frameworks! :linkage => :dynamic`.
+
 ### v2.0.1 \[2 June 2026]
 
 * Added Bridgeless Mode compatibility for `universalLinkClicked`.

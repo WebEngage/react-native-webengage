@@ -27,7 +27,7 @@ class MainApplication : Application(), ReactApplication {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
               // Packages that cannot be autolinked yet can be added manually here, for example:
-              // add(MyReactNativePackage())
+              add(FirebaseTokenPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"
@@ -58,7 +58,7 @@ class MainApplication : Application(), ReactApplication {
   // WebEngage Initialization
   public fun initWebEngage() {
     val webEngageConfig = WebEngageConfig.Builder()
-      .setWebEngageKey("YOUR_WEBENGAGE_LICENSE_KEY")
+      .setWebEngageKey("YOUR_WEBENGAGE_LICENSE_KEY") // Update your license code!
       .setDebugMode(true) // only in development mode
       .build()
     registerActivityLifecycleCallbacks(

@@ -6,6 +6,9 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  NativeModules,
+  Alert,
+  Platform,
 } from 'react-native';
 import {navigate} from '../Navigation/NavigationService';
 import WEButton from '../CommonComponents/WEButton';
@@ -21,6 +24,8 @@ import {
 import CONSTANTS from '../utils/Constants';
 import {getArchitectureInfo} from '../utils/ArchitectureDetector';
 import {TurboModuleRegistry} from 'react-native';
+
+const {FirebaseTokenModule} = NativeModules;
 
 const HomeScreen = ({navigation}) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -207,6 +212,36 @@ const HomeScreen = ({navigation}) => {
     toggleJwtModal();
   };
 
+  const handleDeleteToken = async () => {
+    if (Platform.OS !== 'android') {
+      Alert.alert('Info', 'This feature is only available on Android');
+      return;
+    }
+    try {
+      const result = await FirebaseTokenModule.deletePushToken();
+      console.log('Delete Push Token:', result);
+      Alert.alert('Success', result);
+    } catch (error: any) {
+      console.error('Delete Push Token Error:', error);
+      Alert.alert('Error', error.message || 'Failed to delete push token');
+    }
+  };
+
+  const handleGenerateToken = async () => {
+    if (Platform.OS !== 'android') {
+      Alert.alert('Info', 'This feature is only available on Android');
+      return;
+    }
+    try {
+      const token = await FirebaseTokenModule.generatePushToken();
+      console.log('Generated Push Token:', token);
+      Alert.alert('Push Token', token);
+    } catch (error: any) {
+      console.error('Generate Push Token Error:', error);
+      Alert.alert('Error', error.message || 'Failed to generate push token');
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.architectureContainer}>
@@ -242,6 +277,18 @@ const HomeScreen = ({navigation}) => {
           buttonTextStyle={styles.buttonText}
           buttonText={'Inline'}
           onPress={() => navigate(CONSTANTS.SCREEN_NAMES.INLINE)}
+        />
+        <WEButton
+          buttonStyle={styles.deleteTokenButton}
+          buttonTextStyle={styles.buttonText}
+          buttonText={'Delete Token'}
+          onPress={handleDeleteToken}
+        />
+        <WEButton
+          buttonStyle={styles.createTokenButton}
+          buttonTextStyle={styles.buttonText}
+          buttonText={'Create Token'}
+          onPress={handleGenerateToken}
         />
       </View>
       <WEModal
@@ -298,6 +345,24 @@ const styles = StyleSheet.create({
     margin: 30,
     borderWidth: 1,
     borderRadius: 50,
+  },
+  deleteTokenButton: {
+    width: 200,
+    height: 70,
+    justifyContent: 'center',
+    margin: 30,
+    borderWidth: 1,
+    borderRadius: 50,
+    backgroundColor: '#d9534f',
+  },
+  createTokenButton: {
+    width: 200,
+    height: 70,
+    justifyContent: 'center',
+    margin: 30,
+    borderWidth: 1,
+    borderRadius: 50,
+    backgroundColor: '#5cb85c',
   },
   modalContainer: {
     backgroundColor: '#fff',
